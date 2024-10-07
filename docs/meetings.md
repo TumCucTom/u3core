@@ -6,6 +6,9 @@
 
 <h3>Client 3rd October</h3>
 <ul>
+    <li> Introduction to the company and their users </li>
+    <li> Given documenation with infomation about the project and some prelimary tasks to complete</li>
+    <li> Agreed on which contract license to use </li>
 </ul>
 
 <h3>Mentor 7th October</h3>
