@@ -9,6 +9,10 @@ two deployment architecture that can work with or without AI edge devices.</p>
 
 <h3>Stakeholders</h3>
 <h3>User stories</h3>
+<ul>
+  <li>Big corporation: We have many locations with large server rooms, we would like these to be safe whilst not hvaing constant human supervision.
+  We would like to have one service that can utilise the cameras already in place at these locations (currently being monitored by staff) to be able to detect fire or smoke. Upon detection all managers and duty managers for the respective building should recieve a text to alert them of this. Additionally, we would like a chatbot that is easy to communicate with to be able to provide us with analytics and history for this system.</li>
+</ul>
 
 <h3>Contributors </h3>
 <ul>
