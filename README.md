@@ -13,8 +13,8 @@ two deployment architecture that can work with or without AI edge devices.</p>
 <h3>Stakeholders</h3>
 <h3>User stories</h3>
 <ul>
-  <li>I am a Big corporation A and have many locations with large server rooms, we would like these to be safe whilst not having constant human supervision. We would like to have one service that can <strong>utilise the cameras already in place <strong>at these locations (currently being monitored by staff) to be able to <strong> detect fire or smoke<strong>. We would want cameras to still upload their data to a central server and have the system run on there. Upon detection all managers and duty managers for the respective building should <strong>recieve a text to alert them <strong>of this. Additionally, we would like a <strong>chatbot<strong> that is easy to communicate with to be able to <strong>provide us with analytics and history<strong> for this system.</li>
-    <li> I am Big corporation B and I want the same as A, except, I would like to use AI edge camera devices instead of the cameras uploading data to the cloud.</li>
+  <li>I am a Big corporation A and have many locations with large server rooms, we would like these to be safe whilst not having constant human supervision. We would like to have one service that can <strong>utilise the cameras already in place </strong>at these locations (currently being monitored by staff) to be able to <strong> detect fire or smoke</strong>. We would want cameras to still upload their data to a central server and have the system run on there. Upon detection all managers and duty managers for the respective building should <strong>recieve a text to alert them </strong>of this. Additionally, we would like a <strong>chatbot</strong> that is easy to communicate with to be able to <strong>provide us with analytics and history</strong> for this system.</li>
+    <li> I am Big corporation B and I want the same as A, except, I would like to use <strong>AI edge camera devices </strong>instead of the cameras uploading data to the cloud.</li>
 </ul>
 
 <h3>Contributors </h3>
