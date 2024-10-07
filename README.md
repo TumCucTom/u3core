@@ -7,10 +7,15 @@ two deployment architecture that can work with or without AI edge devices.</p>
 
 <p> It must have a simple alarm console to receive and track detected anomalies with the ability to configure alarms via Email, SMS, and WhatsApp for relevant users.Basic reporting functionality to track incidents and export logs must also be included. Finally, it must integrate with a variety of camera makes/models and APIs of the solution be made available to be able to integrate with any 3rd part alarms,bms, analytics systems.</p>
 
+<h3>Stakeholders</h3>
+<h3>User stories</h3>
+
 <h3>Contributors </h3>
-Thomas Bale hf23482@bristol.ac.uk
-Justice Mintah ar23247@bristol.ac.uk
-Sin Yi Tay if21076@bristol.ac.uk
-William Hook mo23292@bristol.ac.uk
-Xinyuan Chen vi23973@bristol.ac.uk
-Kanghyeon Kim xx23126@bristol.ac.uk
+<ul>
+  <li>Thomas Bale hf23482@bristol.ac.uk</li>
+  <li>Justice Mintah ar23247@bristol.ac.uk</li>
+  <li>Sin Yi Tay if21076@bristol.ac.uk</li>
+  <li>William Hook mo23292@bristol.ac.uk</li>
+  <li>Xinyuan Chen vi23973@bristol.ac.uk</li>
+  <li>Kanghyeon Kim xx23126@bristol.ac.uk</li>  
+</ul>
