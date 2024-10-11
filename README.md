@@ -11,6 +11,9 @@ two deployment architecture that can work with or without AI edge devices.</p>
 <p> It should have an natural language AI that can relay information about the system and the history of the system</p>
 
 <h3>Stakeholders</h3>
+<ul>
+  <li>Dheeraj and team at DigitalU3</li>
+</ul>
 <h3>User stories</h3>
 <ul>
   <li>I am a Big corporation A and have many locations with large server rooms, we would like these to be safe whilst not having constant human supervision. We would like to have one service that can <strong>utilise the cameras already in place </strong>at these locations (currently being monitored by staff) to be able to <strong> detect fire or smoke</strong>. We would want cameras to still upload their data to a central server and have the system run on there. Upon detection all managers and duty managers for the respective building should <strong>recieve a text to alert them </strong>of this. Additionally, we would like a <strong>chatbot</strong> that is easy to communicate with to be able to <strong>provide us with analytics and history</strong> for this system.</li>
@@ -18,11 +21,12 @@ two deployment architecture that can work with or without AI edge devices.</p>
 </ul>
 
 <h3>Contributors </h3>
-<ul>
-  <li>Thomas Bale hf23482@bristol.ac.uk</li>
-  <li>Justice Mintah ar23247@bristol.ac.uk</li>
-  <li>Sin Yi Tay if21076@bristol.ac.uk</li>
-  <li>William Hook mo23292@bristol.ac.uk</li>
-  <li>Xinyuan Chen vi23973@bristol.ac.uk</li>
-  <li>Kanghyeon Kim xx23126@bristol.ac.uk</li>  
-</ul>
+
+|      Name      |          Email          |
+|:--------------:|:-----------------------:|
+|  Thomas Bale   |  hf23482@bristol.ac.uk  |
+| Justice Mintah |  ar23247@bristol.ac.uk  |
+|   Sin Yi Tay   |  if21076@bristol.ac.uk  |
+|  William Hook  |  mo23292@bristol.ac.uk  |
+|  Xinyaun Chen  |  vi23973@bristol.ac.uk  |
+| Kanghyeon Kim  |  xx23126@bristol.ac.uk  |
