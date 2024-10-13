@@ -18,3 +18,13 @@
     <li>Discussed more wrt setting up our repo</li>
     <li>Discussed our progress with pleminary material</li>
 </ul>
+
+<h3> Client 11th October </h3>
+<ul>
+    <li>Shared current project progress and received feedback.</li>
+    <li>Discussed GDPR documentation and related ethical concerns </li>
+    <li>Reviewed the testing plan (A team from the company will test our understanding of the project</li>
+    <li>Roughly discussed the project milestones</li>
+    <li>Formed teams with company members to facilitate easier feedback exchange</li>
+    <li>Explored methods for obtaining the necessary datasets</li>
+</ul>
