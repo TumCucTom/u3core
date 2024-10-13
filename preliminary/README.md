@@ -20,4 +20,12 @@
 
 <h3>2) Extend on the above by developing a program to count the number of people in a room</h3>
 
+<ul>
+<li>  training data shown under dataset 2</li>
+<li> same training as above </li>
+<li> tried using mscoco and prev people as starting points</li>
+<li> JSON parsing for count</li>
+<li> Displaying image still</li>
+</ul>
+
 <h3>3) Have this system work, standalone, on a rasberry pi with a camera</h3>
