@@ -2,7 +2,7 @@
 
 <h3>Mentor 30th Septemeber</h3>
 <ul>
-    <li> README should be .md instead of .txt, need to work on content (refer to work booklet for what it should contain </li>
+    <li> README should be .md instead of .txt, need to work on content (refer to work booklet for what it should contain) </li>
     <li> Kanban should have actual issues and not draft issues. All issues should have a description and status. </li>
 </ul>
 
