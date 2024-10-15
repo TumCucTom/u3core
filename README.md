@@ -1,5 +1,15 @@
 <h1>ML/AI Toplayer Microservice</h1>
-<h3>Project Overview</h3>
+<h3> Content
+<ul>
+  <li><a href="#Project Overview">Projet Overview</a></li>
+  <li><a href="#Stake Holders">Stake Holders</a></li>
+  <li><a href="#User Stories">User Stories</a></li>
+  <li><a href="#Project Structure">Project Structure</a></li>
+  <li><a href="#Tech Stack">Tech Stack</a></li>
+  <li><a href="#Contributors">Contributors</a></li>
+</ul>
+
+<h3 id="Project Overview">Project Overview</h3>
 <p>We have been tasked with creating a computer vision solution for a camera-independent anomaly detection system with
 two deployment architecture that can work with or without AI edge devices.</p>
 
@@ -10,17 +20,22 @@ two deployment architecture that can work with or without AI edge devices.</p>
 
 <p> It should have an natural language AI that can relay information about the system and the history of the system</p>
 
-<h3>Stakeholders</h3>
+<h3 id="Stakeholders">Stakeholders</h3>
 <ul>
   <li>Dheeraj and team at DigitalU3</li>
 </ul>
-<h3>User stories</h3>
+
+<h3 id="User Stories">User Stories</h3>
 <ul>
   <li>I am a Big corporation A and have many locations with large server rooms, we would like these to be safe whilst not having constant human supervision. We would like to have one service that can <strong>utilise the cameras already in place </strong>at these locations (currently being monitored by staff) to be able to <strong> detect fire or smoke</strong>. We would want cameras to still upload their data to a central server and have the system run on there. Upon detection all managers and duty managers for the respective building should <strong>recieve a text to alert them </strong>of this. Additionally, we would like a <strong>chatbot</strong> that is easy to communicate with to be able to <strong>provide us with analytics and history</strong> for this system.</li>
     <li> I am Big corporation B and I want the same as A, except, I would like to use <strong>AI edge camera devices </strong>instead of the cameras uploading data to the cloud.</li>
 </ul>
 
-<h3>Contributors </h3>
+<h3 id="Project Structure"> Project Structure </h3>
+
+<h3 id="Tech Stack"> Tech Stack </h3>
+
+<h3 id="Contributors">Contributors </h3>
 
 |      Name      |          Email          |
 |:--------------:|:-----------------------:|
