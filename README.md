@@ -1,4 +1,4 @@
-# 2024-MLAIPredictionMicroservices
+# 2024-ML/AI Prediction Microservices
 ## Table of Contents
 - [ML/AI Prediction Microservices](#2024-MLAIPredictionMicroservices)
   - [Project Overview](#project-overview)
