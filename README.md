@@ -57,18 +57,51 @@ This is a ML/AI microservice top-layer that integrates on an already existing Io
 ## Releases
 
 ## Technologies Used
+### Tech Stack Analysis
+INSERT DIAGRAM HERE
+#### Front end
+| Langauge / Framework | Use |
+|:---------------------|:----|
+| TBC                  | TBC |
 
-| **Tech Stack Analysis**   | Description                                                                                                                                                                                                                                                                                                                                                                                                       |
-| -----------------------   |-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Tech Stack - software**            | OpenCV, Python, Roboflow, Ultralytics, Yolo. More to come |
-| **Tech Stack - hardware**            | Raspberry Pi, AI edge camera, cloud camera. More to come |
-| **Tech Stack - dev tools**            | Github. More to come |
-| **Fit to Project**        | Object detection will be trained through roboflow or ultralytics with yolo. Image processing for will use OpenCV. Both of those use Python (roboflow through their API). Raspberry Pi is used to connect to a camera and will be used for testing both cloud and on device. AI edge camera will run one deployement by itself, cloud camera will upload video steam to a central unit that holds the deployement. |
-| **Experience in Team**    | Tom - Worked with Machine Learning (mainly with NNs) and researched into optimisation, Will - Previously integrated on top of a IoT platform, All - various experience with python                                                                                                                                                                                                                                |
-| **Risks**                 | Poor object detection can lead to catastophe with great fincaical loss and threat to human life. Same applies for SMS/Email alerts not functioning correctly.                                                                                                                                                                                                                                                     |
+#### Back end
+
+| Langauge / Framework | Use |
+|:-- |:--|
+|OpenCV| Used to get video stream from camera |
+| Roboflow | Train and call feedforward for object detection NN |
+|Python| Utilise openCV and roboflow |
+| Yolo | Used by roboflow for training NN |
+
+#### Hardware
+| Device             | Use                            |
+|:-------------------|:-------------------------------|
+| Rasberry pi        | Used for testing with a camera |
+| AI edge camera TBC | Used for testing AI edge deployment |
+| Cloud camera TBC   | Used for testing cloud deployment |
+
+#### Development Tools
+| Tool   | Use                                      |
+|:-------|:-----------------------------------------|
+| Github | Used to manage workloads and share files |
+
+### Experience in Team
+| Type                                 | Person/s | Detail |
+|:-------------------------------------|:---------|:--|
+| Machine Learning and Neural Networks | Tom      | Previous experience training and using neural networks. Researched into optimisation methods.|
+| Integrating on top of an existing IoT platform | Will | Done during work experience |
+| Python | All | varying degrees of knowledge but all competent |
+
+### Risks
+| Project part     | Risk                                                                      |
+|:-----------------|:--------------------------------------------------------------------------|
+| Object detection | Can lead to catastophe with great fincaical loss and threat to human life |
+| SMS/Email alert | Same as above                                                             |
 
 
 ## Architecture Diagram
+
+INSERT DIAGRAM HERE
 
 |          **Component**          |                                        **Description**                                         |
 |:-------------------------------:|:----------------------------------------------------------------------------------------------:|
