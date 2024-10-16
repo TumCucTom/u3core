@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 # 2024-ML/AI Prediction Microservices
 ## Table of Contents
 - [ML/AI Prediction Microservices](#2024-MLAIPredictionMicroservices)
@@ -13,6 +14,22 @@
 
 ## Project Overview
 This is a ML/AI microservice top-layer that integrates on an already existing IoT platform for detection of fire, smoke and oil leaks.
+=======
+<h1>ML/AI Toplayer Microservice</h1>
+<h2> Content </h2>
+<ul>
+  <li><a href="#Project Overview">Projet Overview</a></li>
+  <li><a href="#Stake Holders">Stake Holders</a></li>
+  <li><a href="#User Stories">User Stories</a></li>
+  <li><a href="#Project Structure">Project Structure</a></li>
+  <li><a href="#Tech Stack">Tech Stack</a></li>
+  <li><a href="#Contributors">Contributors</a></li>
+</ul>
+
+<h2 id="Project Overview">Project Overview</h2>
+<p>We have been tasked with creating a computer vision solution for a camera-independent anomaly detection system with
+two deployment architecture that can work with or without AI edge devices.</p>
+>>>>>>> Stashed changes
 
 ### Tasks / Features
 - We have been tasked with creating a computer vision solution for a camera-independent anomaly detection system
@@ -33,6 +50,7 @@ This is a ML/AI microservice top-layer that integrates on an already existing Io
 
 ## Project Structure
 
+<<<<<<< Updated upstream
 
 ## User Instructions
 
@@ -47,6 +65,75 @@ This is a ML/AI microservice top-layer that integrates on an already existing Io
 ### Unnamed client
 - Providing the training data
 - More info to come
+=======
+<h2 id="Stakeholders">Stakeholders</h2>
+<ul>
+  <li>Dheeraj and team at DigitalU3</li>
+</ul>
+
+<h2 id="User Stories">User Stories</h2>
+<ul>
+  <li>I am a Big corporation A and have many locations with large server rooms, we would like these to be safe whilst not having constant human supervision. We would like to have one service that can <strong>utilise the cameras already in place </strong>at these locations (currently being monitored by staff) to be able to <strong> detect fire or smoke</strong>. We would want cameras to still upload their data to a central server and have the system run on there. Upon detection all managers and duty managers for the respective building should <strong>recieve a text to alert them </strong>of this. Additionally, we would like a <strong>chatbot</strong> that is easy to communicate with to be able to <strong>provide us with analytics and history</strong> for this system.</li>
+    <li> I am Big corporation B and I want the same as A, except, I would like to use <strong>AI edge camera devices </strong>instead of the cameras uploading data to the cloud.</li>
+</ul>
+
+<h2 id="Project Structure"> Project Structure </h2>
+
+<body>
+<ul>
+    <li><h3>project/</h3>
+        <ul>
+            <li><h4>.idea/</h4></li><ul>
+            <li>2024-MLAIPredictionMicroservice.iml 
+            </li>
+            <li>workspace.xml</li>
+            </ul>  
+            <li><h4>docs/ </h4>  
+                <ul>
+                    <li>meetings.md
+                        <span class="comment"> -------recording all the clients meetings and mentor meetings 
+                        </span>
+                    </li>
+                </ul>
+            </li>
+            <li><h4>preliminary/ <span class="comment"> -------The folder for the preliminary task
+            </span></h4> 
+                <ul>
+                    <li>dataset/<span class="comment"> -------The dataset that is used for machine learning
+                    </span></li>
+                    <ul>
+                      <li>test/</li>
+                      <li>train</li>
+                      <li>valid</li>
+                      <li>.DS_Store</li>
+                    </ul>
+                    <li>roboflow-python/</li>
+                    <li>.DS_Store</li>
+                    <li>infer.py <span class="comment"> -------Object detection that could count number of people in front of the camera</span></li>
+                    <li>README.md<span class="comment">            -------details of preliminary task requests<span></li> 
+                </ul>
+            </li>
+            <li>.gitignore</li>
+            <li>README.md<span class="comment">            -------overall description of this project<span></li>
+        </ul>
+    </li>
+</ul>
+
+</body>
+</html>
+</ul>
+
+
+<h2 id="Tech Stack"> Tech Stack </h2>
+<ul>
+  <li>Yolo (powered by Ultralytics)
+  <li>Roboflow
+  <li>Version Control: Git
+  <li>
+</ul>
+
+<h2 id="Contributors">Contributors </h2>
+>>>>>>> Stashed changes
 
 ## User stories
 - As a **team at DigitalU3**, we want the system to be able to be deployed seamlessly on either AI edge or cloud devices. 
