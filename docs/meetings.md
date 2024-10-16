@@ -30,3 +30,10 @@
     <li>Discussed adding Dheeraj and team to the kanban so they can easier track progress.</li>
     <li>Client informed us that their client will be providing the training data</li>
 </ul>
+
+<h3> Mentor 14th Ocotber </h3>
+<ul>
+    <li>Need to add more detailed descriptions for issues</li>
+    <li>Pull requests also need better descriptions and more conversation</li>
+    <li>Need to make sure everyone has at least one issue and one commit a week</li>
+</ul>
