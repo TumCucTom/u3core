@@ -6,7 +6,6 @@
     - [Tasks / Features](#tasks--features)
     - [Project Links](#project-links)
   - [Project Structure](#project-structure)
-    - [project/](#project)
   - [User Instructions](#user-instructions)
   - [Developer Instructions](#developer-instructions)
   - [Stakeholders](#stakeholders)
@@ -53,30 +52,30 @@ This is a ML/AI microservice top-layer that integrates on an already existing Io
 - [**Gnatt Chart/Roadmap**](https://github.com/orgs/spe-uob/projects/237/views/4)
 
 ## Project Structure
-### project/
-- .idea/
-  - 2024-MLAIPredictionMicroservice.iml
-  - workspace.xml
-- docs/
-  - meetings.md
-    - ------- Recording all the clients meetings and mentor meetings
-- preliminary/
-  - dataset/
-    - ------- The dataset that is used for machine learning
-    - test/
-    - train/
-    - valid/
-    - .DS_Store
-  - roboflow-python/
-  - .DS_Store
-  - infer.py
-    - ------- Object detection that could count number of people in front of the camera
-  - README.md
-    - ------- Details of preliminary task requests
-- .gitignore
-- README.md
-  - ------- Overall description of this project
+```
+📁 project/
+├── 📁 .idea/
+│   
+├── 📄 2024-MLAIPredictionMicroservice.iml
+│   └── 📄 workspace.xml
+├── 📁 docs/
+│   └── 📄 meetings.md
+│       └── ------- Recording all the clients meetings and mentor meetings
+└── 📁 preliminary/
+    ├── 📁 dataset/
+    │   └── ------- The dataset that is used for machine learning
+    │       ├── 📄 test/
+    │       ├── 📄 train/
+    │       ├── 📄 valid/
+    │       └── 📄 .DS_Store
+    ├── 📁 roboflow-python/
+    ├── 📄 .DS_Store
+    ├── 📄 infer.py
+    │   └── ------- Object detection that could count number of people in front of the camera
+    └── 📄 README.md
+        └── ------- Details of preliminary task requests
 
+```
 
 
 
