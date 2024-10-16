@@ -1,14 +1,34 @@
 # 2024-ML/AI Prediction Microservices
 ## Table of Contents
-- [ML/AI Prediction Microservices](#2024-MLAIPredictionMicroservices)
+- [2024-ML/AI Prediction Microservices](#2024-mlai-prediction-microservices)
+  - [Table of Contents](#table-of-contents)
   - [Project Overview](#project-overview)
+    - [Tasks / Features](#tasks--features)
+    - [Project Links](#project-links)
+  - [Project Structure](#project-structure)
+    - [project/](#project)
+  - [User Instructions](#user-instructions)
+  - [Developer Instructions](#developer-instructions)
   - [Stakeholders](#stakeholders)
-  - [User Stories](#user-stories)
+    - [DigitalU3](#digitalu3)
+    - [Unnamed client](#unnamed-client)
+  - [User stories](#user-stories)
   - [Releases](#releases)
   - [Technologies Used](#technologies-used)
+    - [Tech Stack Analysis](#tech-stack-analysis)
+      - [Front end](#front-end)
+      - [Back end](#back-end)
+      - [Hardware](#hardware)
+      - [Development Tools](#development-tools)
+    - [Experience in Team](#experience-in-team)
+    - [Risks](#risks)
   - [Architecture Diagram](#architecture-diagram)
   - [Flow of Information](#flow-of-information)
+    - [AI Edge](#ai-edge)
+    - [Cloud system](#cloud-system)
+    - [At any time](#at-any-time)
   - [Additional Information](#additional-information)
+  - [License](#license)
   - [Contributors](#contributors)
 
 ## Project Overview
@@ -33,44 +53,32 @@ This is a ML/AI microservice top-layer that integrates on an already existing Io
 - [**Gnatt Chart/Roadmap**](https://github.com/orgs/spe-uob/projects/237/views/4)
 
 ## Project Structure
-<ul>
-    <li><h3>project/</h3>
-        <ul>
-            <li><h4>.idea/</h4></li><ul>
-            <li>2024-MLAIPredictionMicroservice.iml 
-            </li>
-            <li>workspace.xml</li>
-            </ul>
-            <li><h4>docs/ </h4>
-                <ul>
-                    <li>meetings.md
-                        <span class="comment"> -------recording all the clients meetings and mentor meetings 
-                        </span>
-                    </li>
-                </ul>
-            </li>
-            <li><h4>preliminary/ <span class="comment"> -------The folder for the preliminary task
-            </span></h4> 
-                <ul>
-                    <li>dataset/<span class="comment"> -------The dataset that is used for machine learning
-                    </span></li>
-                    <ul>
-                      <li>test/</li>
-                      <li>train</li>
-                      <li>valid</li>
-                      <li>.DS_Store</li>
-                    </ul>
-                    <li>roboflow-python/</li>
-                    <li>.DS_Store</li>
-                    <li>infer.py <span class="comment"> -------Object detection that could count number of people in front of the camera</span></li>
-                    <li>README.md<span class="comment">            -------details of preliminary task requests<span></li> 
-                </ul>
-            </li>
-            <li>.gitignore</li>
-            <li>README.md<span class="comment">            -------overall description of this project<span></li>
-        </ul>
-    </li>
-</ul>
+### project/
+- .idea/
+  - 2024-MLAIPredictionMicroservice.iml
+  - workspace.xml
+- docs/
+  - meetings.md
+    - ------- Recording all the clients meetings and mentor meetings
+- preliminary/
+  - dataset/
+    - ------- The dataset that is used for machine learning
+    - test/
+    - train/
+    - valid/
+    - .DS_Store
+  - roboflow-python/
+  - .DS_Store
+  - infer.py
+    - ------- Object detection that could count number of people in front of the camera
+  - README.md
+    - ------- Details of preliminary task requests
+- .gitignore
+- README.md
+  - ------- Overall description of this project
+
+
+
 
 ## User Instructions
 
