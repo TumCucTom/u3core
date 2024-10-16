@@ -47,6 +47,7 @@ two deployment architecture that can work with or without AI edge devices.</p>
 - [**Milestones**](https://github.com/spe-uob/2024-MLAIPredictionMicroservices/milestones)
 - [**Issues**](https://github.com/spe-uob/2024-MLAIPredictionMicroservices/issues)
 - [**Pull Requests**](https://github.com/spe-uob/2024-MLAIPredictionMicroservices/pulls)
+- [**Gnatt Chart/Roadmap**](https://github.com/orgs/spe-uob/projects/237/views/4)
 
 ## Project Structure
 
