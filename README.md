@@ -33,6 +33,7 @@ This is a ML/AI microservice top-layer that integrates on an already existing Io
 
 ## Project Structure
 
+
 ## User Instructions
 
 ## Developer Instructions
@@ -59,7 +60,9 @@ This is a ML/AI microservice top-layer that integrates on an already existing Io
 
 | **Tech Stack Analysis**   | Description                                                                                                                                                                                                                                                                                                                                                                                                       |
 | -----------------------   |-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Tech Stack**            | OpenCV, Python, Raspberry Pi, Roboflow, Ultralytics, Yolo, AI edge camera, cloud camera. More to come                                                                                                                                                                                                                                                                                                             |
+| **Tech Stack - software**            | OpenCV, Python, Roboflow, Ultralytics, Yolo. More to come |
+| **Tech Stack - hardware**            | Raspberry Pi, AI edge camera, cloud camera. More to come |
+| **Tech Stack - dev tools**            | Github. More to come |
 | **Fit to Project**        | Object detection will be trained through roboflow or ultralytics with yolo. Image processing for will use OpenCV. Both of those use Python (roboflow through their API). Raspberry Pi is used to connect to a camera and will be used for testing both cloud and on device. AI edge camera will run one deployement by itself, cloud camera will upload video steam to a central unit that holds the deployement. |
 | **Experience in Team**    | Tom - Worked with Machine Learning (mainly with NNs) and researched into optimisation, Will - Previously integrated on top of a IoT platform, All - various experience with python                                                                                                                                                                                                                                |
 | **Risks**                 | Poor object detection can lead to catastophe with great fincaical loss and threat to human life. Same applies for SMS/Email alerts not functioning correctly.                                                                                                                                                                                                                                                     |
@@ -99,6 +102,9 @@ This is a ML/AI microservice top-layer that integrates on an already existing Io
    2. It returns to the user either data about the system or a text response.
 
 ## Additional Information
+
+## License
+Waiting
 
 ## Contributors
 
