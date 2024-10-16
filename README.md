@@ -1,32 +1,16 @@
 # 2024-ML/AI Prediction Microservices
 ## Table of Contents
 - [2024-ML/AI Prediction Microservices](#2024-mlai-prediction-microservices)
-  - [Table of Contents](#table-of-contents)
   - [Project Overview](#project-overview)
-    - [Tasks / Features](#tasks--features)
-    - [Project Links](#project-links)
   - [Project Structure](#project-structure)
-    - [project/](#project)
   - [User Instructions](#user-instructions)
   - [Developer Instructions](#developer-instructions)
   - [Stakeholders](#stakeholders)
-    - [DigitalU3](#digitalu3)
-    - [Unnamed client](#unnamed-client)
   - [User stories](#user-stories)
   - [Releases](#releases)
   - [Technologies Used](#technologies-used)
-    - [Tech Stack Analysis](#tech-stack-analysis)
-      - [Front end](#front-end)
-      - [Back end](#back-end)
-      - [Hardware](#hardware)
-      - [Development Tools](#development-tools)
-    - [Experience in Team](#experience-in-team)
-    - [Risks](#risks)
   - [Architecture Diagram](#architecture-diagram)
   - [Flow of Information](#flow-of-information)
-    - [AI Edge](#ai-edge)
-    - [Cloud system](#cloud-system)
-    - [At any time](#at-any-time)
   - [Additional Information](#additional-information)
   - [License](#license)
   - [Contributors](#contributors)
@@ -53,6 +37,7 @@ This is a ML/AI microservice top-layer that integrates on an already existing Io
 - [**Gnatt Chart/Roadmap**](https://github.com/orgs/spe-uob/projects/237/views/4)
 
 ## Project Structure
+
 ### project/
 - .idea/
   - 2024-MLAIPredictionMicroservice.iml
@@ -76,9 +61,6 @@ This is a ML/AI microservice top-layer that integrates on an already existing Io
 - .gitignore
 - README.md
   - ------- Overall description of this project
-
-
-
 
 ## User Instructions
 
