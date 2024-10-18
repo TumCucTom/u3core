@@ -26,7 +26,6 @@
 <li> The training started from mscoco object detection and previous people detection checkpoints for v1 and v2 respectively. V2 has marginally better performance.</li>
 <li> In addition to the previous code, the response JSON is used to get the count of the number of predicitons.
 This is printed as the count of the number of people in the video per frame.</li>
-<li> Displaying image feed to user still occurs</li>
 </ul>
 
 <h3>3) Have this system work, standalone, on a rasberry pi with a camera</h3>

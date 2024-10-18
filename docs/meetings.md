@@ -2,6 +2,8 @@
 
 <h3>Mentor 30th Septemeber</h3>
 <ul>
+    <li> README should be .md instead of .txt, need to work on content (refer to work booklet for what it should contain) </li>
+    <li> Kanban should have actual issues and not draft issues. All issues should have a description and status. </li>
 </ul>
 
 <h3>Client 3rd October</h3>
@@ -21,10 +23,17 @@
 
 <h3> Client 11th October </h3>
 <ul>
-    <li>Shared current project progress and received feedback.</li>
-    <li>Discussed GDPR documentation and related ethical concerns </li>
-    <li>Reviewed the testing plan (A team from the company will test our understanding of the project</li>
-    <li>Roughly discussed the project milestones</li>
-    <li>Formed teams with company members to facilitate easier feedback exchange</li>
-    <li>Explored methods for obtaining the necessary datasets</li>
+    <li>Shared current project progress.</li>
+    <li>Discussed GDPR documentation and related ethical concerns. All GDPR has been covered on their side and so all ethics approval that needs to be done is for our own person testing</li>
+    <li>Subsequently discussed how we plan to test. Client said they are liaising with their real world client about this</li>
+    <li>Roughly discussed the project milestones. Again, we are waiting for client to conclude their meetings with their client.</li>
+    <li>Discussed adding Dheeraj and team to the kanban so they can easier track progress.</li>
+    <li>Client informed us that their client will be providing the training data</li>
+</ul>
+
+<h3> Mentor 14th Ocotber </h3>
+<ul>
+    <li>Need to add more detailed descriptions for issues</li>
+    <li>Pull requests also need better descriptions and more conversation</li>
+    <li>Need to make sure everyone has at least one issue and one commit a week</li>
 </ul>
