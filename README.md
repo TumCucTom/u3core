@@ -24,7 +24,13 @@ This is a ML/AI microservice top-layer that integrates on an already existing Io
 
 ### Tasks / Features
 
+#### Frontend
+- There should be Email ID setup and an authentication workflow
+- User friendly UI
+- UI integration with the backend 
+- Camera and device integration
 
+#### Backend
 - We have been tasked with creating a computer vision solution for a camera-independent anomaly detection system
 - It will have two deployment architectures that can work with or without AI edge devices.
 - The system will provide annomoly detection for oil, fire and smoke with flexibility for future expansion. 
