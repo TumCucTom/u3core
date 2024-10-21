@@ -33,7 +33,7 @@ This is a ML/AI microservice top-layer that integrates on an already existing Io
 #### Backend
 - We have been tasked with creating a computer vision solution for a camera-independent anomaly detection system
 - It will have two deployment architectures that can work with or without AI edge devices.
-- The system will provide annomoly detection for oil, fire and smoke with flexibility for future expansion. 
+- The system will provide anomaly detection for oil, fire and smoke with flexibility for future expansion. 
 - It will have support for AI edge devices and cloud deployment and be scalable for multi-site deployments.
 - It will have a simple alarm console to receive and track detected anomalies with the ability to configure alarms via Email, SMS, and WhatsApp for relevant users.
 - It will have basic reporting functionality to track incidents and export logs must also be included.
