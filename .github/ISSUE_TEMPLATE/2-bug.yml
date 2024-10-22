@@ -1,8 +1,8 @@
 name: Bug Report
 description: File a bug report.
 title: "[Bug]: "
-labels: ["bug"]
-projects: ["sep-uob/176"]
+labels: ["Type: Bug"]
+projects: ["sep-uob/237"]
 assignees:
   - xavcochran
 body:
