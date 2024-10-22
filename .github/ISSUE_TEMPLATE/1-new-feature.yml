@@ -1,8 +1,8 @@
 name: New Feature Issue
 description: Describe the new feature you are making or enhancing.
 title: "[Feature]: "
-labels: ["enhancement"]
-projects: ["sep-uob/176"]
+labels: ["Type: Feature Request"]
+projects: ["sep-uob/237"]
 body:
   - type: markdown
     attributes:
