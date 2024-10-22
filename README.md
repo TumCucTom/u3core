@@ -50,7 +50,6 @@ This is a ML/AI microservice top-layer that integrates on an already existing Io
 
 ## Project Structure
 
-### project
 ```
 📁 project/
 ├── 📁 .idea/
