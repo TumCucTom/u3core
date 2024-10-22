@@ -4,6 +4,9 @@ labels: []
 projects: ["spe-uob/237"]
 body:
   - type: markdown
+    attributes:
+      value: |
+        Please fill out the following information to allow the team to understand the new feature you are working on.
   - type: textarea
     id: maintext
     attributes:
