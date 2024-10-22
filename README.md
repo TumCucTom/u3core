@@ -187,7 +187,7 @@ INSERT DIAGRAM HERE
 |AWS deployment for cloud-based anomaly detection system||
 
 ## License
-Waiting
+[type of license](LICENSE.md)
 
 ## Contributors
 
