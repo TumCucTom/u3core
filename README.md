@@ -49,7 +49,6 @@ This is a ML/AI microservice top-layer that integrates on an already existing Io
 - [**Gnatt Chart/Roadmap**](https://github.com/orgs/spe-uob/projects/237/views/4)
 
 ## Project Structure
-
 ```
 📁 project/
 ├── 📁 .idea/
