@@ -5,7 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="03aba5af-7038-499b-b5a6-2e3d7cf0a2a3" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.github/ISSUE_TEMPLATE/1-new-feature.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.github/ISSUE_TEMPLATE/2-bug.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.github/pull_request_template.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -50,6 +53,9 @@
   }
 }]]></component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$" />
     </key>
@@ -187,7 +193,7 @@
       <option name="presentableId" value="Default" />
       <updated>1728303587778</updated>
       <workItem from="1728303588925" duration="6749000" />
-      <workItem from="1729257081895" duration="2369000" />
+      <workItem from="1729257081895" duration="3173000" />
     </task>
     <servers />
   </component>
