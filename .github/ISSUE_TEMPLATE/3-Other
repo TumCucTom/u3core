@@ -1,0 +1,14 @@
+name: Other Issue
+description: Document an issue which is not a bug or a feature request
+labels: []
+projects: ["spe-uob/237"]
+body:
+  - type: markdown
+  - type: textarea
+    id: maintext
+    attributes:
+      label: Describe the Issue
+      description: Provide details
+      placeholder: Description goes here
+    validations:
+      required: true
