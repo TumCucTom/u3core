@@ -50,7 +50,6 @@ This is a ML/AI microservice top-layer that integrates on an already existing Io
 
 ## Project Structure
 
-### project
 ```
 📁 project/
 ├── 📁 .idea/
@@ -181,7 +180,7 @@ INSERT DIAGRAM HERE
    2. It returns to the user either data about the system or a text response.
 
 ## Additional Information
-## Testing
+### Testing
 | Test | How it is tested |
 |:- | :- |
 |Test system with actual video feeds (oil, smoke, fire) ||
