@@ -1,23 +1,15 @@
 # 2024-ML/AI Prediction Microservices
 ## Table of Contents
 - [2024-ML/AI Prediction Microservices](#2024-mlai-prediction-microservices)
-  - [Table of Contents](#table-of-contents)
-  - [Project Overview](#project-overview)
-  - [Project Structure](#project-structure)
-  - [User Instructions](#user-instructions)
-  - [Developer Instructions](#developer-instructions)
-  - [Stakeholders](#stakeholders)
-  - [User stories](#user-stories)
-  - [Releases](#releases)
-  - [Technologies Used](#technologies-used)
+  - [Project Overview & structure](#project-overview)
+  - [User/ Developer Instructions](#user-instructions)
+  - [Stakeholders and User stories](#stakeholders)
+  - [Releases and Technologies](#releases)
     - [Tech Stack Analysis](#tech-stack-analysis)
     - [Experience in Team](#experience-in-team)
     - [Risks](#risks)
-  - [Architecture Diagram](#architecture-diagram)
-  - [Flow of Information](#flow-of-information)
-  - [Additional Information](#additional-information)
-  - [License](#license)
-  - [Contributors](#contributors)
+  - [Architecture and Information](#architecture-diagram)
+  - [License and Contributors](#license)
 
 ## Project Overview
 This is a ML/AI microservice top-layer that integrates on an already existing IoT platform for detection of fire, smoke and oil leaks.
