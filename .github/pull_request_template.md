@@ -4,7 +4,9 @@
 
 Please include a summary of the changes and the related issue. Please also include relevant motivation and context. List any dependencies that are required for this change.
 
-Closes #(issue)
+## Issue related to PR
+<!--[What issue is related to this PR (if any)]-->
+- Resolves #
 
 ## Type of change
 
