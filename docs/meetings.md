@@ -49,5 +49,9 @@
 ## [No mentor meeting on reading week]
 
 ## Client 25th October
-- Met new members of the 
+- Met new members of the team (Vikram and Precurance)
+- Discussed issues with sharing githubs (Justice subsequently emailed Sarah)
+- Walked through how testing will occurs
+- Told us that cameras will be supplied over the coming weeks
+- Dheeraj assured us that we will have the contact all signed by next week
 
