@@ -1,47 +1,53 @@
-<h1>Record of All Meetings</h1>
+# Record of All Meetings
 
-<h3>Mentor 30th Septemeber</h3>
-<ul>
-    <li> README should be .md instead of .txt, need to work on content (refer to work booklet for what it should contain) </li>
-    <li> Kanban should have actual issues and not draft issues. All issues should have a description and status. </li>
-</ul>
+## Mentor 30th Septemeber
 
-<h3>Client 3rd October</h3>
-<ul>
-    <li> Introduction to the company and their users </li>
-    <li> Given documenation with infomation about the project and some prelimary tasks to complete</li>
-    <li> Agreed on which contract license to use </li>
-</ul>
-
-<h3>Mentor 7th October</h3>
-<ul>
-    <li>Kanban needs to be related to an issues, needs tags and milestone</li>
-    <li>Discussed with Anss what the project will be</li>
-    <li>Discussed more wrt setting up our repo</li>
-    <li>Discussed our progress with pleminary material</li>
-</ul>
-
-<h3> Client 11th October </h3>
-<ul>
-    <li>Shared current project progress.</li>
-    <li>Discussed GDPR documentation and related ethical concerns. All GDPR has been covered on their side and so all ethics approval that needs to be done is for our own person testing</li>
-    <li>Subsequently discussed how we plan to test. Client said they are liaising with their real world client about this</li>
-    <li>Roughly discussed the project milestones. Again, we are waiting for client to conclude their meetings with their client.</li>
-    <li>Discussed adding Dheeraj and team to the kanban so they can easier track progress.</li>
-    <li>Client informed us that their client will be providing the training data</li>
-</ul>
-
-<h3> Mentor 14th Ocotber </h3>
-<ul>
-    <li>Need to add more detailed descriptions for issues</li>
-    <li>Pull requests also need better descriptions and more conversation</li>
-    <li>Need to make sure everyone has at least one issue and one commit a week</li>
-</ul>
+- README should be .md instead of .txt, need to work on content (refer to work booklet for what it should contain) 
+- Kanban should have actual issues and not draft issues. All issues should have a description and status. 
 
 
-<h3>Client 18th October</h3>
-<ul>
-    <li>Discussed specific milestones</li>
-    <li>Establish client communication protocol using Slack</li>
-    <li>Clarified roles and responsibilities with the project</li>
-</ul>
+## Client 3rd October
+
+- Introduction to the company and their users 
+- Given documenation with infomation about the project and some prelimary tasks to complete
+- Agreed on which contract license to use 
+
+
+## Mentor 7th October
+
+- Kanban needs to be related to an issues, needs tags and milestone
+- Discussed with Anss what the project will be
+- Discussed more wrt setting up our repo
+- Discussed our progress with pleminary material
+
+
+##  Client 11th October 
+
+- Shared current project progress.
+- Discussed GDPR documentation and related ethical concerns. All GDPR has been covered on their side and so all ethics approval that needs to be done is for our own person testing
+- Subsequently discussed how we plan to test. Client said they are liaising with their real world client about this
+- Roughly discussed the project milestones. Again, we are waiting for client to conclude their meetings with their client.
+- Discussed adding Dheeraj and team to the kanban so they can easier track progress.
+- Client informed us that their client will be providing the training data
+
+
+##  Mentor 14th Ocotber 
+
+- Need to add more detailed descriptions for issues
+- Pull requests also need better descriptions and more conversation
+- Need to make sure everyone has at least one issue and one commit a week
+
+
+
+## Client 18th October
+
+- Discussed specific milestones
+- Establish client communication protocol using Slack
+- Clarified roles and responsibilities with the project
+
+
+## [No mentor meeting on reading week]
+
+## Client 25th October
+- Met new members of the 
+
