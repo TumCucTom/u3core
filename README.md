@@ -15,9 +15,17 @@
 This is a ML/AI microservice top-layer that integrates on an already existing IoT platform for detection of fire, smoke and oil leaks.
 
 ### Tasks / Features
+
+#### Frontend
+- There should be Email ID setup and an authentication workflow
+- User friendly UI
+- UI integration with the backend 
+- Camera and device integration
+
+#### Backend
 - We have been tasked with creating a computer vision solution for a camera-independent anomaly detection system
 - It will have two deployment architectures that can work with or without AI edge devices.
-- The system will provide annomoly detection for oil, fire and smoke with flexibility for future expansion. 
+- The system will provide anomaly detection for oil, fire and smoke with flexibility for future expansion. 
 - It will have support for AI edge devices and cloud deployment and be scalable for multi-site deployments.
 - It will have a simple alarm console to receive and track detected anomalies with the ability to configure alarms via Email, SMS, and WhatsApp for relevant users.
 - It will have basic reporting functionality to track incidents and export logs must also be included.
@@ -88,25 +96,30 @@ This is a ML/AI microservice top-layer that integrates on an already existing Io
 ### Tech Stack Analysis
 INSERT DIAGRAM HERE
 #### Front end
-| Langauge / Framework | Use |
-|:---------------------|:----|
-| TBC                  | TBC |
+| Langauge / Framework | Use                                                                 |
+|:---------------------|:--------------------------------------------------------------------|
+| Figma                | Designs for UI (user registration, camera setup, alerts management) |
+| AWS | To integrate with backend |
+| React/Angular | Build front end |
 
 #### Back end
 
 | Langauge / Framework | Use |
-|:-- |:--|
-|OpenCV| Used to get video stream from camera |
-| Roboflow | Train and call feedforward for object detection NN |
-|Python| Utilise openCV and roboflow |
-| Yolo | Used by roboflow for training NN |
+|:---------------------|:--|
+| OpenCV               | Used to get video stream from camera |
+| Roboflow             | Train and call feedforward for object detection NN |
+| Python               | Utilise openCV and roboflow |
+| Yolo                 | Used by roboflow for training NN |
+| Twilio               | Used for the alert system |
+| AWS SNS | Used for alert system |
+| RTSP | To send video footage over web |
 
 #### Hardware
-| Device             | Use                            |
-|:-------------------|:-------------------------------|
-| Rasberry pi        | Used for testing with a camera |
-| AI edge camera TBC | Used for testing AI edge deployment |
-| Cloud camera TBC   | Used for testing cloud deployment |
+| Device                       | Use                            |
+|:-----------------------------|:-------------------------------|
+| Rasberry pi                  | Used for testing with a camera |
+| AI edge camera (Intel-based) | Used for testing AI edge deployment |
+| Cloud camera TBC             | Used for testing cloud deployment |
 
 #### Development Tools
 | Tool   | Use                                      |
@@ -114,17 +127,17 @@ INSERT DIAGRAM HERE
 | Github | Used to manage workloads and share files |
 
 ### Experience in Team
-| Type                                 | Person/s | Detail |
-|:-------------------------------------|:---------|:--|
-| Machine Learning and Neural Networks | Tom      | Previous experience training and using neural networks. Researched into optimisation methods.|
-| Integrating on top of an existing IoT platform | Will | Done during work experience |
-| Python | All | varying degrees of knowledge but all competent |
+| Type                                 | Person/s | Detail                                                                                        |
+|:-------------------------------------|:---------|:----------------------------------------------------------------------------------------------|
+| Machine Learning and Neural Networks | Tom      | Previous experience training and using neural networks. Researched into optimisation methods. |
+| Integrating on top of an existing IoT platform | Will | Done during work experience                                                                   |
+| Python | All | Varying degrees of knowledge but all competent                                                |
 
 ### Risks
 | Project part     | Risk                                                                      |
 |:-----------------|:--------------------------------------------------------------------------|
 | Object detection | Can lead to catastophe with great fincaical loss and threat to human life |
-| SMS/Email alert | Same as above                                                             |
+| SMS/Email alert | Can lead to catastophe with great fincaical loss and threat to human life                                                            |
 
 
 ## Architecture Diagram
@@ -163,9 +176,15 @@ INSERT DIAGRAM HERE
    2. It returns to the user either data about the system or a text response.
 
 ## Additional Information
+### Testing
+| Test | How it is tested |
+|:- | :- |
+|Test system with actual video feeds (oil, smoke, fire) ||
+|Full backend & frontend integration||
+|AWS deployment for cloud-based anomaly detection system||
 
 ## License
-Waiting
+[type of license](LICENSE.md)
 
 ## Contributors
 

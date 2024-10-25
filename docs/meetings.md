@@ -37,3 +37,11 @@
     <li>Pull requests also need better descriptions and more conversation</li>
     <li>Need to make sure everyone has at least one issue and one commit a week</li>
 </ul>
+
+
+<h3>Client 18th October</h3>
+<ul>
+    <li>Discussed specific milestones</li>
+    <li>Establish client communication protocol using Slack</li>
+    <li>Clarified roles and responsibilities with the project</li>
+</ul>
