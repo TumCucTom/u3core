@@ -36,25 +36,30 @@ This is a ML/AI microservice top-layer that integrates on an already existing Io
 ```
 📁 project/
 ├── 📁 .idea/
-│   
-├── 📄 2024-MLAIPredictionMicroservice.iml
-│   └── 📄 workspace.xml
+│    ├──📄 2024-MLAIPredictionMicroservice.iml
+│    └──📄 workspace.xml
+├── 📁 alert system/
+│    └──📄 alert_sys.py
+│        └── ------ Building up alert system
 ├── 📁 docs/
-│   └── 📄 meetings.md
-│       └── ------- Recording all the clients meetings and mentor meetings
-└── 📁 preliminary/
-    ├── 📁 dataset/
-    │   └── ------- The dataset that is used for machine learning
-    │       ├── 📄 test/
-    │       ├── 📄 train/
-    │       ├── 📄 valid/
-    │       └── 📄 .DS_Store
-    ├── 📁 roboflow-python/
-    ├── 📄 .DS_Store
-    ├── 📄 infer.py
-    │   └── ------- Object detection that could count number of people in front of the camera
-    └── 📄 README.md
-        └── ------- Details of preliminary task requests
+│    ├──📄 ethics.md
+│    └──📄 meetings.md
+│        └── ------- Recording all the clients meetings and mentor meetings
+├──📁 preliminary/
+│   ├──📁 Personcounter/
+│   │    ├──📁 dataset/
+│   │    │   ├──------- The dataset that is used for machine learning
+│   │    │   ├──📁 test/
+│   │    │   ├──📁 train/
+│   │    │   └──📁 valid/
+│   │    ├──📁 roboflow-python/
+│   │    └──📄 infer.py
+│   │        └── ------- Object detection that could count number │of people in front of the camera
+│   └──📄 README.md
+│       └── ------- Details of preliminary task requests
+├──📄 .gitignore
+└──📄 README.md
+    └── ------- Overall description of the project
 ```
 
 ## User Instructions
