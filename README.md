@@ -1,3 +1,10 @@
+![Roboflow](https://img.shields.io/badge/roboflow-6706CE?style=for-the-badge&logo=roboflow&logoColor=#6706CE)
+![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
+![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB) 
+![Git](https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white) 
+![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white) 
+![AWS](https://img.shields.io/badge/aws-%23232f3e.svg?style=for-the-badge&logo=amazon-web-services&logoColor=white) 
+
 # 2024-ML/AI Prediction Microservices
 ## Table of Contents
 - [2024-ML/AI Prediction Microservices](#2024-mlai-prediction-microservices)
@@ -192,6 +199,8 @@ This is a ML/AI microservice top-layer that integrates on an already existing Io
 
 ## Contributors
 
+### Names and information
+
 |      Name      |      Github      |                Link                 |          Email          |
 |:--------------:|:----------------:|:-----------------------------------:|:-----------------------:|
 |  Thomas Bale   |    tumcuctom     |    https://github.com/TumCucTom     |  hf23482@bristol.ac.uk  |
@@ -200,3 +209,14 @@ This is a ML/AI microservice top-layer that integrates on an already existing Io
 |  William Hook  |   William23292   |   https://github.com/William23292   |  mo23292@bristol.ac.uk  |
 |  Xinyaun Chen  | seanchenlovestom | https://github.com/SeanChenLovesTom |  vi23973@bristol.ac.uk  |
 | Kanghyeon Kim  |  Kanghyeon5468   |  https://github.com/Kanghyeon5468   |  xx23126@bristol.ac.uk  |
+
+### Responsbilities
+
+| Frontend | Backend | Full stack |
+|:-: |:-:| :-: |
+|William | Kanghyeon | Thomas |
+|Sin Yi | Xinyuan | Justice |
+
+- Client Liason: Justice
+- Mentor Liason: Thomas
+
