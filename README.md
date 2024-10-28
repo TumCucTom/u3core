@@ -195,6 +195,8 @@ INSERT DIAGRAM HERE
 
 ## Contributors
 
+### Names and information
+
 |      Name      |      Github      |                Link                 |          Email          |
 |:--------------:|:----------------:|:-----------------------------------:|:-----------------------:|
 |  Thomas Bale   |    tumcuctom     |    https://github.com/TumCucTom     |  hf23482@bristol.ac.uk  |
@@ -203,3 +205,14 @@ INSERT DIAGRAM HERE
 |  William Hook  |   William23292   |   https://github.com/William23292   |  mo23292@bristol.ac.uk  |
 |  Xinyaun Chen  | seanchenlovestom | https://github.com/SeanChenLovesTom |  vi23973@bristol.ac.uk  |
 | Kanghyeon Kim  |  Kanghyeon5468   |  https://github.com/Kanghyeon5468   |  xx23126@bristol.ac.uk  |
+
+### Responsbilities
+
+| Frontend | Backend | Full stack |
+|:-: |:-:| :-: |
+|William | Kanghyeon | Thomas |
+|Sin Yi | Xinyuan | Justice |
+
+- Client Liason: Justice
+- Mentor Liason: Thomas
+
