@@ -19,7 +19,7 @@
 
 <h1>Route and justification</h1>
 
-<h1>Data privacy and protection</h1>
+<h3>Data privacy and protection</h3>
 <p>Because our software is not standalone, it is an integerated piece into a layer of other systems some of the data collected will depend on how the client uses it. However our client has assured us that all the data colleceted will be stored according to GDPR. </p>
 
 
