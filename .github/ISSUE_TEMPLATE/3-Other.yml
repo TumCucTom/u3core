@@ -1,17 +1,43 @@
-name: Other Issue
-description: Document an issue which is not a bug or a feature request
-labels: []
-projects: ["spe-uob/237"]
+name: Other issue
+description: File another issue
+title: "[Other]: "
+labels: [""]
+projects: ["sep-uob/237"]
+assignees:
 body:
   - type: markdown
     attributes:
       value: |
-        Please fill out the following information to allow the team to understand the new feature you are working on.
+        Thanks for taking the time to fill out this bug report!
   - type: textarea
-    id: maintext
+    id: Describe the issue
     attributes:
-      label: Describe the Issue
-      description: Provide details
-      placeholder: Description goes here
+      label: What is this issue for?
+      description: Use as much detail as possible
+      placeholder: Details...
+      value: "Issue"
     validations:
       required: true
+  - type: dropdown
+    id: type
+    attributes:
+      label: What platforms are you seeing the problem on?
+      multiple: true
+      options:
+        - Meeting
+        - Organisation
+        - Documentation
+        - Other
+  - type: textarea
+    id: What should be done for this issue?
+    attributes:
+      label:  What needs to be done?
+      description: Inform people of what should be done to fix this issue
+  # - type: checkboxes
+  #   id: terms
+  #   attributes:
+  #     label: Code of Conduct
+  #     description: By submitting this issue, you agree to follow our [Code of Conduct](https://example.com). 
+  #     options:
+  #       - label: I agree to follow this project's Code of Conduct
+  #         required: true

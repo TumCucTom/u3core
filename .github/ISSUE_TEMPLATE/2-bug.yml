@@ -3,8 +3,6 @@ description: File a bug report.
 title: "[Bug]: "
 labels: ["Type: Bug"]
 projects: ["sep-uob/237"]
-assignees:
-  - xavcochran
 body:
   - type: markdown
     attributes:
