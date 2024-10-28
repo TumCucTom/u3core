@@ -94,7 +94,10 @@ This is a ML/AI microservice top-layer that integrates on an already existing Io
 
 ## Technologies Used
 ### Tech Stack Analysis
-INSERT DIAGRAM HERE
+![tech_stack_analysis](https://github.com/user-attachments/assets/e3b63935-56bb-4581-ab9c-28c13fd8fe1e)
+
+
+
 #### Front end
 | Langauge / Framework | Use                                                                 |
 |:---------------------|:--------------------------------------------------------------------|
@@ -141,8 +144,9 @@ INSERT DIAGRAM HERE
 
 
 ## Architecture Diagram
+![tech_slack_analysis](https://github.com/user-attachments/assets/da6118a8-02a5-4962-9596-0909103e30b7)
 
-INSERT DIAGRAM HERE
+
 
 |          **Component**          |                                        **Description**                                         |
 |:-------------------------------:|:----------------------------------------------------------------------------------------------:|
