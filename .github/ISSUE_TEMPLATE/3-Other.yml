@@ -3,16 +3,15 @@ description: File another issue
 title: "[Other]: "
 labels: [""]
 projects: ["sep-uob/237"]
-assignees:
 body:
   - type: markdown
     attributes:
       value: |
-        Thanks for taking the time to fill out this bug report!
+        Thanks for taking the time to fill out this issue!
   - type: textarea
-    id: Describe the issue
+    id: Describe-the-issue
     attributes:
-      label: What is this issue for?
+      label: What is this issue for
       description: Use as much detail as possible
       placeholder: Details...
       value: "Issue"
@@ -29,7 +28,7 @@ body:
         - Documentation
         - Other
   - type: textarea
-    id: What should be done for this issue?
+    id: What-should-be-done
     attributes:
       label:  What needs to be done?
       description: Inform people of what should be done to fix this issue
