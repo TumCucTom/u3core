@@ -74,8 +74,45 @@ This is a ML/AI microservice top-layer that integrates on an already existing Io
 └──📄 README.md                        # Overall description of the project
 ```
 ## User Instructions
+### Requirements and Prerequisites
+Run the following command in your terminal:
+```
+pip3 install opencv-python numpy requests
+```
+
+Clone the repo or download the zip file with:
+```
+wget https://github.com/spe-uob/2024-MLAIPredictionMicroservices/archive/main.zip
+```
+
+### Cloud Deployment Usage
+
+- Identify the RTSP URL for your Intel-Based camera
+  - This is typically: rtsp://(IP address):(port number)/(stream name)
+  - You can usually find this on the manufacture's website
+
+### AI Edge Deployment Usage
+
+- TBC
 
 ## Developer Instructions
+### Requirements and Prerequisites
+
+- An appropriate IDE that can run Python (e.g. VSCode, Intellij)
+  - To edit on your IDE you will need to download the dependencies:
+  - Run ``` pip3 install opencv-python numpy requests ``` in your terminal
+- Access to the Roboflow account for backend.
+- Access to the Figma project for design collaboration.
+- Access to the GitHub repository for development. 
+  - To gain access to these resources and contribute to the project, you will need approval from the current [developers](#contributors).
+
+### Contributing
+
+- When contributing your work should always be on a feature branch, linked to an issue.
+- All issues should be filled out with detail, using the templates, including the appropriate tags on the right.
+- Pull requests should be used with the given template and you should ensure you tick all the checklists relevant to your pull before marking it ready for review. Keep as a draft until then.
+
+
 
 ## Stakeholders
 ### DigitalU3
