@@ -49,34 +49,30 @@ This is a ML/AI microservice top-layer that integrates on an already existing Io
 
 ## Project Structure
 ```
-📁 project/
-├── 📁 .idea/
-│    ├──📄 2024-MLAIPredictionMicroservice.iml
-│    └──📄 workspace.xml
-├── 📁 alert system/
-│    └──📄 alert_sys.py
-│        └── ------ Building up alert system
-├── 📁 docs/
-│    ├──📄 ethics.md
-│    └──📄 meetings.md
-│        └── ------- Recording all the clients meetings and mentor meetings
-├──📁 preliminary/
-│   ├──📁 Personcounter/
-│   │    ├──📁 dataset/
-│   │    │   ├──------- The dataset that is used for machine learning
-│   │    │   ├──📁 test/
-│   │    │   ├──📁 train/
-│   │    │   └──📁 valid/
-│   │    ├──📁 roboflow-python/
-│   │    └──📄 infer.py
-│   │        └── ------- Object detection that could count number │of people in front of the camera
-│   └──📄 README.md
-│       └── ------- Details of preliminary task requests
-├──📄 .gitignore
-└──📄 README.md
-    └── ------- Overall description of the project
+📁 project/                            #                    
+├── 📁 ai-tools/                       # Information about AI technologies used
+│    └──📄 README.md                   #
+├── 📁 docs/                           #
+│    ├──📄 ethics.md                   #
+│    └──📄 meetings.md                 # Recording all the clients meetings and mentor meetings
+├── 📁 frontend/                       #
+│    └──📄 README.md                   #
+├── 📁 backend/                        #
+│    ├──📄 imageGetPrep.py             # OpenCV code for getting a preprocessing videostream
+│    └──📄 README.md                   # 
+├──📁 preliminary/                     #
+│   ├──📁 Personcounter/               #
+│   │   ├──📁 dataset/                 # First training dataset used
+│   │   ├──📁 dataset2/                # Second training dataset used
+│   │   ├──📁 roboflow-python/         #
+│   │   ├──📄 counter.py               # Code adapted for counting people
+│   │   ├──📄 inferpi.py               # Code adapted for rasberry pi
+│   │   └──📄 infer.py                 # People detection code
+│   └──📄 README.md                    # Details of preliminary task requests
+├──📄 .gitignore                       #
+├──📄 LICENSE.md                       # License for this project
+└──📄 README.md                        # Overall description of the project
 ```
-
 ## User Instructions
 
 ## Developer Instructions
