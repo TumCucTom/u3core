@@ -55,3 +55,9 @@
 - Told us that cameras will be supplied over the coming weeks
 - Dheeraj assured us that we will have the contact all signed by next week
 
+##Client 8th November
+-Discussed fire dataset training
+-Discussed spills dataset training
+-Shared progress on frontend workflows and designs
+-Told us that cameras will still be supplied
+
