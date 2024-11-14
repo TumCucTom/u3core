@@ -2,8 +2,8 @@
 #import sys
 #sys.path.append('/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages')
 
-import cv2
 import base64
+import cv2
 
 #size of the image you want to send to the network in SIZE x SIZE pixels
 SIZE = 416
@@ -12,9 +12,12 @@ SIZE = 416
 video = cv2.VideoCapture(0)
 
 # Get and preprocess a frame
-def getImage():
+def get_Image():
     # Get the current image from the webcam
     ret, img = video.read()
+    if img is None:
+        print("Failed to capture image")
+        return None
 
     # Resize (while maintaining the aspect ratio) to improve speed and save bandwidth
     height, width, channels = img.shape
