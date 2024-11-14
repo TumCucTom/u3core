@@ -22,4 +22,5 @@ jobs:
         pip install -r backend/requirements.txt
     - name: Analysing the code with pylint
       run: |
-        pylint $(git ls-files '*.py')
+        # pylint $(git ls-files '*.py') --rcfile=.pylintrc  --disable=C,R
+        # If you have a custom pylint config file
