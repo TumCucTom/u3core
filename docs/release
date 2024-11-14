@@ -12,9 +12,11 @@ Checks
  Test cases successfully passed X
  Continuous integration depolyed X
  Continuous deployment deployed
- System deployed, accessible to the client X
+ System deployed, accessible to the client X **
  Client successfully interacted with system 
 Notes 
 we have our client meetings every friday 
 so next meeting 15/11/2024 we will show our
 client 
+**computer vision model can be accessed on
+roboflow 
