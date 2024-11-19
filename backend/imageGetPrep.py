@@ -9,7 +9,8 @@ import base64
 SIZE = 416
 
 #change input number from 0 to change the camera in use
-video = cv2.VideoCapture(0)
+RTSP_URL = "rtsp://localhost:8554/mystream"
+video = cv2.VideoCapture(RTSP_URL)
 
 # Get and preprocess a frame
 def getImage():
