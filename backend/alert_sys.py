@@ -71,7 +71,7 @@ def detect_fire_with_roboflow(frame):
     )
     response_data = response.json()
     predictions = response_data.get("predictions", [])
-    
+
     for prediction in predictions:
         if prediction["class"] == "fire" and prediction["confidence"] >= roboflow_params["confidence"]:
             return True
