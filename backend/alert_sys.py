@@ -68,7 +68,8 @@ def detect_fire_with_roboflow(frame):
     response = requests.post(
         R_MODEL_URL,
         params=R_PARAMS,
-        files={"file": img_encoded.tobytes()}
+        files={"file": img_encoded.tobytes()},
+        timeout=5.0
     )
     response_data = response.json()
     predictions = response_data.get("predictions", [])
