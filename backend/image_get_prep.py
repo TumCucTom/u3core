@@ -10,7 +10,8 @@ sys.path.append('/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.
 SIZE = 416
 
 #change input number from 0 to change the camera in use
-video = cv2.VideoCapture(0)
+RTSP_URL = "rtsp://localhost:8554/mystream"
+video = cv2.VideoCapture(RTSP_URL)
 
 def get_image():
     """get the image and process it ready for the roboflow model."""

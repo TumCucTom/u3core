@@ -114,6 +114,29 @@ wget https://github.com/spe-uob/2024-MLAIPredictionMicroservices/archive/main.zi
 
 
 
+### Testing with RTSP
+We use [mediamtx](https://github.com/bluenviron/mediamtx/tree/main) to test rtsp streaming in conjunction with obs studio. To set up obs studio correctly:
+
+Open `Settings -> Output -> Recording` and use the following parameters:
+
+* FFmpeg output type: `Output to URL`
+* File path or URL: `rtsp://localhost:8554/mystream`
+* Container format: `rtsp`
+* Check `show all codecs (even if potentically incompatible)`
+* Video encoder: `h264_nvenc (libx264)`
+* Video encoder settings (if any): `bf=0`
+* Audio track: `1`
+* Audio encoder: `libopus`
+
+To start the stream:
+* You can now start mediamtx with `./mediamtx`
+* Then use the button `Start Recording` (instead of `Start Streaming`) to start streaming in OBS.
+* Either:
+    * Output to a file using [ffmpeg](https://evermeet.cx/ffmpeg/)
+    * With `ffmpeg -i rtsp://localhost:8554/mystream -c copy rtsp-outputs/output.mp4`
+* Or:
+    * Replace the openCV URL in the infer python file with `rtsp://localhost:8554/mystream`
+
 ## Stakeholders
 ### DigitalU3
 - Delivered their needs and wants to use
