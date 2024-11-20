@@ -2,5 +2,5 @@ opencv-python
 numpy
 requests
 roboflow
-twilio.rest
+twilio
 boto3
