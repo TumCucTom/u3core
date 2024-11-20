@@ -1,29 +1,30 @@
+"""use roboflow model to send alerts"""
+import time
 import cv2
 import boto3
 from twilio.rest import Client
-import time
 import requests
 
 # AWS SNS set up
-aws_region = "aws_region"
-aws_access_key = "aws_access_key"
-aws_secret_key = "aws_secret_key"
+AWS_REGION = "aws_region"
+AWS_ACESS_KEY = "aws_access_key"
+AWS_SECRET_KEY = "aws_secret_key"
 
 # Twilio set up
-twilio_account_sid = "twilio_account_sid"
-twilio_auth_token = "twilio_auth_token"
-twilio_whatsapp_number = "twilio_whatsapp_number"
+T_ACCOUNT_SID = "twilio_account_sid"
+T_AUTH_TOKEN = "twilio_auth_token"
+TWILO_NUMBER = "twilio_whatsapp_number"
 
 # Recipient set up
-recipient_phone_number = "number"
-recipient_whatsapp_number = "whatsapp:number"
+REC_NUMBER = "number"
+REC_WHATSAPP_NUMBER = "whatsapp:number"
 
 
 # Roboflow set up
-roboflow_api_key = "roboflow api key"
-roboflow_model_url = "model URL"
-roboflow_params = {
-    "api_key": roboflow_api_key,
+R_API_KEY = "roboflow api key"
+R_MODEL_URL = "model URL"
+R_PARAMS = {
+    "api_key": R_API_KEY,
     "confidence": 0.5
 }
 
@@ -31,16 +32,16 @@ roboflow_params = {
 # rtsp_url = "rtsp://your_rtsp_stream_url"
 
 # Alert message
-alert_message = "Abnormal detected"
+ALERT_MESSAGE = "Abnormal detected"
 
 # send message through Aws sns(must be implemented)
 def send_sms_via_sns(phone_number, message):
     """Send SMS via AWS SNS."""
     sns_client = boto3.client(
         "sns",
-        region_name=aws_region,
-        aws_access_key_id=aws_access_key,
-        aws_secret_access_key=aws_secret_key
+        region_name=AWS_REGION,
+        aws_access_key_id=AWS_ACESS_KEY,
+        aws_secret_access_key=AWS_SECRET_KEY
     )
     response = sns_client.publish(
         PhoneNumber=phone_number,
@@ -51,9 +52,9 @@ def send_sms_via_sns(phone_number, message):
 # Send message through Twilio
 def send_whatsapp_via_twilio(to_number, message):
     """Send WhatsApp message via Twilio."""
-    client = Client(twilio_account_sid, twilio_auth_token)
+    client = Client(T_ACCOUNT_SID, T_AUTH_TOKEN)
     message = client.messages.create(
-        from_=twilio_whatsapp_number,
+        from_=TWILO_NUMBER,
         body=message,
         to=to_number
     )
@@ -65,15 +66,15 @@ def detect_fire_with_roboflow(frame):
     """Detect fire using Roboflow API."""
     _, img_encoded = cv2.imencode(".jpg", frame)
     response = requests.post(
-        roboflow_model_url,
-        params=roboflow_params,
+        R_MODEL_URL,
+        params=R_PARAMS,
         files={"file": img_encoded.tobytes()}
     )
     response_data = response.json()
     predictions = response_data.get("predictions", [])
 
     for prediction in predictions:
-        if prediction["class"] == "fire" and prediction["confidence"] >= roboflow_params["confidence"]:
+        if prediction["class"] == "fire" and prediction["confidence"] >= R_PARAMS["confidence"]:
             return True
     return False
 
@@ -101,8 +102,8 @@ def process_webcam_stream():
             current_time = time.time()
             if current_time - last_alert_time > alert_interval:
                 print("Fire detected! Sending alerts...")
-                send_sms_via_sns(recipient_phone_number, alert_message)
-                send_whatsapp_via_twilio(recipient_whatsapp_number, alert_message)
+                send_sms_via_sns(REC_NUMBER, ALERT_MESSAGE)
+                send_whatsapp_via_twilio(REC_WHATSAPP_NUMBER, ALERT_MESSAGE)
                 last_alert_time = current_time
 
         cv2.imshow("Webcam Stream", frame)  # Show webcam stream
