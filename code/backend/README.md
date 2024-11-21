@@ -1,3 +1,15 @@
+##Process (so far)
+- RTSP server runs on amazon ec2 instance using [mediamtx](https://github.com/bluenviron/mediamtx/tree/main)
+  - It uses TCP
+  - Port forwarding rules must be adjusted on the ec2 instance
+- We write to the stream using OBS with computer webcam
+- A different machine can read from the stream using openCV
+  - The RTSP URL is taken as the camera input
+- The roboflow API is called with the current frame
+- It returns a JSON including any predictions
+- If a prediction is given, an alert is sent to a given number 
+  - This is on whatsapp via Twilio
+
 ## Training Data
 Find infomation about training data in the [Training README](training/README.md)
 
