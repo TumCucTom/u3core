@@ -21,8 +21,8 @@ REC_WHATSAPP_NUMBER = "whatsapp:number"
 
 
 # Roboflow set up
-R_API_KEY = "roboflow api key"
-R_MODEL_URL = "model URL"
+R_API_KEY ="FRUmKXAzM8M7TupHxPph"
+R_MODEL_URL = "https://app.roboflow.com/tumcuc/people-in-a-room-counter-2/3"
 R_PARAMS = {
     "api_key": R_API_KEY,
     "confidence": 0.5
