@@ -1,3 +1,10 @@
+![Roboflow](https://img.shields.io/badge/roboflow-6706CE?style=for-the-badge&logo=roboflow&logoColor=#6706CE)
+![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
+![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB) 
+![Git](https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white) 
+![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white) 
+![AWS](https://img.shields.io/badge/aws-%23232f3e.svg?style=for-the-badge&logo=amazon-web-services&logoColor=white) 
+
 # 2024-ML/AI Prediction Microservices
 ## Table of Contents
 - [2024-ML/AI Prediction Microservices](#2024-mlai-prediction-microservices)
@@ -45,37 +52,93 @@ A more in detail document can be found in the [docs](/docs/frontend), but a summ
 
 ## Project Structure
 ```
-📁 project/
-├── 📁 .idea/
-│    ├──📄 2024-MLAIPredictionMicroservice.iml
-│    └──📄 workspace.xml
-├── 📁 alert system/
-│    └──📄 alert_sys.py
-│        └── ------ Building up alert system
-├── 📁 docs/
-│    ├──📄 ethics.md
-│    └──📄 meetings.md
-│        └── ------- Recording all the clients meetings and mentor meetings
-├──📁 preliminary/
-│   ├──📁 Personcounter/
-│   │    ├──📁 dataset/
-│   │    │   ├──------- The dataset that is used for machine learning
-│   │    │   ├──📁 test/
-│   │    │   ├──📁 train/
-│   │    │   └──📁 valid/
-│   │    ├──📁 roboflow-python/
-│   │    └──📄 infer.py
-│   │        └── ------- Object detection that could count number │of people in front of the camera
-│   └──📄 README.md
-│       └── ------- Details of preliminary task requests
-├──📄 .gitignore
-└──📄 README.md
-    └── ------- Overall description of the project
+📁 project/                            #                    
+├── 📁 ai-tools/                       # Information about AI technologies used
+│    └──📄 README.md                   #
+├── 📁 docs/                           #
+│    ├──📄 ethics.md                   #
+│    └──📄 meetings.md                 # Recording all the clients meetings and mentor meetings
+├── 📁 frontend/                       #
+│    └──📄 README.md                   #
+├── 📁 backend/                        #
+│    ├──📄 imageGetPrep.py             # OpenCV code for getting a preprocessing videostream
+│    └──📄 README.md                   # 
+├──📁 preliminary/                     #
+│   ├──📁 Personcounter/               #
+│   │   ├──📁 dataset/                 # First training dataset used
+│   │   ├──📁 dataset2/                # Second training dataset used
+│   │   ├──📁 roboflow-python/         #
+│   │   ├──📄 counter.py               # Code adapted for counting people
+│   │   ├──📄 inferpi.py               # Code adapted for rasberry pi
+│   │   └──📄 infer.py                 # People detection code
+│   └──📄 README.md                    # Details of preliminary task requests
+├──📄 .gitignore                       #
+├──📄 LICENSE.md                       # License for this project
+└──📄 README.md                        # Overall description of the project
+```
+## User Instructions
+### Requirements and Prerequisites
+Run the following command in your terminal:
+```
+pip3 install opencv-python numpy requests
 ```
 
-## User Instructions
+Clone the repo or download the zip file with:
+```
+wget https://github.com/spe-uob/2024-MLAIPredictionMicroservices/archive/main.zip
+```
+
+### Cloud Deployment Usage
+
+- Identify the RTSP URL for your Intel-Based camera
+  - This is typically: rtsp://(IP address):(port number)/(stream name)
+  - You can usually find this on the manufacture's website
+
+### AI Edge Deployment Usage
+
+- TBC
 
 ## Developer Instructions
+### Requirements and Prerequisites
+
+- An appropriate IDE that can run Python (e.g. VSCode, Intellij)
+  - To edit on your IDE you will need to download the dependencies:
+  - Run ``` pip3 install opencv-python numpy requests ``` in your terminal
+- Access to the Roboflow account for backend.
+- Access to the Figma project for design collaboration.
+- Access to the GitHub repository for development. 
+  - To gain access to these resources and contribute to the project, you will need approval from the current [developers](#contributors).
+
+### Contributing
+
+- When contributing your work should always be on a feature branch, linked to an issue.
+- All issues should be filled out with detail, using the templates, including the appropriate tags on the right.
+- Pull requests should be used with the given template and you should ensure you tick all the checklists relevant to your pull before marking it ready for review. Keep as a draft until then.
+
+
+
+### Testing with RTSP
+We use [mediamtx](https://github.com/bluenviron/mediamtx/tree/main) to test rtsp streaming in conjunction with obs studio. To set up obs studio correctly:
+
+Open `Settings -> Output -> Recording` and use the following parameters:
+
+* FFmpeg output type: `Output to URL`
+* File path or URL: `rtsp://localhost:8554/mystream`
+* Container format: `rtsp`
+* Check `show all codecs (even if potentically incompatible)`
+* Video encoder: `h264_nvenc (libx264)`
+* Video encoder settings (if any): `bf=0`
+* Audio track: `1`
+* Audio encoder: `libopus`
+
+To start the stream:
+* You can now start mediamtx with `./mediamtx`
+* Then use the button `Start Recording` (instead of `Start Streaming`) to start streaming in OBS.
+* Either:
+    * Output to a file using [ffmpeg](https://evermeet.cx/ffmpeg/)
+    * With `ffmpeg -i rtsp://localhost:8554/mystream -c copy rtsp-outputs/output.mp4`
+* Or:
+    * Replace the openCV URL in the infer python file with `rtsp://localhost:8554/mystream`
 
 ## Stakeholders
 ### DigitalU3
@@ -97,7 +160,10 @@ A more in detail document can be found in the [docs](/docs/frontend), but a summ
 
 ## Technologies Used
 ### Tech Stack Analysis
-INSERT DIAGRAM HERE
+![tech_stack_analysis](https://github.com/user-attachments/assets/e3b63935-56bb-4581-ab9c-28c13fd8fe1e)
+
+
+
 #### Front end
 | Langauge / Framework | Use                                                                 |
 |:---------------------|:--------------------------------------------------------------------|
@@ -144,8 +210,9 @@ INSERT DIAGRAM HERE
 
 
 ## Architecture Diagram
+![tech_slack_analysis](https://github.com/user-attachments/assets/da6118a8-02a5-4962-9596-0909103e30b7)
 
-INSERT DIAGRAM HERE
+
 
 |          **Component**          |                                        **Description**                                         |
 |:-------------------------------:|:----------------------------------------------------------------------------------------------:|
@@ -191,6 +258,8 @@ INSERT DIAGRAM HERE
 
 ## Contributors
 
+### Names and information
+
 |      Name      |      Github      |                Link                 |          Email          |
 |:--------------:|:----------------:|:-----------------------------------:|:-----------------------:|
 |  Thomas Bale   |    tumcuctom     |    https://github.com/TumCucTom     |  hf23482@bristol.ac.uk  |
@@ -199,3 +268,14 @@ INSERT DIAGRAM HERE
 |  William Hook  |   William23292   |   https://github.com/William23292   |  mo23292@bristol.ac.uk  |
 |  Xinyaun Chen  | seanchenlovestom | https://github.com/SeanChenLovesTom |  vi23973@bristol.ac.uk  |
 | Kanghyeon Kim  |  Kanghyeon5468   |  https://github.com/Kanghyeon5468   |  xx23126@bristol.ac.uk  |
+
+### Responsbilities
+
+| Frontend | Backend | Full stack |
+|:-: |:-:| :-: |
+|William | Kanghyeon | Thomas |
+|Sin Yi | Xinyuan | Justice |
+
+- Client Liason: Justice
+- Mentor Liason: Thomas
+
