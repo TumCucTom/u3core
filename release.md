@@ -1,0 +1,22 @@
+Release Checklist
+
+This checklist must be submitted by each group for each release. Download the checklist, complete it and save it as a PDF - upload it to the unit Blackboard under Assessment, Submission & Feedback.
+
+Release Name: (MVP/Beta/Final)
+
+Date: 14/11/2024
+
+Checks
+
+[X] 3 named User Stories implemented 
+[X] Test cases successfully passed 
+ [X]Continuous integration depolyed 
+ Continuous deployment deployed
+[X] System deployed, accessible to the client X **
+ Client successfully interacted with system 
+Notes 
+we have our client meetings every friday 
+so next meeting 15/11/2024 we will show our
+client 
+**computer vision model can be accessed on
+roboflow
