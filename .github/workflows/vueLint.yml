@@ -1,5 +1,9 @@
 name: Run Unit Tests and Lint Files
 "on": push
+
+permissions:
+  contents: read
+
 jobs:
   unit_test-lint:
     runs-on: ubuntu-latest
@@ -9,7 +13,7 @@ jobs:
         run: npm --prefix code/frontend/web install
       - name: Run lint tests
         run: |
-          npm ci
-          npm run build
-          npm run test:unit
-          npm run lint
+          npm --prefix code/frontend/web ci
+          npm --prefix code/frontend/web run build
+          npm --prefix code/frontend/web run test:unit
+          npm --prefix code/frontend/web run lint
