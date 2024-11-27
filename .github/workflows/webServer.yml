@@ -1,0 +1,22 @@
+name: Run Unit Tests and Lint Files
+
+"on":
+  push:
+    paths:
+      - code/frontend/web-server/**
+
+permissions:
+  contents: read
+
+jobs:
+  unit_test-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install modules
+        run: npm --prefix code/frontend/web-server install
+      - name: Run web app tests
+        run: |
+          npm --prefix code/frontend/web-server ci
+          npm --prefix code/frontend/web-server run build
+          npm --prefix code/frontend/web-server run lint

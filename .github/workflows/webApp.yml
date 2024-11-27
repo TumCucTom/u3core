@@ -1,6 +1,9 @@
 name: Run Unit Tests and Lint Files
 
-"on": push
+"on":
+  push:
+    paths:
+      - code/frontend/web-app/**
 
 permissions:
   contents: read
@@ -12,7 +15,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Install modules
         run: npm --prefix code/frontend/web-app install
-      - name: Run lint tests
+      - name: Run web app tests
         run: |
           npm --prefix code/frontend/web-app ci
           npm --prefix code/frontend/web-app run build
