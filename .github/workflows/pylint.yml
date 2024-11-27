@@ -2,10 +2,9 @@ name: Pylint
 
 on:
   push:
-    paths:
-      - 'code/backend/python-features/**'
-      - '.github/workflows/pylint.yml'
-
+    paths-ignore:
+      - "code/backend/web-server/**"
+      - "code/frontend/web-app/**"
 jobs:
   build:
     runs-on: ubuntu-latest
