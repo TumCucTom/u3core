@@ -98,7 +98,7 @@
                   suffix=""
                   :rules="[
                       val => val && val.length > 0 || 'Please enter an email address',
-                      val => /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g.test(val) || 'Invalid email format'
+                      val => /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/.test(val) || 'Invalid email format'
                     ]"
               >
               </q-input>
