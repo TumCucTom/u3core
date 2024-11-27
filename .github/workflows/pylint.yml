@@ -3,7 +3,7 @@ name: Pylint
 on:
   push:
     paths:
-      - code/backend/**
+      - code/backend/python-features/**
       - .github/workflows/pylint.yml
 
 jobs:

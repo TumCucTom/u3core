@@ -20,9 +20,9 @@ app.use(express.json());
 
 const connection = mysql.createConnection({
   host: 'localhost',
-  user: 'valentinavelasco',
-  password: 'Activated01',
-  database: 'SocialMediaApp',
+  user: 'trvbale',
+  password: 'MLAI01',
+  database: 'MLAIDB',
 });
 
 connection.connect((err) => {
@@ -34,7 +34,7 @@ connection.connect((err) => {
 });
 
 app.get('/api/emails', (req, res) => {
-  const query = 'SELECT email FROM custLogin';
+  const query = 'SELECT email FROM customerLogins';
   connection.query(query, (error, results) => {
     if (error) {
       console.error('Error fetching emails:', error);
@@ -48,7 +48,7 @@ app.get('/api/emails', (req, res) => {
 
 app.get('/api/login', (req, res) => {
   const emailLogin = req.query.emailVar;
-  const query3 = 'SELECT hashPWord FROM custLogin WHERE email = ?';
+  const query3 = 'SELECT encyrptedPassword FROM customerLogins WHERE email = ?';
   connection.query(query3, [emailLogin], (error, results) => {
     if (error) {
       console.error('Error fetching data:', error);
@@ -58,7 +58,7 @@ app.get('/api/login', (req, res) => {
     if (results.length === 0) {
       res.json(null);
     } else {
-      const hashedPassword = results[0].hashPWord;
+      const hashedPassword = results[0].encryptedPassword;
       res.json(hashedPassword);
     }
   });
