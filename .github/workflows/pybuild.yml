@@ -7,7 +7,7 @@ on:
   pull_request:
     paths:
       - code/backend/**
-      - .github/**
+      - .github/workflows/pybuild.yml
     branches: [ "dev", "main" ]
 
 permissions:
