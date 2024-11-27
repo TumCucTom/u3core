@@ -1,4 +1,5 @@
 # Front end
+
 ## Structure
 
 - This section of the project contains two main directories:
