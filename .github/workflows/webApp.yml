@@ -4,6 +4,7 @@ name: Run Unit Tests and Lint Files
   push:
     paths:
       - code/frontend/web-app/**
+      - .github/**
 
 permissions:
   contents: read

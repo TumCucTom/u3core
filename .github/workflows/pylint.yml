@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - code/backend/**
+      - .github/**
 
 jobs:
   build:

@@ -5,6 +5,9 @@ name: Python application
 
 on:
   pull_request:
+    paths:
+      - code/backend/**
+      - .github/**
     branches: [ "dev", "main" ]
 
 permissions:
