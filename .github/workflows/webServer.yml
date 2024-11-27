@@ -3,7 +3,7 @@ name: webServer
 "on":
   push:
     paths:
-      - code/frontend/web-server/**
+      - code/backend/web-server/**
       - .github/workflows/webServer.yml
 
 permissions:
