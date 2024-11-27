@@ -5,7 +5,7 @@
         <div class="column">
             <div class="col self-center">
                 <q-btn flat>
-                <img src="~/assets/spaceNXT.png" style="height:5.5rem" @click="hyperlink"/>
+                <img src="~/assets/quasar-logo-vertical.svg" style="height:5.5rem" @click="hyperlink"/>
                 </q-btn>
             </div>
             <div class ="col self-end">
@@ -45,7 +45,7 @@ export default {
 
   methods: {
     hyperlink() {
-        window.open("https://spacenxtlabs.com", "_blank");
+        window.open("https://google.com", "_blank");
     },
 
     }
