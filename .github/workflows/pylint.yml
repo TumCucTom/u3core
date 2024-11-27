@@ -3,8 +3,8 @@ name: Pylint
 on:
   push:
     paths-ignore:
-      - "code/backend/web-server/**"
-      - "code/frontend/web-app/**"
+      - "code/backend/web-server/node_modules/flatted/python/**"
+      - "code/frontend/web-app/node_modules/flatted/python/**"
 jobs:
   build:
     runs-on: ubuntu-latest
