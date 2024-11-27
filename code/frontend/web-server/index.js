@@ -84,7 +84,7 @@ app.post("/api/addToCustomer", async (req, res) => {
         const customerID = results.insertId;
 
         const query2 = 'INSERT INTO CustLogin (email, hashPWord, customerID) VALUES (?,?,?)';
-        connection.query(query2, [email, hashedPassword, customerID], (error2, null) => {
+        connection.query(query2, [email, hashedPassword, customerID], (error2, results2) => {
             if (error2) {
                 console.error('Error adding item to customerLogin:', error);
                 res.status(500).json({ message: 'Internal Server Error' });
@@ -92,6 +92,7 @@ app.post("/api/addToCustomer", async (req, res) => {
             } else {
                 res.json({ message: 'Item added successfully to CustomerLogin' });
             }
+            results2 = undefined
         });
     });
 });
