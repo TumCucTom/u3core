@@ -1,22 +1,32 @@
-name: Run Unit Tests and Lint Files
+name: webServer
 
 "on":
   push:
     paths:
-      - code/frontend/web-server/**
+      - code/frontend/web-app/**
       - .github/**
+
 permissions:
   contents: read
 
+env:
+  NODE_VERSION: 14
+
 jobs:
-  unit_test-lint:
+  linting:
+    name: Linting
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Install modules
-        run: npm --prefix code/frontend/web-server install
-      - name: Run web app tests
-        run: |
-          npm --prefix code/frontend/web-server ci
-          npm --prefix code/frontend/web-server run build
-          npm --prefix code/frontend/web-server run lint
+      - name: Install NodeJS
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Code Checkout
+        uses: actions/checkout@v2
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Code Linting
+        run: npm run lint

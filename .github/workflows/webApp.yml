@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 jobs:
-  unit_test-lint:
+  built-and-lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
