@@ -1,0 +1,23 @@
+name: Run Unit Tests and Lint Files
+
+"on":
+  push:
+    paths:
+      - 'code/frontend/web-app/**'
+      - '.github/workflows/webApp.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  built-and-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install modules
+        run: npm --prefix code/frontend/web-app install
+      - name: Run web app tests
+        run: |
+          npm --prefix code/frontend/web-app ci
+          npm --prefix code/frontend/web-app run build
+          npm --prefix code/frontend/web-app run lint
