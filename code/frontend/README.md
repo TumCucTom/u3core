@@ -1,5 +1,12 @@
 # Front end
 
+## Run and Test
+To open the web app, run the following in your terminal:
+```
+    cd code/frontend/web-app
+    quasar dev
+```
+
 ## Structure
 
 - This section of the project contains two main directories:
