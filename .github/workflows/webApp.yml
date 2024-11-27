@@ -3,8 +3,8 @@ name: Run Unit Tests and Lint Files
 "on":
   push:
     paths:
-      - code/frontend/web-app/**
-      - .github/workflows/webApp.yml
+      - 'code/frontend/web-app/**'
+      - '.github/workflows/webApp.yml'
 
 permissions:
   contents: read

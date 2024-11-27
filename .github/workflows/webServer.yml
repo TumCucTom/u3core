@@ -3,8 +3,8 @@ name: webServer
 "on":
   push:
     paths:
-      - code/backend/web-server/**
-      - .github/workflows/webServer.yml
+      - 'code/backend/web-server/**'
+      - '.github/workflows/webServer.yml'
 
 permissions:
   contents: read

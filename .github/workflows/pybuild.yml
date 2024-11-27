@@ -6,8 +6,8 @@ name: Python application
 on:
   pull_request:
     paths:
-      - code/backend/python-features/**
-      - .github/workflows/pybuild.yml
+      - 'code/backend/python-features/**'
+      - '.github/workflows/pybuild.yml'
     branches: [ "dev", "main" ]
 
 permissions:
