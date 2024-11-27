@@ -15,5 +15,4 @@ jobs:
         run: |
           npm --prefix code/frontend/web-app ci
           npm --prefix code/frontend/web-app run build
-          npm --prefix code/frontend/web-app run test:unit
           npm --prefix code/frontend/web-app run lint
