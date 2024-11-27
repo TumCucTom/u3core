@@ -2,11 +2,11 @@
 /* eslint no-console: ["error", { allow: ["warn"] }] */
 
 const mysql = require("mysql2");
-const bcrypt = require('bcrypt');
+const bcrypt = require("bcrypt");
+const cors = require("cors");
 const express = require("express");
 const app = express();
 
-/*
 const corsOptions = {
     origin: 'http://localhost:9000',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
@@ -15,7 +15,6 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.use(express.json());
- */
 
 const connection = mysql.createConnection({
     host: 'localhost',
