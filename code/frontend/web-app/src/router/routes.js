@@ -1,9 +1,17 @@
+import Home from "src/pages/Login.vue";
+import HomeLayout from "layouts/HomeLayout.vue";
+
 const routes = [
   {
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/IndexPage.vue') }
+      { path: '',
+        component: () => import('pages/IndexPage.vue'),
+        component: HomeLayout,
+          children: [
+            { path: '', component: Home },
+          ]}
     ]
   },
 
