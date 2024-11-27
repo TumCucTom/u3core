@@ -3,7 +3,7 @@
 
 - This section of the project contains two main directories:
   - Web-app: the actual web app, holding pages and all information that may be displayed to users
-  - Web-server: hosts the web app and handles integration with the back end, including RESTful calls
+    - hosted by web server
 
 ## Web App
 - Login page: Has elements for registering and logging in (login for generic user and admin)
@@ -11,7 +11,3 @@
     - Server handles actual request with database
   - Uses regex to ensure passwords and emails match the correct patterns
   - Does not handle async encryption for passwords
-
-## Web Server
-- Handles SQL calls to the user database
-- Performs async encryption for passwords
