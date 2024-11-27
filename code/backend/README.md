@@ -1,4 +1,4 @@
-##Process (so far)
+## Process (so far)
 - RTSP server runs on amazon ec2 instance using [mediamtx](https://github.com/bluenviron/mediamtx/tree/main)
   - It uses TCP
   - Port forwarding rules must be adjusted on the ec2 instance
@@ -24,3 +24,9 @@ Find infomation about training data in the [Training README](training/README.md)
 - You can see instructions on how to setup this process in [Dev Instructions](README.md#developer-instructions).
 - We can use our webcam in OBS studio and send the data to the rtsp server hosted locally by mediamtx
 - We can then take from this stream using openCV in python or output to a file using ffmpeg
+
+## Web Server
+- Handles SQL calls to the user database
+- Performs async encryption for passwords
+- You can run it in your terminal with:
+  - 
