@@ -6,7 +6,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install modules
-        run: npm install
+        run: npm --prefix code/frontend/web/package-lock.json install
       - name: Run lint tests
         run: |
           npm ci
