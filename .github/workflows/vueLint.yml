@@ -10,7 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install modules
-        run: npm --prefix code/frontend/web install
+        run: npm --prefix code/frontend/web-app install
       - name: Run lint tests
         run: |
           npm --prefix code/frontend/web ci
