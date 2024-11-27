@@ -2,9 +2,10 @@ name: Pylint
 
 on:
   push:
-    paths-ignore:
-      - "code/backend/web-server/node_modules/flatted/python/**"
-      - "code/frontend/web-app/node_modules/flatted/python/**"
+    paths:
+      - 'code/backend/python-features/**'
+      - '.github/workflows/pylint.yml'
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -27,5 +28,5 @@ jobs:
       run: |
         # If you have a custom pylint config file
         pylint $(git ls-files '*.py') --rcfile=.github/workflows/.pylintrc
-        # pylint $(git ls-files '*.py')
+        # pylint $(git ls-files 'code/backend/python-features/*.py')
         
