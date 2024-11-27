@@ -17,8 +17,8 @@
                   label="First Name *"
                   lazy-rules
                   :rules="[
-                  val => val && val.length > 0 || 'Please type something',
-                  val => /^[A-Z]/.test(val) || 'First name must start with a capital letter'
+                  val => val && val.length > 0 || 'Name must include characters',
+                  val => /^[A-Z]/.test(val) || 'First name must start with a capital'
                 ]"
               />
               <q-input
@@ -27,7 +27,7 @@
                   label="Last Name *"
                   lazy-rules
                   :rules="[
-                  val => val && val.length > 0 || 'Please type something',
+                  val => val && val.length > 0 || 'Name must include characters',
                   val => /^[A-Z]/.test(val) || 'Last name must start with a capital letter'
                 ]"
               />
@@ -38,7 +38,7 @@
                   suffix=""
                   :rules="[
                     val => val && val.length > 0 || 'Please enter an email address',
-                    val => /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g.test(val) || 'Invalid email format'
+                    val => /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/.test(val) || 'Invalid email format'
                   ]"
               >
               </q-input>
@@ -124,5 +124,3 @@
     </div>
   </div>
 </template>
-<script setup>
-</script>
