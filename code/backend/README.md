@@ -29,4 +29,7 @@ Find infomation about training data in the [Training README](training/README.md)
 - Handles SQL calls to the user database
 - Performs async encryption for passwords
 - You can run it in your terminal with:
-  - 
+```
+cd code/backend/web-server
+npm run
+```
