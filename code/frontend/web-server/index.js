@@ -1,5 +1,6 @@
 /* web server for hosting web app and making RESTful calls */
-/* eslint no-unused-vars: ["error", { "varsIgnorePattern": "[iI]gnored" }] */
+/* eslint-disable no-console */
+/* eslint-disable no-unused-vars */
 
 const mysql = require('mysql2');
 const bcrypt = require('bcrypt');
