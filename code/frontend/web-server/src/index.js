@@ -1,3 +1,4 @@
+/* eslint no-console: ["error", { allow: ["warn"] }] */
 const app = require('./app');
 
 const port = '8888';
