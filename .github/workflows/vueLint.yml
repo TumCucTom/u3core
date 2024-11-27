@@ -13,7 +13,7 @@ jobs:
         run: npm --prefix code/frontend/web-app install
       - name: Run lint tests
         run: |
-          npm --prefix code/frontend/web ci
-          npm --prefix code/frontend/web run build
-          npm --prefix code/frontend/web run test:unit
-          npm --prefix code/frontend/web run lint
+          npm --prefix code/frontend/web-app ci
+          npm --prefix code/frontend/web-app run build
+          npm --prefix code/frontend/web-app run test:unit
+          npm --prefix code/frontend/web-app run lint
