@@ -26,7 +26,11 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Install Dependencies
-        run: npm --prefix code/frontend/web-server ci
+        run: |
+          npm --prefix code/frontend/web-server ci
+          npm i -S mysql2
+          npm i -S bcrypt
+          npm i -S cors
 
       - name: Code Linting
         run: npm --prefix code/frontend/web-server run lint
