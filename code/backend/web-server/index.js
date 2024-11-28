@@ -126,7 +126,7 @@ app.post("/api/sendResetEmail", (req, res) => {
 
     // Generate a secure random token
     const verificationToken = crypto.randomBytes(20).toString('hex');
-    const verificationLink = `http://localhost:9000/#/ForgotPassword?token=${verificationToken}&email=${encodeURIComponent(email)}`;
+    const verificationLink = `http://localhost:9000/#/ResetPassword?token=${verificationToken}&email=${encodeURIComponent(email)}`;
 
     let mailOptions = {
       from: 'u3Core@gmail.com',
@@ -182,7 +182,7 @@ app.post("/api/sendVerifyEmail", (req, res) => {
 
     // Generate a secure random token
     const verificationToken = crypto.randomBytes(20).toString('hex');
-    const verificationLink = `http://localhost:9000/#/ForgotPassword?token=${verificationToken}&email=${encodeURIComponent(email)}`;
+    const verificationLink = `http://localhost:9000/#/VerifiedPassword?token=${verificationToken}&email=${encodeURIComponent(email)}`;
     let code = Math.random() * 1000;
 
     let mailOptions = {

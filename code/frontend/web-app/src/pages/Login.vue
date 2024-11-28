@@ -218,7 +218,7 @@ export default {
           });
 
           // Redirect user
-          router.push('/Generator');
+          router.push('/OTPVerification');
         } else {
           // Passwords don't match, notify the user
           $q.notify({
