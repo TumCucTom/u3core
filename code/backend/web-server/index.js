@@ -6,7 +6,8 @@ const mysql = require('mysql2');
 const bcrypt = require('bcrypt');
 const cors = require('cors');
 const express = require('express');
-
+const nodemailer = require('nodemailer');
+const crypto = require("crypto");
 const app = express();
 
 const corsOptions = {
@@ -93,6 +94,121 @@ app.post('/api/addToCustomer', async (req, res) => {
       } else {
         res.json({ message: 'Item added successfully to CustomerLogin' });
       }
+    });
+  });
+});
+
+app.post("/api/sendResetEmail", (req, res) => {
+  console.log("sendEmail endpoint hit with data:", req.body);
+  const { email } = req.body;
+
+  // First, check if the email exists in the database
+  const query = 'SELECT email FROM CustomerLogins WHERE email = ?';
+  connection.query(query, [email], (error, results) => {
+    if (error) {
+      console.error('Error querying the database:', error);
+      return res.status(500).json({ message: 'Internal Server Error', error: error.toString() });
+    }
+
+    // If email does not exist, respond with an error
+    if (results.length === 0) {
+      return res.status(404).json({ message: 'Email not found' });
+    }
+
+    // Proceed with sending the email if the email is found
+    let transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: 'u3Core@gmail.com',
+        pass: 'auftest123'
+      }
+    });
+
+    // Generate a secure random token
+    const verificationToken = crypto.randomBytes(20).toString('hex');
+    const verificationLink = `http://localhost:9000/#/ForgotPassword?token=${verificationToken}&email=${encodeURIComponent(email)}`;
+
+    let mailOptions = {
+      from: 'u3Core@gmail.com',
+      to: email,
+      subject: 'Password Reset Request',
+      html: `
+    <div style="border: 1px solid #f04c26; background-color: #ffffff; padding: 40px; max-width: 800px; margin: auto; font-family: Arial, sans-serif; box-shadow: 0 8px 10px rgba(0, 0, 0, 0.15); text-align: center;">
+      <p style="font-size: 16px; font-weight: bold;">This is a password reset request email. Clicking the button below will redirect you to a new page where you can verify your email and reset your password:</p>
+      <div style="margin: 40px auto;"> 
+        <a href="${verificationLink}" target="_blank" style="background: linear-gradient(to right, #0e004d, #064e81); color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; display: block; max-width: 250px; width: 80%; margin: auto; font-size: 16px; font-weight: bold;">Verify and Reset Password</a>
+      </div>
+    </div>
+  `,
+    };
+
+    transporter.sendMail(mailOptions, (mailError, info) => {
+      if (mailError) {
+        console.log(mailError)
+        console.error('Error sending email:', mailError);
+        return res.status(500).send({ message: 'Error sending email', error: mailError.toString() });
+      }
+      console.log('Email sent: ' + info.response);
+      return res.status(200).send({ message: 'Email sent successfully', info: info.response });
+    });
+  });
+});
+
+app.post("/api/sendVerifyEmail", (req, res) => {
+  console.log("sendEmail endpoint hit with data:", req.body);
+  const { email } = req.body;
+
+  // First, check if the email exists in the database
+  const query = 'SELECT email FROM CustomerLogins WHERE email = ?';
+  connection.query(query, [email], (error, results) => {
+    if (error) {
+      console.error('Error querying the database:', error);
+      return res.status(500).json({ message: 'Internal Server Error', error: error.toString() });
+    }
+
+    // If email does not exist, respond with an error
+    if (results.length === 0) {
+      return res.status(404).json({ message: 'Email not found' });
+    }
+
+    // Proceed with sending the email if the email is found
+    let transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: 'u3Core@gmail.com',
+        pass: 'auftest123'
+      }
+    });
+
+    // Generate a secure random token
+    const verificationToken = crypto.randomBytes(20).toString('hex');
+    const verificationLink = `http://localhost:9000/#/ForgotPassword?token=${verificationToken}&email=${encodeURIComponent(email)}`;
+    let code = Math.random() * 1000;
+
+    let mailOptions = {
+      from: 'u3core@gmail.com',
+      to: email,
+      subject: 'Email verification',
+      html: `
+    <div style="border: 1px solid #f04c26; background-color: #ffffff; padding: 40px; max-width: 800px; margin: auto; font-family: Arial, sans-serif; box-shadow: 0 8px 10px rgba(0, 0, 0, 0.15); text-align: center;">
+      <p style="font-size: 16px; font-weight: bold;">This is a verification email. Clicking the button below will redirect you to a new page where you can verify your email. Alternatively, you can enter the code below into the OTP page you just left.</p>
+      <div style="margin: 40px auto;"> 
+        <a href="${verificationLink}" target="_blank" style="background: linear-gradient(to right, #0e004d, #064e81); color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; display: block; max-width: 250px; width: 80%; margin: auto; font-size: 16px; font-weight: bold;">Verify and Reset Password</a>
+      </div>
+      <div style="margin-top: 40px; width: 100%; display: flex; justify-content: center;">
+        <p style="font-size: 50px;">String(code)</p>
+      </div>
+    </div>
+  `,
+
+    transporter.sendMail(mailOptions, (mailError, info) => {
+      if (mailError) {
+        console.log(mailError)
+        console.error('Error sending email:', mailError);
+        return res.status(500).send({ message: 'Error sending email', error: mailError.toString() });
+      }
+      console.log('Email sent: ' + info.response);
+      return res.status(200).send({ message: 'Email sent successfully', info: info.response });
     });
   });
 });
