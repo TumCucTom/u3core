@@ -28,9 +28,6 @@ jobs:
       - name: Install Dependencies
         run: |
           npm --prefix code/backend/web-server ci
-          npm --prefix code/backend/web-server i -S mysql2
-          npm --prefix code/backend/web-server i -S bcrypt
-          npm --prefix code/backend/web-server i -S cors
-
+          npm --prefix code/backend/web-server i -S mysql2 bcrypt cors
       - name: Code Linting
         run: npm --prefix code/backend/web-server run lint
