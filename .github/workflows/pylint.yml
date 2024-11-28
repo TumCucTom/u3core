@@ -1,6 +1,10 @@
 name: Pylint
 
-on: [push]
+on:
+  push:
+    paths:
+      - 'code/backend/python-features/**'
+      - '.github/workflows/pylint.yml'
 
 jobs:
   build:
@@ -22,7 +26,5 @@ jobs:
         pip install -r code/backend/requirements.txt
     - name: Analysing the code with pylint
       run: |
-        # If you have a custom pylint config file
-        pylint $(git ls-files '*.py') --rcfile=.github/workflows/.pylintrc
-        # pylint $(git ls-files '*.py')
+        pylint $(git ls-files 'code/backend/python-features/*.py') --rcfile=.github/workflows/.pylintrc
         
