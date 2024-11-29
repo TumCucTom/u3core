@@ -7,7 +7,8 @@ const bcrypt = require('bcrypt');
 const cors = require('cors');
 const express = require('express');
 const nodemailer = require('nodemailer');
-const crypto = require("crypto");
+const crypto = require('crypto');
+
 const app = express();
 
 const corsOptions = {
@@ -98,8 +99,8 @@ app.post('/api/addToCustomer', async (req, res) => {
   });
 });
 
-app.post("/api/sendResetEmail", (req, res) => {
-  console.log("sendEmail endpoint hit with data:", req.body);
+app.post('/api/sendResetEmail', (req, res) => {
+  console.log('sendEmail endpoint hit with data:', req.body);
   const { email } = req.body;
 
   // First, check if the email exists in the database
@@ -116,19 +117,19 @@ app.post("/api/sendResetEmail", (req, res) => {
     }
 
     // Proceed with sending the email if the email is found
-    let transporter = nodemailer.createTransport({
+    const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
         user: 'u3Core@gmail.com',
-        pass: 'auftest123'
-      }
+        pass: 'auftest123',
+      },
     });
 
     // Generate a secure random token
     const verificationToken = crypto.randomBytes(20).toString('hex');
     const verificationLink = `http://localhost:9000/#/ResetPassword?token=${verificationToken}&email=${encodeURIComponent(email)}`;
 
-    let mailOptions = {
+    const mailOptions = {
       from: 'u3Core@gmail.com',
       to: email,
       subject: 'Password Reset Request',
@@ -144,18 +145,19 @@ app.post("/api/sendResetEmail", (req, res) => {
 
     transporter.sendMail(mailOptions, (mailError, info) => {
       if (mailError) {
-        console.log(mailError)
+        console.log(mailError);
         console.error('Error sending email:', mailError);
         return res.status(500).send({ message: 'Error sending email', error: mailError.toString() });
       }
-      console.log('Email sent: ' + info.response);
+      console.log(`Email sent: ${info.response}`);
       return res.status(200).send({ message: 'Email sent successfully', info: info.response });
     });
+    return res.status(404).json({ message: 'Unidentified internal error' });
   });
 });
 
-app.post("/api/sendVerifyEmail", (req, res) => {
-  console.log("sendEmail endpoint hit with data:", req.body);
+app.post('/api/sendVerifyEmail', (req, res) => {
+  console.log('sendEmail endpoint hit with data:', req.body);
   const { email } = req.body;
 
   // First, check if the email exists in the database
@@ -172,20 +174,20 @@ app.post("/api/sendVerifyEmail", (req, res) => {
     }
 
     // Proceed with sending the email if the email is found
-    let transporter = nodemailer.createTransport({
+    const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
         user: 'u3Core@gmail.com',
-        pass: 'auftest123'
-      }
+        pass: 'auftest123',
+      },
     });
 
     // Generate a secure random token
     const verificationToken = crypto.randomBytes(20).toString('hex');
     const verificationLink = `http://localhost:9000/#/VerifiedPassword?token=${verificationToken}&email=${encodeURIComponent(email)}`;
-    let code = Math.random() * 1000;
+    const code = Math.random() * 1000;
 
-    let mailOptions = {
+    const mailOptions = {
       from: 'u3core@gmail.com',
       to: email,
       subject: 'Email verification',
@@ -204,12 +206,13 @@ app.post("/api/sendVerifyEmail", (req, res) => {
 
     transporter.sendMail(mailOptions, (mailError, info) => {
       if (mailError) {
-        console.log(mailError)
+        console.log(mailError);
         console.error('Error sending email:', mailError);
         return res.status(500).send({ message: 'Error sending email', error: mailError.toString() });
       }
-      console.log('Email sent: ' + info.response);
+      console.log(`Email sent: ${info.response}`);
       return res.status(200).send({ message: 'Email sent successfully', info: info.response });
     });
+    return res.status(404).json({ message: 'Unidentified internal error' });
   });
 });
