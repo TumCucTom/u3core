@@ -18,6 +18,7 @@ const routes = [
   { path: '/VerifiedPassword', component: () => import('src/pages/VerifiedPassword.vue') },
   { path: '/Dashboard', component: () => import('src/pages/DashBoard.vue') },
   { path: '/OTPVerification', component: () => import('src/pages/OTPVerification.vue') },
+  { path: '/SetupResetPassword', component: () => import('src/pages/ForgotPassword.vue') },
 
   // Always leave this as last one,
   // but you can also remove it

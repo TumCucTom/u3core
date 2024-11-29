@@ -113,7 +113,7 @@
               />
 
               <div class="text-center">
-                <router-link to="/EmailVerification" class="forgot-password-link">Forgot your password?</router-link>
+                <router-link to="/SetupResetPassword" class="forgot-password-link">Forgot your password?</router-link>
               </div>
               <div class="q-mt-md text-center">
                 <q-btn class="gradient-button" label="SIGN IN" size="18px" type="login" rounded push />
