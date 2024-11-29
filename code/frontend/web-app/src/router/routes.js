@@ -16,7 +16,7 @@ const routes = [
   },
   { path: '/ResetPassword', component: () => import('src/pages/ResetPassword.vue') },
   { path: '/VerifiedPassword', component: () => import('src/pages/VerifiedPassword.vue') },
-  { path: '/Dashboard', component: () => import('src/pages/Dashboard.vue') },
+  { path: '/Dashboard', component: () => import('src/pages/DashBoard.vue') },
   { path: '/OTPVerification', component: () => import('src/pages/OTPVerification.vue') },
 
   // Always leave this as last one,
