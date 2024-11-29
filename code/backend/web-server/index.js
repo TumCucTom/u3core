@@ -200,6 +200,7 @@ app.post("/api/sendVerifyEmail", (req, res) => {
       </div>
     </div>
   `,
+    };
 
     transporter.sendMail(mailOptions, (mailError, info) => {
       if (mailError) {
