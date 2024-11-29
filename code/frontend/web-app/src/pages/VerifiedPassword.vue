@@ -11,19 +11,12 @@
 <script>
 import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { useQuasar } from 'quasar';
-import axios from 'axios';
 
 export default {
   name: "VerifiedPassword",
   setup() {
     const router = useRouter();
-    const $q = useQuasar();
     const email = ref('');
-    const newPassword = ref('');
-    const confirmPassword = ref('');
-    const showPassword = ref(false);
-    const showConfirmPassword = ref(false);
     const token = ref('');
 
     onMounted(() => {
