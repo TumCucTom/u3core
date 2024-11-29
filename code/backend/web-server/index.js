@@ -216,3 +216,7 @@ app.post('/api/sendVerifyEmail', (req, res) => {
     return res.status(404).json({ message: 'Unidentified internal error' });
   });
 });
+
+app.post('/api/checkCode', (req, res) => {
+  console.log('TODO');
+});
