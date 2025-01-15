@@ -21,7 +21,7 @@ Find infomation about training data in the [Training README](training/README.md)
 ## RTSP
 
 - We use [mediamtx](https://github.com/bluenviron/mediamtx/tree/main) to test rtsp streaming in conjunction with obs studio
-- You can see instructions on how to setup this process in [Dev Instructions](README.md#developer-instructions).
+- You can see instructions on how to setup this process in [Dev Instructions](../../README.md#developer-instructions).
 - We can use our webcam in OBS studio and send the data to the rtsp server hosted locally by mediamtx
 - We can then take from this stream using openCV in python or output to a file using ffmpeg
 
@@ -29,4 +29,7 @@ Find infomation about training data in the [Training README](training/README.md)
 - Handles SQL calls to the user database
 - Performs async encryption for passwords
 - You can run it in your terminal with:
-  - 
+```
+cd code/backend/web-server
+npm run
+```
