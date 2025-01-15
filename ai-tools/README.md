@@ -13,8 +13,12 @@
   - describe the error to me in a more readble way
   - explain what specific parts of the error are and possible solutions
 - An example would be where I could not understand why quasar build would run locally but not with github actions on the [deploy.yml](../.github/workflows/deploy.yml)
-  - ChatGPT suggested ```npx quasar build``` which worked 
-
+  - ChatGPT suggested ```npx quasar build``` which worked
+ 
+### justice-123 Usage:
+- When encountering error messages i would use chatGPT to quickly explain the solution in a more clear way and give possible solutions.
+-An example would be where I could not understand why my openCV was displaying a black screen when working on inferpi.py
+ChatGPT suggested that the current version of raspberry Pi was not compatible with openCV and that i had to downgrade.
 ## Other AI uses
 
 ### Make suggestions for design / tech stack choices - TumCucTom
