@@ -103,10 +103,31 @@ wget https://github.com/spe-uob/2024-MLAIPredictionMicroservices/archive/main.zi
 - An appropriate IDE that can run Python (e.g. VSCode, Intellij)
   - To edit on your IDE you will need to download the dependencies:
   - Run ``` pip3 install opencv-python numpy requests ``` in your terminal
+  - You will also need to install node.js, docker and npm to run the backend:
+    - Run:
+      ```
+      brew install node
+      brew install docker
+      brew install docker-compose
+      brew install npm
+      ```
 - Access to the Roboflow account for backend.
 - Access to the Figma project for design collaboration.
 - Access to the GitHub repository for development. 
   - To gain access to these resources and contribute to the project, you will need approval from the current [developers](#contributors).
+
+To run the backend server:
+```
+cd code/backend
+docker compose build
+docker compose up
+```
+
+For the frontend:
+```
+cd code/frontend
+npm run dev
+```
 
 ### Contributing
 
