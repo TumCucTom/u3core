@@ -129,6 +129,10 @@ cd code/frontend
 npm run dev
 ```
 
+Also see the [backend README](code/backend/README.md) for more information on the backend server.
+
+and the [frontend README](code/frontend/README.md) for more information on the frontend server.
+
 ### Contributing
 
 - When contributing your work should always be on a feature branch, linked to an issue.
