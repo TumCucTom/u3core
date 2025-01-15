@@ -21,11 +21,12 @@ app.use(cors(corsOptions));
 app.use(express.json());
 
 const connection = mysql.createConnection({
-  host: 'localhost',
-  user: 'trvbale',
-  password: 'MLAI01',
-  database: 'MLAIDB',
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
 });
+
 
 connection.connect((err) => {
   if (err) {
