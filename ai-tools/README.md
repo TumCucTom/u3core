@@ -1,10 +1,13 @@
 # AI tools used in production
 ## AI Generated code
 
-### Example template:
+### Small, mundane files - TumCucTom:
 #### Find code here:
+[docker-compose.yml](../code/backend/docker-compose.yml)
 #### How this code works
+Links the backend server code to the database so that they are hosted together
 #### Why AI was used
+These are small scripts that are hard to remember all of the details for. AI is helpful for ensuring that the scripts are correct.
 
 ## Debugging with AI
 
