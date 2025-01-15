@@ -12,7 +12,7 @@
 - When encountering error messages I struggle to understand (if I can't find a solution on stack overflow or similar), I will typically use chatGPT to:
   - describe the error to me in a more readble way
   - explain what specific parts of the error are and possible solutions
-- An example would be where I could not understand why quasar build would run locally but not with github actions on the [build.yml](../.github/workflows/build.yml)
+- An example would be where I could not understand why quasar build would run locally but not with github actions on the [deploy.yml](../.github/workflows/deploy.yml)
   - ChatGPT suggested ```npx quasar build``` which worked 
 
 ## Other AI uses
