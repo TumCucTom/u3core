@@ -4,3 +4,7 @@ requests
 roboflow
 twilio
 boto3
+flask
+flask-cors
+pymysql
+bcrypt
