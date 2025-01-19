@@ -7,6 +7,6 @@ boto3
 flask
 flask-cors
 pymysql
+cryptography
 bcrypt
 email-validator
-

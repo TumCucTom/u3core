@@ -6,23 +6,21 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"
+      - "3002:3000"
     environment:
       DB_HOST: db
       DB_USER: general-user
       DB_PASSWORD: MLAI2024
       DB_NAME: MLAIDB
     depends_on:
-      - db
-    volumes:
-      - ./python-server:/app  # Mount the server code into the container
-    command: python server.py  # Run the Python server script
+      db:
+        condition: service_healthy
 
   db:
     image: mysql:8
     container_name: mysql_container
     ports:
-      - "3306:3306"
+      - "3307:3306"
     environment:
       MYSQL_ROOT_PASSWORD: MLAI2024
       MYSQL_DATABASE: MLAIDB
@@ -30,6 +28,11 @@ services:
       MYSQL_PASSWORD: MLAI2024
     volumes:
       - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   db_data:

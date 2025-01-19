@@ -9,19 +9,31 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import os
 import secrets
+import time
+import pymysql
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "http://localhost:9000", "supports_credentials": True}})
 
-# Database connection
 db_config = {
-    "host": os.getenv("DB_HOST", "localhost"),
-    "user": os.getenv("DB_USER", "root"),
-    "password": os.getenv("DB_PASSWORD", ""),
-    "database": os.getenv("DB_NAME", "MLAIDB")
+    "host": "db",
+    "user": "general-user",
+    "password": "MLAI2024",
+    "database": "MLAIDB",
+    "port": 3306
 }
 
-connection = pymysql.connect(**db_config)
+max_retries = 10
+for attempt in range(max_retries):
+    try:
+        connection = pymysql.connect(**db_config)
+        print("Database connection successful!")
+        break
+    except pymysql.err.OperationalError as e:
+        print(f"Attempt {attempt + 1}/{max_retries}: Unable to connect to the database. Retrying...")
+        time.sleep(5)
+else:
+    raise Exception("Max retries exceeded. Could not connect to the database.")
 
 
 @app.route('/api/emails', methods=['GET'])
