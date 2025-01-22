@@ -15,7 +15,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     mariadb-client \
     && rm -rf /var/lib/apt/lists/*
 
-
 # Copy requirements.txt
 COPY requirements.txt ./
 
@@ -25,17 +24,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the backend code
 COPY python-server .
 
-# Copy the SQL dump file
-COPY initdb/dump.sql /usr/src/app/dump.sql
-
-# Copy the custom initialization script
-COPY initdb/custom-init.sh /usr/src/app/custom-init.sh
-
-# Make the custom initialization script executable
-RUN chmod +x /usr/src/app/custom-init.sh
-
 # Expose the backend port
 EXPOSE 3000
 
-# Use the custom initialization script as the entrypoint
-ENTRYPOINT ["./custom-init.sh"]
+# Start the Python server
+CMD ["python", "server.py"]
