@@ -13,7 +13,7 @@ import time
 import pymysql
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "http://localhost:9000", "supports_credentials": True}})
+CORS(app)  # Enable CORS for all routes
 
 db_config = {
     "host": "db",
@@ -34,6 +34,10 @@ for attempt in range(max_retries):
         time.sleep(5)
 else:
     raise Exception("Max retries exceeded. Could not connect to the database.")
+
+@app.route('/api/test', methods=['GET'])
+def test_server():
+    return jsonify({"message": "Server is running!", "status": "success"}), 200
 
 
 @app.route('/api/emails', methods=['GET'])
@@ -155,4 +159,5 @@ def send_email(to_email, subject, link, code=None):
 
 
 if __name__ == '__main__':
-    app.run(port=3000, debug=True)
+    app.run(host='0.0.0.0', port=3000, debug=True)
+
