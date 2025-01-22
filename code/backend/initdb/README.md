@@ -1,5 +1,8 @@
+# Dump choices
 
-# Restoring a Database from a MySQL Dump File
+Either use docker which will automatically use the dump or do the below
+
+## Restoring a Database from a MySQL Dump File
 
 ## Steps
 

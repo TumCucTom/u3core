@@ -1,15 +1,20 @@
 # Use the Python base image
-FROM python:3.9-slim
+FROM python:3.9-slim-bullseye
 
 # Set the working directory
 WORKDIR /usr/src/app
 
 # Install system dependencies for MySQL support and build tools
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    apt-transport-https \
+    ca-certificates \
+    gnupg \
     gcc \
     libmariadb-dev \
-    default-libmysqlclient-dev \
+    libmariadb-dev-compat \
+    mariadb-client \
     && rm -rf /var/lib/apt/lists/*
+
 
 # Copy requirements.txt
 COPY requirements.txt ./
@@ -20,8 +25,17 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the backend code
 COPY python-server .
 
+# Copy the SQL dump file
+COPY initdb/dump.sql /usr/src/app/dump.sql
+
+# Copy the custom initialization script
+COPY initdb/custom-init.sh /usr/src/app/custom-init.sh
+
+# Make the custom initialization script executable
+RUN chmod +x /usr/src/app/custom-init.sh
+
 # Expose the backend port
 EXPOSE 3000
 
-# Start the backend
-CMD ["python", "server.py"]
+# Use the custom initialization script as the entrypoint
+ENTRYPOINT ["./custom-init.sh"]

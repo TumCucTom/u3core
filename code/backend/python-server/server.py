@@ -39,6 +39,46 @@ else:
 def test_server():
     return jsonify({"message": "Server is running!", "status": "success"}), 200
 
+@app.route('/api/dbinfo', methods=['GET'])
+def get_db_info():
+    try:
+        with connection.cursor() as cursor:
+            # Fetch all table names
+            cursor.execute("SHOW TABLES")
+            tables = cursor.fetchall()
+
+            db_info = {}
+
+            for (table_name,) in tables:
+                # Fetch column details for each table
+                cursor.execute(f"DESCRIBE {table_name}")
+                columns = cursor.fetchall()
+                column_info = [
+                    {
+                        "Field": col[0],
+                        "Type": col[1],
+                        "Null": col[2],
+                        "Key": col[3],
+                        "Default": col[4],
+                        "Extra": col[5]
+                    } for col in columns
+                ]
+
+                # Fetch all rows for each table
+                cursor.execute(f"SELECT * FROM {table_name}")
+                rows = cursor.fetchall()
+
+                db_info[table_name] = {
+                    "columns": column_info,
+                    "entries": rows
+                }
+
+        return jsonify(db_info)
+
+    except Exception as e:
+        print(f"Error fetching database info: {e}")
+        return jsonify({"error": "Internal Server Error"}), 500
+
 
 @app.route('/api/emails', methods=['GET'])
 def get_emails():

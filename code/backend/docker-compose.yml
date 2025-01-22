@@ -17,7 +17,9 @@ services:
         condition: service_healthy
 
   db:
-    image: mysql:8
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: mysql_container
     ports:
       - "3307:3306"
@@ -28,6 +30,7 @@ services:
       MYSQL_PASSWORD: MLAI2024
     volumes:
       - db_data:/var/lib/mysql
+      - ./initdb:/docker-entrypoint-initdb.d
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
