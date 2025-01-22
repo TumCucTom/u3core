@@ -39,6 +39,31 @@ else:
 def test_server():
     return jsonify({"message": "Server is running!", "status": "success"}), 200
 
+@app.route('/api/testAddEntry', methods=['POST'])
+def test_add_entry():
+    test_data = request.json.get('testData', 'Default Test Data')
+
+    try:
+        with connection.cursor() as cursor:
+            # Create the TestTable if it doesn't exist
+            create_table_query = """
+            CREATE TABLE IF NOT EXISTS TestTable (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                testData VARCHAR(255)
+            );
+            """
+            cursor.execute(create_table_query)
+
+            # Insert the test data
+            cursor.execute("INSERT INTO TestTable (testData) VALUES (%s)", (test_data,))
+
+        connection.commit()
+        return jsonify({"message": "Test entry added successfully!"})
+    except Exception as e:
+        print(f"Error adding test entry: {e}")
+        return jsonify({"error": "Internal Server Error"}), 500
+
+
 @app.route('/api/dbinfo', methods=['GET'])
 def get_db_info():
     try:
@@ -118,17 +143,44 @@ def add_to_customer():
 
     try:
         with connection.cursor() as cursor:
+            # Ensure the Customer table exists
+            create_customer_table = """
+            CREATE TABLE IF NOT EXISTS Customer (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                firstname VARCHAR(255),
+                lastname VARCHAR(255)
+            );
+            """
+            cursor.execute(create_customer_table)
+
+            # Ensure the CustLogin table exists
+            create_custlogin_table = """
+            CREATE TABLE IF NOT EXISTS CustLogin (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                email VARCHAR(255) UNIQUE,
+                hashPWord VARCHAR(255),
+                customerID INT,
+                FOREIGN KEY (customerID) REFERENCES Customer(id)
+            );
+            """
+            cursor.execute(create_custlogin_table)
+
+            # Insert into Customer table
             cursor.execute("INSERT INTO Customer (firstname, lastname) VALUES (%s, %s)", (first_name, last_name))
             customer_id = cursor.lastrowid
+
+            # Insert into CustLogin table
             cursor.execute(
                 "INSERT INTO CustLogin (email, hashPWord, customerID) VALUES (%s, %s, %s)",
                 (email, hashed_password, customer_id)
             )
+
         connection.commit()
         return jsonify({"message": "Customer added successfully"})
     except Exception as e:
         print(f"Error adding customer: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
+
 
 
 @app.route('/api/sendResetEmail', methods=['POST'])
