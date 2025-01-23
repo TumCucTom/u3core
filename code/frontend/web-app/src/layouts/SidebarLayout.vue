@@ -7,7 +7,7 @@
             
             <q-item class="q-mb-md">
               <q-item-section>
-                <q-img src="your-logo-path.png" alt="Digital U3" style="width: 150px;" />
+                <q-img src="../assets/u3logo1.png" alt="Digital U3" style="width: 150px;" />
               </q-item-section>
             </q-item>
   

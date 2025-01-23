@@ -4,7 +4,7 @@
       <!-- left column -->
       <div class="col-12 col-md-6 bg-light q-px-lg q-py-xl">
         <div class="text-left">
-          <q-img src="your-logo-path.png" alt="Digital U3" style="width: 150px;" />
+          <q-img src="../assets/u3logo1.png" alt="Digital U3" style="width: 150px;" />
           <div class="q-mt-xl text-center">
             <q-rating value="5" readonly size="lg" color="amber" />
             <p class="q-my-md text-h5">

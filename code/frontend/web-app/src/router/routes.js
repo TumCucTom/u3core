@@ -22,7 +22,9 @@ const routes = [
     component: () => import('layouts/SidebarLayout.vue'), 
     children: [
       //route for dashboard{ path: 'dashboard', component: () => import('pages/DashboardPage.vue') }, 
-      { path: 'configuration/sites', component: sitesPage},
+      { path: '',
+       component: sitesPage
+      },
       //route for camera { path: 'configuration/camera', component: () => import('pages/CameraPage.vue') },
       //route for ai edge gateway { path: 'configuration/ai-gateway', component: () => import('pages/AIGatewayPage.vue') },
       //route for alerts console{ path: 'alerts-console', component: () => import('pages/AlertsConsolePage.vue') },
