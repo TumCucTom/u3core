@@ -5,6 +5,7 @@ on:
     paths:
       - 'code/backend/python-features/**'
       - '.github/workflows/pylint.yml'
+      - 'code/backend/python-server/**'
 
 jobs:
   build:
