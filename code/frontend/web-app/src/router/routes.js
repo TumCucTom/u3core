@@ -1,17 +1,18 @@
-import Home from "src/pages/Login.vue";
+import Home from "src/pages/LoginPage.vue";
 import HomeLayout from "layouts/HomeLayout.vue";
+import blank from "layouts/MinimalLayout.vue"
 
 const routes = [
   {
+
     path: '/',
-    component: () => import('layouts/MainLayout.vue'),
+    component: () => import('layouts/MinimalLayout.vue'),
     children: [
       { path: '',
-        component: () => import('pages/IndexPage.vue'),
-        component: HomeLayout,
-          children: [
-            { path: '', component: Home },
-          ]}
+        component: Home,
+ 
+        }
+
     ]
   },
 
