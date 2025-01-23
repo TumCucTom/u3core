@@ -278,7 +278,8 @@ To start the stream:
 |AWS deployment for cloud-based anomaly detection system||
 
 ## License
-[type of license](LICENSE.md)
+
+This project is licensed under a custom license. Please see the [LICENSE](./LICENSE) file for more details.
 
 ## Contributors
 
