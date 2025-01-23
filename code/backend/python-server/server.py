@@ -1,16 +1,23 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import pymysql
 import bcrypt
-import smtplib
 import random
 import string
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-import os
 import secrets
 import time
 import pymysql
+import logging
+import pycurl
+from io import BytesIO
+import json
+
+# Configure logging
+logging.basicConfig(level=logging.DEBUG,
+                    format='%(asctime)s - %(levelname)s - %(message)s',
+                    handlers=[
+                        logging.StreamHandler(),  # Console output
+                        logging.FileHandler('/app/logs/myapp.log')  # Log to a file
+                    ])
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
@@ -107,9 +114,12 @@ def get_db_info():
 
 @app.route('/api/emails', methods=['GET'])
 def get_emails():
+    """
+    Fetches all emails from the CustLogin table.
+    """
     try:
         with connection.cursor() as cursor:
-            cursor.execute("SELECT email FROM customerLogins")
+            cursor.execute("SELECT email FROM CustLogin")
             emails = [row[0] for row in cursor.fetchall()]
         return jsonify(emails)
     except Exception as e:
@@ -119,17 +129,28 @@ def get_emails():
 
 @app.route('/api/login', methods=['GET'])
 def login():
-    email = request.args.get('emailVar')
+    """
+    Authenticates a user by their email and password.
+    """
+    email = request.args.get('emailVar')  # Fetch query parameter
+
+    if not email:
+        return jsonify({"error": "Email required"}), 400
+
     try:
         with connection.cursor() as cursor:
-            cursor.execute("SELECT encryptedPassword FROM customerLogins WHERE email = %s", (email,))
+            # Fetch the hashed password for the given email
+            cursor.execute("SELECT hashPWord FROM CustLogin WHERE email = %s", (email,))
             result = cursor.fetchone()
+
             if result:
-                return jsonify(result[0])
-            return jsonify(None)
+                stored_hashed_password = result[0]
+                return stored_hashed_password
+            return jsonify({"error": "User not found"}), 404
     except Exception as e:
         print(f"Error during login: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
+
 
 
 @app.route('/api/addToCustomer', methods=['POST'])
@@ -191,13 +212,12 @@ def send_reset_email():
 
     try:
         with connection.cursor() as cursor:
-            cursor.execute("SELECT email FROM CustomerLogins WHERE email = %s", (email,))
+            cursor.execute("SELECT email FROM CustLogin WHERE email = %s", (email,))
             if not cursor.fetchone():
                 return jsonify({"message": "Email not found"}), 404
 
         token = secrets.token_hex(20)
         verification_link = f"http://localhost:9000/#/ResetPassword?token={token}&email={email}"
-        send_email(email, "Password Reset Request", verification_link)
         return jsonify({"message": "Email sent successfully"})
     except Exception as e:
         print(f"Error sending reset email: {e}")
@@ -212,13 +232,14 @@ def send_verify_email():
 
     try:
         with connection.cursor() as cursor:
-            cursor.execute("SELECT email FROM CustomerLogins WHERE email = %s", (email,))
+            cursor.execute("SELECT email FROM CustLogin WHERE email = %s", (email,))
             if not cursor.fetchone():
                 return jsonify({"message": "Email not found"}), 404
 
         token = secrets.token_hex(20)
         verification_link = f"http://localhost:9000/#/VerifiedPassword?token={token}&email={email}"
         otp_code = ''.join(random.choices(string.digits, k=6))
+        #return jsonify({"error": send_email(email, "Password Reset Request", verification_link)}), 500
         send_email(email, "Email Verification", verification_link, otp_code)
         return jsonify({"message": "Verification email sent successfully"})
     except Exception as e:
@@ -227,12 +248,8 @@ def send_verify_email():
 
 
 def send_email(to_email, subject, link, code=None):
-    smtp_user = "u3Core@gmail.com"
-    smtp_password = "auftest123"
-    message = MIMEMultipart()
-    message['From'] = smtp_user
-    message['To'] = to_email
-    message['Subject'] = subject
+    postmark_token = "d4763cf8-6f26-46e0-8442-9c3274e51a5b"  # Replace with your Postmark server token
+    sender_email = "info@shopveloworks.com"  # Replace with your verified sender email
 
     html_content = f"""
     <div>
@@ -242,12 +259,51 @@ def send_email(to_email, subject, link, code=None):
         html_content += f"<p>Your OTP is: <strong>{code}</strong></p>"
     html_content += "</div>"
 
-    message.attach(MIMEText(html_content, 'html'))
+    # Prepare the payload for the Postmark API
+    payload = {
+        "From": sender_email,
+        "To": to_email,
+        "Subject": subject,
+        "HtmlBody": html_content,
+        "MessageStream": "verify"
+    }
 
-    with smtplib.SMTP('smtp.gmail.com', 587) as server:
-        server.starttls()
-        server.login(smtp_user, smtp_password)
-        server.send_message(message)
+    # Send the email using the Postmark API
+    try:
+        url = "https://api.postmarkapp.com/email"
+        headers = [
+            "Accept: application/json",
+            "Content-Type: application/json",
+            f"X-Postmark-Server-Token: {postmark_token}"
+        ]
+
+        # Prepare the data
+        data = json.dumps(payload)
+
+        # Use BytesIO to capture the response body
+        response_buffer = BytesIO()
+
+        # Set up the pycurl request
+        c = pycurl.Curl()
+        c.setopt(c.URL, url)
+        c.setopt(c.POST, 1)
+        c.setopt(c.POSTFIELDS, data)
+        c.setopt(c.HTTPHEADER, headers)
+        c.setopt(c.WRITEDATA, response_buffer)
+        c.setopt(c.TIMEOUT, 30)  # 30 seconds timeout
+
+        # Execute the request
+        c.perform()
+
+        # Get the response data
+        response_body = response_buffer.getvalue().decode('utf-8')
+
+        # Close the connection
+        c.close()
+
+        print(f"Email sent successfully to {to_email}. With {response_body}")
+    except requests.exceptions.RequestException as e:
+        print(f"Error sending email: {e}")
 
 
 if __name__ == '__main__':

@@ -10,3 +10,4 @@ pymysql
 cryptography
 bcrypt
 email-validator
+pycurl

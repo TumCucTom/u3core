@@ -200,7 +200,7 @@ export default {
     };
 
     const onLogin = async () => {
-      const emailSend = [emailLogin.value];
+      const emailSend = String(emailLogin.value);
 
       try {
         const response = await axios.get('http://127.0.0.1:3002/api/login', { params: { emailVar: emailSend } });

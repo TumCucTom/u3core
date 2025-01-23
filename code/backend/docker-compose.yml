@@ -5,6 +5,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    volumes:
+      - ./logs:/app/logs  # Mount the host machine's ./logs directory to the container
     ports:
       - "3002:3000"
     environment:
