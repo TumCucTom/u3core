@@ -8,6 +8,7 @@ import time
 import pymysql
 import logging
 import pycurl
+import requests
 from io import BytesIO
 import json
 
