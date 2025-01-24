@@ -131,3 +131,38 @@
 2025-01-24 20:39:26,697 - INFO -  * Restarting with stat
 2025-01-24 20:39:26,879 - WARNING -  * Debugger is active!
 2025-01-24 20:39:26,879 - INFO -  * Debugger PIN: 640-387-207
+2025-01-24 20:39:57,419 - INFO - 172.18.0.1 - - [24/Jan/2025 20:39:57] "[33mOPTIONS /start-stream HTTP/1.1[0m" 404 -
+2025-01-24 20:41:33,133 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:3000
+ * Running on http://172.18.0.3:3000
+2025-01-24 20:41:33,133 - INFO - [33mPress CTRL+C to quit[0m
+2025-01-24 20:41:33,134 - INFO -  * Restarting with stat
+2025-01-24 20:41:33,307 - WARNING -  * Debugger is active!
+2025-01-24 20:41:33,308 - INFO -  * Debugger PIN: 640-387-207
+2025-01-24 20:41:49,660 - INFO - 172.18.0.1 - - [24/Jan/2025 20:41:49] "[33mOPTIONS /startStream HTTP/1.1[0m" 404 -
+2025-01-24 20:51:37,475 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:3000
+ * Running on http://172.18.0.3:3000
+2025-01-24 20:51:37,475 - INFO - [33mPress CTRL+C to quit[0m
+2025-01-24 20:51:37,476 - INFO -  * Restarting with stat
+2025-01-24 20:51:37,662 - WARNING -  * Debugger is active!
+2025-01-24 20:51:37,663 - INFO -  * Debugger PIN: 640-387-207
+2025-01-24 20:52:19,076 - INFO - 172.18.0.1 - - [24/Jan/2025 20:52:19] "[33mOPTIONS /startStream HTTP/1.1[0m" 404 -
+2025-01-24 20:53:00,924 - INFO - 172.18.0.1 - - [24/Jan/2025 20:53:00] "[35m[1mPOST /api/startStream HTTP/1.1[0m" 500 -
+2025-01-24 20:53:04,275 - INFO - 172.18.0.1 - - [24/Jan/2025 20:53:04] "[35m[1mPOST /api/startStream HTTP/1.1[0m" 500 -
+2025-01-24 20:53:07,346 - INFO - 172.18.0.1 - - [24/Jan/2025 20:53:07] "[35m[1mPOST /api/startStream HTTP/1.1[0m" 500 -
+2025-01-24 20:53:24,997 - INFO - 172.18.0.1 - - [24/Jan/2025 20:53:24] "[35m[1mPOST /api/startStream HTTP/1.1[0m" 500 -
+2025-01-24 20:54:42,722 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:3000
+ * Running on http://172.18.0.3:3000
+2025-01-24 20:54:42,722 - INFO - [33mPress CTRL+C to quit[0m
+2025-01-24 20:54:42,723 - INFO -  * Restarting with stat
+2025-01-24 20:54:42,888 - WARNING -  * Debugger is active!
+2025-01-24 20:54:42,889 - INFO -  * Debugger PIN: 640-387-207
+2025-01-24 21:15:10,042 - INFO - 172.18.0.1 - - [24/Jan/2025 21:15:10] "[35m[1mPOST /api/startStream HTTP/1.1[0m" 500 -
+2025-01-24 21:15:26,473 - INFO - 172.18.0.1 - - [24/Jan/2025 21:15:26] "[35m[1mPOST /api/startStream HTTP/1.1[0m" 500 -
+2025-01-24 21:15:28,954 - INFO - 172.18.0.1 - - [24/Jan/2025 21:15:28] "[35m[1mPOST /api/startStream HTTP/1.1[0m" 500 -
+2025-01-24 21:15:34,045 - INFO - 172.18.0.1 - - [24/Jan/2025 21:15:34] "[35m[1mPOST /api/startStream HTTP/1.1[0m" 500 -

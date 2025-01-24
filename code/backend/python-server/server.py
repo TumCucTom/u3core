@@ -50,7 +50,7 @@ else:
 HLS_OUTPUT_DIR = '/tmp/hls_streams'
 os.makedirs(HLS_OUTPUT_DIR, exist_ok=True)
 
-@app.route('/api/start-stream', methods=['POST'])
+@app.route('/api/startStream', methods=['POST'])
 def start_stream():
     """
     Starts converting the RTSP stream to HLS format.

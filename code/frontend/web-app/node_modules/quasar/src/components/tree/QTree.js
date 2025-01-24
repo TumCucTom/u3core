@@ -320,9 +320,7 @@ export default createComponent({
 
     function setExpanded (key, state, node = getNodeByKey(key), m = meta.value[ key ]) {
       if (m.lazy && m.lazy !== 'loaded') {
-        if (m.lazy === 'loading') {
-          return
-        }
+        if (m.lazy === 'loading') return
 
         lazy.value[ key ] = 'loading'
         if (Array.isArray(node[ props.childrenKey ]) !== true) {

@@ -34,7 +34,7 @@
 
     "options": {
       "type": "Array",
-      "desc": "Available options that the user can select from. For best performance freeze the list of options.",
+      "desc": "Array of objects with available options that the user can select from. For best performance freeze the list of options. Canonical form of each object is with 'label' (String), 'value' (Any) and optional 'disable' (Boolean) props (can be customized with options-value/option-label/option-disable props).",
       "default": "[]",
       "examples": [
         "[ 'Tesla', 'iPhone' ]",

@@ -51,9 +51,11 @@ export default createComponent({
     )
 
     function immediatePoll () {
-      if (props.disable === true || isFetching.value === true || isWorking.value === false) {
-        return
-      }
+      if (
+        props.disable === true
+        || isFetching.value === true
+        || isWorking.value === false
+      ) return
 
       const
         scrollHeight = getScrollHeight(localScrollTarget),
@@ -71,9 +73,11 @@ export default createComponent({
     }
 
     function trigger () {
-      if (props.disable === true || isFetching.value === true || isWorking.value === false) {
-        return
-      }
+      if (
+        props.disable === true
+        || isFetching.value === true
+        || isWorking.value === false
+      ) return
 
       index++
       isFetching.value = true

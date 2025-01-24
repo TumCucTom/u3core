@@ -43,9 +43,9 @@
               <q-btn label="Live View" color="amber" flat @click="startLiveStream"/>
             </div>
 
-            <!-- This will be the video element showing the live stream or fallback to default MP4 -->
+            <!-- Video element to show live stream or fallback to default MP4 -->
             <div class="bg-grey-8 q-mt-md" style="height: 250px; position: relative;">
-              <video v-if="streaming" ref="videoPlayer" :src="videoSrc" controls autoplay loop style="width: 100%; height: 100%; object-fit: cover;"/>
+              <video v-if="streaming" ref="videoPlayer" controls autoplay loop style="width: 100%; height: 100%; object-fit: cover;"/>
               <video v-else ref="videoPlayer" src="/default_video.mp4" controls autoplay loop style="width: 100%; height: 100%; object-fit: cover;"/>
             </div>
 
@@ -154,6 +154,7 @@ export default {
       streaming: false,
       videoSrc: '',
       sites: [], // List of sites fetched from the server
+      socket: null, // WebSocket instance
     };
   },
   created() {
@@ -205,8 +206,36 @@ export default {
       }
     },
     async startLiveStream() {
+      // Set up WebSocket for live stream
+      if (this.socket) {
+        this.socket.close(); // Close any existing socket
+      }
+
+      this.socket = new WebSocket('ws://localhost:8080'); // Adjust to your WebSocket server
+      this.socket.binaryType = 'blob'; // Set to handle binary data
+
+      this.socket.onopen = () => {
+        console.log('WebSocket connection established');
+      };
+
+      this.socket.onmessage = (event) => {
+        // Handle received video frames and display them in the video element
+        const blob = event.data;
+        const url = URL.createObjectURL(blob);
+        this.$refs.videoPlayer.src = url;
+      };
+
+      this.socket.onerror = (error) => {
+        console.error('WebSocket error:', error);
+      };
+
+      this.socket.onclose = () => {
+        console.log('WebSocket connection closed');
+      };
+
+      // Send RTSP URL to server
       try {
-        const response = await axios.post('http://127.0.0.1:3002/start-stream', {
+        const response = await axios.post('http://127.0.0.1:3002/startStream', {
           rtsp_url: this.videoSrc,
         });
         if (response.data.status === 'success') {
@@ -257,7 +286,7 @@ export default {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 2rem;  /* Make the text large */
+  font-size: 2rem; /* Make the text large */
   color: white;
 }
 </style>
