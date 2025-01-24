@@ -29,7 +29,8 @@ export default async function (createAppFn, quasarUserOptions) {
   // Here we inject into it the Quasar UI, the router & possibly the store.
   const app = createAppFn(RootComponent)
 
-  
+  app.config.performance = true
+
 
   app.use(Quasar, quasarUserOptions)
 
