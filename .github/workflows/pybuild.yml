@@ -6,10 +6,10 @@ on:
       - 'code/backend/python-features/**'
       - 'code/backend/python-server/**'
       - '.github/workflows/pybuild.yml'
-    branches: [ "dev", "main"]
+    branches: [ "dev", "main","cd/ci improve"]
   push:
-    branches:
-      -cd/ci-improve
+    paths:
+     - '.github/workflows/pybuild.yml'
 
 permissions:
   contents: read
@@ -20,13 +20,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-    #  - name: Cache pip dependencies
-    #    uses: actions/cache@v3
-    #    with:
-    #      path: ~/.cache/pip
-    #      key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-    #      restore-keys: |
-    #        ${{ runner.os }}-pip-
+      - name: Cache pip dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
       - name: Set up Python 3.10
         uses: actions/setup-python@v5
         with:
@@ -44,6 +44,7 @@ jobs:
   # Job for linting the code
   lint:
     runs-on: ubuntu-latest
+    needs: [install-dependencies]
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python 3.10
@@ -79,5 +80,3 @@ jobs:
         uses: codecov/codecov-action@v3
         with:
           file: coverage.xml
-  
-        
