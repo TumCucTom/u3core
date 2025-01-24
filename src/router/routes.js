@@ -1,31 +1,44 @@
-import Home from "src/pages/Login.vue";
+import Home from "src/pages/LoginPage.vue";
 import HomeLayout from "layouts/HomeLayout.vue";
+import otp from "src/pages/otPage.vue";
+import DashboardPage from "src/pages/DashboardPage.vue";
+import ManageSitesPage from "src/pages/ManageSitesPage.vue";
+import ManageModelsPage from "src/pages/ManageModelsPage.vue";
+import ActionSettingsPage from "src/pages/ActionSettingsPage.vue";
+import Verified from "src/pages/VerifiedPassword.vue";
 
 const routes = [
+  //start off at the login page as the default route
   {
-    path: '/',
-    component: () => import('layouts/MainLayout.vue'),
+    path: "/",
+    component: () => import("layouts/MinimalLayout.vue"),
     children: [
-      { path: '',
-        component: () => import('pages/IndexPage.vue'),
-        component: HomeLayout,
-          children: [
-            { path: '', component: Home },
-          ]}
-    ]
+      {
+        path: "",
+        component: Home,
+      },
+      {path: "otp", component: otp},
+      { path: "verified-email", component: Verified }, // Action Settings page
+    ],
   },
-  { path: '/ResetPassword', component: () => import('src/pages/ResetPassword.vue') },
-  { path: '/VerifiedPassword', component: () => import('src/pages/VerifiedPassword.vue') },
-  { path: '/Dashboard', component: () => import('src/pages/DashBoard.vue') },
-  { path: '/OTPVerification', component: () => import('src/pages/OTPVerification.vue') },
-  { path: '/SetupResetPassword', component: () => import('src/pages/ForgotPassword.vue') },
 
-  // Always leave this as last one,
-  // but you can also remove it
+  // sidebar layout for all the other pages
   {
-    path: '/:catchAll(.*)*',
-    component: () => import('pages/ErrorNotFound.vue')
-  }
-]
+    path: "/app",
+    component: () => import("layouts/SidebarLayout.vue"),
+    children: [
+      { path: "dashboard", component: DashboardPage }, // Dashboard page
+      { path: "manage-sites", component: ManageSitesPage }, // Manage Sites page
+      { path: "manage-models", component: ManageModelsPage }, // Manage Models page
+      { path: "action-settings", component: ActionSettingsPage }, // Action Settings page
+    ],
+  },
 
-export default routes
+  // Catch-all for 404 errors
+  {
+    path: "/:catchAll(.*)*",
+    component: () => import("pages/ErrorNotFound.vue"),
+  },
+];
+
+export default routes;
