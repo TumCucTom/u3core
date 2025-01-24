@@ -40,4 +40,4 @@ jobs:
           git commit -m "Deploy to GitHub Pages"
 
           # Push to the gh-pages branch using the token for authentication
-          git push --force "https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}" gh-pages
+          git push --force "https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}" gh-pages
