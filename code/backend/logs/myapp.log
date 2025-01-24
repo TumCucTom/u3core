@@ -1,0 +1,18 @@
+2025-01-23 19:47:28,952 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:3000
+ * Running on http://172.18.0.3:3000
+2025-01-23 19:47:28,953 - INFO - [33mPress CTRL+C to quit[0m
+2025-01-23 19:47:28,953 - INFO -  * Restarting with stat
+2025-01-23 19:47:29,073 - WARNING -  * Debugger is active!
+2025-01-23 19:47:29,073 - INFO -  * Debugger PIN: 640-387-207
+2025-01-23 19:47:41,589 - INFO - 172.18.0.1 - - [23/Jan/2025 19:47:41] "[35m[1mPOST /api/sendVerifyEmail HTTP/1.1[0m" 500 -
+2025-01-23 19:57:13,551 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:3000
+ * Running on http://172.18.0.3:3000
+2025-01-23 19:57:13,552 - INFO - [33mPress CTRL+C to quit[0m
+2025-01-23 19:57:13,552 - INFO -  * Restarting with stat
+2025-01-23 19:57:13,753 - WARNING -  * Debugger is active!
+2025-01-23 19:57:13,754 - INFO -  * Debugger PIN: 640-387-207
+2025-01-23 19:57:47,495 - INFO - 172.18.0.1 - - [23/Jan/2025 19:57:47] "POST /api/sendVerifyEmail HTTP/1.1" 200 -

@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./logs:/app/logs  # Mount the host machine's ./logs directory to the container
+    ports:
+      - "3002:3000"
+    environment:
+      DB_HOST: db
+      DB_USER: general-user
+      DB_PASSWORD: MLAI2024
+      DB_NAME: MLAIDB
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    build:
+      context: ./db
+      dockerfile: Dockerfile
+    container_name: mysql_container
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: MLAI2024
+      MYSQL_DATABASE: MLAIDB
+      MYSQL_USER: general-user
+      MYSQL_PASSWORD: MLAI2024
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./initdb:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 15s
+      timeout: 10s
+      retries: 15
+
+volumes:
+  db_data:
