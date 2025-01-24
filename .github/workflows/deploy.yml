@@ -3,13 +3,12 @@ on:
   push:
     branches:
       - dev
-      - bug-fix-cd
 
 permissions:
   contents: write
 jobs:
   build-and-deploy:
-    concurrency: ci-${{ github.ref }} # Recommended if you intend to make multiple deployments in quick succession.
+    concurrency: ci-${{ github.ref }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout 🛎️
@@ -39,5 +38,5 @@ jobs:
           git add .
           git commit -m "Deploy to GitHub Pages"
 
-          # Force push to the gh-pages branch
-          git push --force "https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" gh-pages
+          # Push to the gh-pages branch using the token for authentication
+          git push --force "https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}" gh-pages
