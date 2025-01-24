@@ -2,3 +2,4 @@
 venv/
 .DS_store
 code/backend/env
+code/backend/logs/myapp.log

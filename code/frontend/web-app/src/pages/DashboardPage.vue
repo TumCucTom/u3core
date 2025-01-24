@@ -2,10 +2,10 @@
     <q-page class="q-px-lg q-py-md">
       <div>
         <div class="q-mb-lg">
-          <h1 class="text-h4 text-bold">Welcome back, </h1>
+          <h1 class="text-h4 text-bold">Welcome back, {{name}}</h1>
           <p class="text-subtitle2">Track, manage and forecast your customers and orders.</p>
         </div>
-  
+
         <!--  top level box -->
         <div class="row q-mb-lg">
           <q-card flat bordered class="col-12 col-md-4 q-pa-md">
@@ -30,7 +30,7 @@
             </div>
           </q-card>
         </div>
-  
+
         <!-- charts section -->
         <div class="row q-mb-lg">
           <!-- left column -->
@@ -43,7 +43,7 @@
               </div>
               <div class="text-grey-7 text-center q-mt-lg">No data available</div>
             </q-card>
-  
+
             <!-- type of anomalies detected -->
             <q-card flat bordered class="q-pa-md">
               <div class="row justify-between items-center">
@@ -53,7 +53,7 @@
               <div class="text-grey-7 text-center q-mt-lg">No data available</div>
             </q-card>
           </div>
-  
+
           <!-- right Column -->
           <div class="col-12 col-md-4">
             <!-- incidence severity overview -->
@@ -66,7 +66,7 @@
             </q-card>
           </div>
         </div>
-  
+
         <!-- heatmap  -->
         <q-card flat bordered class="q-pa-md">
           <div class="row justify-between items-center">
@@ -78,20 +78,52 @@
       </div>
     </q-page>
   </template>
-  
-  <script>
-  export default {
-    name: "DashboardPage",
-  };
-  </script>
-  
-  <style>
-  .q-page {
-    background: #f9f9f9; /* Match light background */
-  }
-  
-  .text-grey-7 {
-    color: #a0a0b0;
-  }
-  </style>
-  
+
+<script>
+import axios from 'axios';
+import { ref, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
+
+export default {
+  name: "DashboardPage",
+  setup() {
+    const email = ref('');
+    const name = ref('User'); // Use a ref for the name variable
+
+    const route = useRoute();
+
+    onMounted(() => {
+      email.value = decodeURIComponent(route.query.email || '');
+      if (email.value) {
+        axios
+          .get(`http://127.0.0.1:3002/api/getName`, {
+            params: { email: email.value }, // Pass the email as a query parameter
+          })
+          .then((response) => {
+            name.value = String(response.data); // Update the name with the backend response
+          })
+          .catch((error) => {
+            console.error('Error fetching name:', error);
+          });
+      } else {
+        console.error('No email found in the URL');
+      }
+    });
+
+    return {
+      email,
+      name,
+    };
+  },
+};
+</script>
+
+<style>
+.q-page {
+  background: #f9f9f9; /* Match light background */
+}
+
+.text-grey-7 {
+  color: #a0a0b0;
+}
+</style>

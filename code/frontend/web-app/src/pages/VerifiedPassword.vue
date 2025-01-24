@@ -31,7 +31,7 @@ export default {
         router.push('/');
       } else {
         console.log('Successful verification')
-        router.push('/app/dashboard')
+        router.push(`/app/dashboard?email=${email.value}`)
       }
     });
   }

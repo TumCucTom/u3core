@@ -128,6 +128,36 @@ def get_emails():
         return jsonify({"error": "Internal Server Error"}), 500
 
 
+@app.route('/api/getName', methods=['GET'])
+def get_name():
+    """
+    Authenticates a user by their email and password.
+    """
+    email = request.args.get('email')  # Fetch query parameter
+
+    if not email:
+        return jsonify({"error": "Email required"}), 400
+
+    try:
+        with connection.cursor() as cursor:
+            # Fetch the name for the given email
+            cursor.execute("""
+                SELECT Customer.firstname
+                FROM Customer
+                JOIN CustLogin ON Customer.id = CustLogin.id
+                WHERE CustLogin.email = %s;
+            """, (email,))
+
+            result = cursor.fetchone()
+
+            if result:
+                name = result[0]
+                return name
+            return jsonify({"error": "User not found"}), 404
+    except Exception as e:
+        print(f"Error during login: {e}")
+        return jsonify({"error": "Internal Server Error"}), 500
+
 @app.route('/api/login', methods=['GET'])
 def login():
     """
@@ -151,8 +181,6 @@ def login():
     except Exception as e:
         print(f"Error during login: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
-
-
 
 @app.route('/api/addToCustomer', methods=['POST'])
 def add_to_customer():
