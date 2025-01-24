@@ -5,6 +5,7 @@ on:
     paths:
       - 'code/backend/python-features/**'
       - '.github/workflows/pylint.yml'
+      - 'code/backend/python-server/**'
 
 jobs:
   build:
@@ -20,6 +21,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
+        sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev
         python -m pip install --upgrade pip
         pip install pylint
         pip install -r code/frontend/requirements.txt

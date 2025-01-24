@@ -36,36 +36,66 @@
 
           <!-- form -->
           <q-form>
-
             <q-input
+              v-if="!isLogin"
               filled
-              type="email"
-              label="Email*"
-              placeholder="Enter your email"
-              class="q-my-md"
+              v-model="firstName"
+              label="First Name *"
+              lazy-rules
+              :rules="[
+                  val => val && val.length > 0 || 'Please type something',
+                  val => /^[A-Z]/.test(val) || 'First name must start with a capital letter'
+                ]"
             />
-
-
+            <q-input
+              v-if="!isLogin"
+              filled
+              v-model="lastName"
+              label="Last Name *"
+              lazy-rules
+              :rules="[
+                  val => val && val.length > 0 || 'Please type something',
+                  val => /^[A-Z]/.test(val) || 'Last name must start with a capital letter'
+                ]"
+            />
             <q-input
               filled
-              type="password"
-              label="Password*"
-              placeholder="Enter your password"
-              class="q-my-md"
+              v-model="email"
+              label="Email Address *"
+              suffix=""
+              :rules="[
+                    val => val && val.length > 0 || 'Please enter an email address',
+                    val => /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g.test(val) || 'Invalid email format'
+                  ]"
             >
-              <template v-if="!isLogin" v-slot:hint>
-                Must be at least 8 characters.
-              </template>
             </q-input>
 
+            <q-input
+              filled
+              v-model="password"
+              label="Password *"
+              type="password"
+              lazy-rules
+              :rules="[
+                    val => val && val.length >= 8 || 'Password must be at least 8 characters long',
+                    val => /[A-Z]/.test(val) || 'Password must contain at least one capital letter',
+                    val => /[0-9]/.test(val) || 'Password must contain at least one number',
+                    val => /[\W_]/.test(val) || 'Password must contain at least one special character'
+                  ]"
+            />
+
+            <div class="password-requirements">
+              Password must be at least 8 characters long and include at least one capital letter, one number, and one special character.
+            </div>
 
             <q-input
               v-if="!isLogin"
               filled
+              v-model="confirmPassword"
+              label="Confirm Password *"
               type="password"
-              label="Confirm Password*"
-              placeholder="Confirm your password"
-              class="q-my-md"
+              lazy-rules
+              :rules="[val => val && val.length > 0 || 'Please type something', val => val == password || 'Passwords do not match']"
             />
 
 
@@ -239,11 +269,49 @@
 
 </script>
 
-<style>
+<style scoped>
+
 .bg-light {
   background-color: #f9fafb;
 }
 .full-height {
   height: 100vh;
 }
+
+.q-card {
+  border: 1px solid #f04c26; /* Keeps the existing border */
+  background: linear-gradient(to bottom,
+  rgba(245, 245, 245, 1) 0%,
+  rgba(255, 255, 255, 0.95) 50%,
+  rgba(245, 245, 245, 1) 100%) !important;
+  box-shadow: 0 8px 10px rgba(0, 0, 0, 0.15); /* More pronounced shadow for depth */
+}
+
+:deep(.gradient-button) {
+  background: linear-gradient(to right, #0e004d, #064e81) !important; /* Adjusted for blue gradient */
+  color: white !important;
+}
+
+:deep(.gradient-button:hover) {
+  background: linear-gradient(to right, #064e81, #0e004d) !important; /* Hover effect reverses gradient */
+}
+
+.registration-login-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 70vh; /* height of container */
+  margin-bottom: 20px;
+  padding-left: 35px; /* Adjust the size as needed */
+  padding-right: 35px; /* Adjust the size as needed */
+
+}
+
+.password-requirements {
+  font-size: 14px;
+  color: #666;
+  margin-top: 1px;
+  margin-bottom: 10px; /* Adjust spacing as needed */
+}
+
 </style>

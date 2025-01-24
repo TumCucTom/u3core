@@ -27,7 +27,7 @@
 
 
         <q-btn label="Verify email" color="pink" class="full-width q-my-md text-white" />
-        <p class="text-caption text-center q-mt-sm">
+        <p class="text-caption text-center q-mt-sm" @click="resendEmail">
           Didn’t receive the email?
           <span class="text-pink cursor-pointer">Click to resend</span>
         </p>

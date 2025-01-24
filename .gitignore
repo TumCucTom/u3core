@@ -1,4 +1,4 @@
 .idea
 venv/
 .DS_store
-
+code/backend/env

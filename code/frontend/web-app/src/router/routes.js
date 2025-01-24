@@ -22,6 +22,7 @@ const routes = [
   { path: '/ResetPassword', component: () => import('src/pages/ResetPassword.vue') },
   { path: '/Dashboard', component: () => import('src/pages/ManageSitesPage.vue') },
   { path: '/OTPVerification', component: () => import('src/pages/otPage.vue') },
+  { path: '/OTP', component: otp },
   { path: '/SetupResetPassword', component: () => import('src/pages/ForgotPassword.vue') },
 
   // Always leave this as last one,

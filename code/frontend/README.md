@@ -4,7 +4,7 @@
 To open the web app, run the following in your terminal:
 ```
     cd code/frontend/web-app
-    quasar dev
+    npm run dev
 ```
 
 ## Structure
