@@ -113,7 +113,7 @@
               />
 
               <div class="text-center">
-                <router-link to="/EmailVerification" class="forgot-password-link">Forgot your password?</router-link>
+                <router-link to="/SetupResetPassword" class="forgot-password-link">Forgot your password?</router-link>
               </div>
               <div class="q-mt-md text-center">
                 <q-btn class="gradient-button" label="SIGN IN" size="18px" type="login" rounded push />
@@ -159,7 +159,7 @@ export default {
 
     const onSubmit = () => {
 
-      axios.get('http://localhost:3000/api/emails')
+      axios.get('http://127.0.0.1:3002/api/emails')
         .then(response => {
           allEmails.value = response.data;
           if (allEmails.value.includes(email.value)) {
@@ -190,7 +190,7 @@ export default {
         items: [firstName.value, lastName.value, email.value, password.value],
       };
 
-      axios.post('http://localhost:3000/api/addToCustomer', requestData)
+      axios.post('http://127.0.0.1:3002/api/addToCustomer', requestData)
         .then(response => {
           console.log(response.data);
         })
@@ -200,10 +200,10 @@ export default {
     };
 
     const onLogin = async () => {
-      const emailSend = [emailLogin.value];
+      const emailSend = String(emailLogin.value);
 
       try {
-        const response = await axios.get('http://localhost:3000/api/login', { params: { emailVar: emailSend } });
+        const response = await axios.get('http://127.0.0.1:3002/api/login', { params: { emailVar: emailSend } });
         const fetchedHashedPassword = response.data;
 
         const result = await bcrypt.compare(passwordLogin.value, fetchedHashedPassword);
@@ -218,7 +218,7 @@ export default {
           });
 
           // Redirect user
-          router.push('/Generator');
+          router.push('/OTPVerification');
         } else {
           // Passwords don't match, notify the user
           $q.notify({
