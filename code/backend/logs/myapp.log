@@ -16,3 +16,82 @@
 2025-01-23 19:57:13,753 - WARNING -  * Debugger is active!
 2025-01-23 19:57:13,754 - INFO -  * Debugger PIN: 640-387-207
 2025-01-23 19:57:47,495 - INFO - 172.18.0.1 - - [23/Jan/2025 19:57:47] "POST /api/sendVerifyEmail HTTP/1.1" 200 -
+2025-01-24 11:20:01,337 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:3000
+ * Running on http://172.18.0.3:3000
+2025-01-24 11:20:01,338 - INFO - [33mPress CTRL+C to quit[0m
+2025-01-24 11:20:01,338 - INFO -  * Restarting with stat
+2025-01-24 11:20:01,504 - WARNING -  * Debugger is active!
+2025-01-24 11:20:01,505 - INFO -  * Debugger PIN: 640-387-207
+2025-01-24 11:20:48,862 - INFO - 172.18.0.1 - - [24/Jan/2025 11:20:48] "OPTIONS /api/sendVerifyEmail HTTP/1.1" 200 -
+2025-01-24 11:20:49,502 - INFO - 172.18.0.1 - - [24/Jan/2025 11:20:49] "POST /api/sendVerifyEmail HTTP/1.1" 200 -
+2025-01-24 11:23:40,720 - INFO - 172.18.0.1 - - [24/Jan/2025 11:23:40] "OPTIONS /api/sendVerifyEmail HTTP/1.1" 200 -
+2025-01-24 11:23:41,412 - INFO - 172.18.0.1 - - [24/Jan/2025 11:23:41] "POST /api/sendVerifyEmail HTTP/1.1" 200 -
+2025-01-24 11:24:32,409 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:3000
+ * Running on http://172.18.0.3:3000
+2025-01-24 11:24:32,410 - INFO - [33mPress CTRL+C to quit[0m
+2025-01-24 11:24:32,410 - INFO -  * Restarting with stat
+2025-01-24 11:24:32,582 - WARNING -  * Debugger is active!
+2025-01-24 11:24:32,583 - INFO -  * Debugger PIN: 640-387-207
+2025-01-24 11:24:38,912 - INFO - 172.18.0.1 - - [24/Jan/2025 11:24:38] "OPTIONS /api/sendVerifyEmail HTTP/1.1" 200 -
+2025-01-24 11:24:39,399 - INFO - 172.18.0.1 - - [24/Jan/2025 11:24:39] "POST /api/sendVerifyEmail HTTP/1.1" 200 -
+2025-01-24 11:57:33,293 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:3000
+ * Running on http://172.18.0.3:3000
+2025-01-24 11:57:33,294 - INFO - [33mPress CTRL+C to quit[0m
+2025-01-24 11:57:33,294 - INFO -  * Restarting with stat
+2025-01-24 11:57:33,446 - WARNING -  * Debugger is active!
+2025-01-24 11:57:33,447 - INFO -  * Debugger PIN: 640-387-207
+2025-01-24 11:57:52,581 - INFO - 172.18.0.1 - - [24/Jan/2025 11:57:52] "[35m[1mGET /api/getName?email=[object+Object] HTTP/1.1[0m" 500 -
+2025-01-24 11:59:11,962 - INFO - 172.18.0.1 - - [24/Jan/2025 11:59:11] "[35m[1mGET /api/getName?email=info@shopveloworks.com HTTP/1.1[0m" 500 -
+2025-01-24 12:01:43,963 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:3000
+ * Running on http://172.18.0.3:3000
+2025-01-24 12:01:43,963 - INFO - [33mPress CTRL+C to quit[0m
+2025-01-24 12:01:43,964 - INFO -  * Restarting with stat
+2025-01-24 12:01:44,118 - WARNING -  * Debugger is active!
+2025-01-24 12:01:44,119 - INFO -  * Debugger PIN: 640-387-207
+2025-01-24 12:02:36,565 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:3000
+ * Running on http://172.18.0.3:3000
+2025-01-24 12:02:36,566 - INFO - [33mPress CTRL+C to quit[0m
+2025-01-24 12:02:36,566 - INFO -  * Restarting with stat
+2025-01-24 12:02:36,719 - WARNING -  * Debugger is active!
+2025-01-24 12:02:36,720 - INFO -  * Debugger PIN: 640-387-207
+2025-01-24 12:02:50,993 - INFO - 172.18.0.1 - - [24/Jan/2025 12:02:50] "GET /api/getName?email=info@shopveloworks.com HTTP/1.1" 200 -
+2025-01-24 12:03:38,966 - INFO - 172.18.0.1 - - [24/Jan/2025 12:03:38] "GET /api/getName?email=info@shopveloworks.com HTTP/1.1" 200 -
+2025-01-24 12:04:28,697 - INFO - 172.18.0.1 - - [24/Jan/2025 12:04:28] "GET /api/getName?email=info@shopveloworks.com HTTP/1.1" 200 -
+2025-01-24 12:06:57,374 - INFO - 172.18.0.1 - - [24/Jan/2025 12:06:57] "GET /api/getName?email=info@shopveloworks.com HTTP/1.1" 200 -
+2025-01-24 12:07:18,362 - INFO - 172.18.0.1 - - [24/Jan/2025 12:07:18] "GET /api/getName?email=info@shopveloworks.com HTTP/1.1" 200 -
+2025-01-24 12:07:21,221 - INFO - 172.18.0.1 - - [24/Jan/2025 12:07:21] "GET /api/getName?email=info@shopveloworks.com HTTP/1.1" 200 -
+2025-01-24 12:10:05,829 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:3000
+ * Running on http://172.18.0.3:3000
+2025-01-24 12:10:05,829 - INFO - [33mPress CTRL+C to quit[0m
+2025-01-24 12:10:05,830 - INFO -  * Restarting with stat
+2025-01-24 12:10:05,978 - WARNING -  * Debugger is active!
+2025-01-24 12:10:05,979 - INFO -  * Debugger PIN: 640-387-207
+2025-01-24 12:10:35,353 - INFO - 172.18.0.1 - - [24/Jan/2025 12:10:35] "OPTIONS /api/sendVerifyEmail HTTP/1.1" 200 -
+2025-01-24 12:10:35,974 - INFO - 172.18.0.1 - - [24/Jan/2025 12:10:35] "POST /api/sendVerifyEmail HTTP/1.1" 200 -
+2025-01-24 12:10:44,897 - INFO - 172.18.0.1 - - [24/Jan/2025 12:10:44] "GET /api/getName?email=info@shopveloworks.com HTTP/1.1" 200 -
+2025-01-24 12:17:14,498 - INFO - 172.18.0.1 - - [24/Jan/2025 12:17:14] "GET /api/getName?email=info@shopveloworks.com HTTP/1.1" 200 -
+2025-01-24 12:18:06,013 - INFO - 172.18.0.1 - - [24/Jan/2025 12:18:06] "GET /api/getName?email=info@shopveloworks.com HTTP/1.1" 200 -
+2025-01-24 12:49:37,837 - INFO - 172.18.0.1 - - [24/Jan/2025 12:49:37] "GET /api/getName?email=info@shopveloworks.com HTTP/1.1" 200 -
+2025-01-24 13:04:52,713 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:3000
+ * Running on http://172.18.0.3:3000
+2025-01-24 13:04:52,713 - INFO - [33mPress CTRL+C to quit[0m
+2025-01-24 13:04:52,714 - INFO -  * Restarting with stat
+2025-01-24 13:04:52,881 - WARNING -  * Debugger is active!
+2025-01-24 13:04:52,882 - INFO -  * Debugger PIN: 640-387-207
+2025-01-24 13:06:41,246 - INFO - 172.18.0.1 - - [24/Jan/2025 13:06:41] "OPTIONS /api/sendVerifyEmail HTTP/1.1" 200 -
+2025-01-24 13:06:41,694 - INFO - 172.18.0.1 - - [24/Jan/2025 13:06:41] "POST /api/sendVerifyEmail HTTP/1.1" 200 -
+2025-01-24 13:06:56,861 - INFO - 172.18.0.1 - - [24/Jan/2025 13:06:56] "GET /api/getName?email=info@shopveloworks.com HTTP/1.1" 200 -

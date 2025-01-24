@@ -128,6 +128,36 @@ def get_emails():
         return jsonify({"error": "Internal Server Error"}), 500
 
 
+@app.route('/api/getName', methods=['GET'])
+def get_name():
+    """
+    Authenticates a user by their email and password.
+    """
+    email = request.args.get('email')  # Fetch query parameter
+
+    if not email:
+        return jsonify({"error": "Email required"}), 400
+
+    try:
+        with connection.cursor() as cursor:
+            # Fetch the name for the given email
+            cursor.execute("""
+                SELECT Customer.firstname
+                FROM Customer
+                JOIN CustLogin ON Customer.id = CustLogin.id
+                WHERE CustLogin.email = %s;
+            """, (email,))
+
+            result = cursor.fetchone()
+
+            if result:
+                name = result[0]
+                return name
+            return jsonify({"error": "User not found"}), 404
+    except Exception as e:
+        print(f"Error during login: {e}")
+        return jsonify({"error": "Internal Server Error"}), 500
+
 @app.route('/api/login', methods=['GET'])
 def login():
     """
@@ -151,8 +181,6 @@ def login():
     except Exception as e:
         print(f"Error during login: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
-
-
 
 @app.route('/api/addToCustomer', methods=['POST'])
 def add_to_customer():
@@ -238,7 +266,7 @@ def send_verify_email():
                 return jsonify({"message": "Email not found"}), 404
 
         token = secrets.token_hex(20)
-        verification_link = f"http://localhost:9000/#/VerifiedPassword?token={token}&email={email}"
+        verification_link = f"http://localhost:9000/#/verified-email?token={token}&email={email}"
         otp_code = ''.join(random.choices(string.digits, k=6))
         #return jsonify({"error": send_email(email, "Password Reset Request", verification_link)}), 500
         send_email(email, "Email Verification", verification_link, otp_code)
