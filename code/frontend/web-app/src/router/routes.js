@@ -5,6 +5,7 @@ import DashboardPage from "src/pages/DashboardPage.vue";
 import ManageSitesPage from "src/pages/ManageSitesPage.vue";
 import ManageModelsPage from "src/pages/ManageModelsPage.vue";
 import ActionSettingsPage from "src/pages/ActionSettingsPage.vue";
+import Verified from "src/pages/VerifiedPassword.vue";
 
 const routes = [
   //start off at the login page as the default route
@@ -14,12 +15,10 @@ const routes = [
     children: [
       {
         path: "",
-        component: Home, 
+        component: Home,
       },
-      {
-        path: "otp",
-        component: otp, // OTP Page
-      },
+      {path: "otp", component: otp},
+      { path: "verified-email", component: Verified }, // Action Settings page
     ],
   },
 
