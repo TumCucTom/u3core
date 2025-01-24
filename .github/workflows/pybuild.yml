@@ -7,6 +7,7 @@ on:
   pull_request:
     paths:
       - 'code/backend/python-features/**'
+      - 'code/backend/python-server/**'
       - '.github/workflows/pybuild.yml'
     branches: [ "dev", "main" ]
 
@@ -26,6 +27,7 @@ jobs:
         python-version: '3.x'
     - name: Install dependencies
       run: |
+        sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev
         python -m pip install --upgrade pip
         pip install flake8
         pip install -r code/frontend/requirements.txt

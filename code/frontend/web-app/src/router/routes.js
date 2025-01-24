@@ -1,4 +1,5 @@
-import home from "src/pages/LoginPage.vue";
+import Home from "src/pages/LoginPage.vue";
+import HomeLayout from "layouts/HomeLayout.vue";
 import otp from "src/pages/otPage.vue";
 import DashboardPage from "src/pages/DashboardPage.vue";
 import ManageSitesPage from "src/pages/ManageSitesPage.vue";
@@ -13,7 +14,7 @@ const routes = [
     children: [
       {
         path: "",
-        component: home, 
+        component: Home, 
       },
       {
         path: "otp",
