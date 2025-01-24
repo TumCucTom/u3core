@@ -10,14 +10,14 @@
         <div class="q-pa-md q-mb-md" style="height: 60px;">
           <!-- space to put logo later -->
         </div>
-  
+
         <!-- sidebar -->
         <q-list dense>
           <q-item
             clickable
             v-ripple
             tag="router-link"
-            to="/dashboard"
+            to="/app/dashboard"
             class="q-mb-sm"
           >
             <q-item-section avatar>
@@ -25,12 +25,12 @@
             </q-item-section>
             <q-item-section>Dashboard</q-item-section>
           </q-item>
-  
+
           <q-item
             clickable
             v-ripple
             tag="router-link"
-            to="/manage-sites"
+            to="/app/manage-sites"
             class="q-mb-sm"
           >
             <q-item-section avatar>
@@ -38,12 +38,12 @@
             </q-item-section>
             <q-item-section>Manage Sites</q-item-section>
           </q-item>
-  
+
           <q-item
             clickable
             v-ripple
             tag="router-link"
-            to="/alerts-console"
+            to="/app/alerts-console"
             class="q-mb-sm"
           >
             <q-item-section avatar>
@@ -51,12 +51,12 @@
             </q-item-section>
             <q-item-section>Alerts Console</q-item-section>
           </q-item>
-  
+
           <q-item
             clickable
             v-ripple
             tag="router-link"
-            to="/action-settings"
+            to="/app/action-settings"
           >
             <q-item-section avatar>
               <q-icon name="layers" />
@@ -64,7 +64,7 @@
             <q-item-section>Action Settings</q-item-section>
           </q-item>
         </q-list>
-  
+
         <!-- footer -->
         <div class="q-pa-md q-mt-auto">
           <q-item clickable v-ripple @click ="handleLogout">
@@ -84,13 +84,13 @@
           </q-item>
         </div>
       </q-drawer>
-  
+
       <q-page-container>
         <router-view />
       </q-page-container>
     </q-layout>
   </template>
-  
+
   <script>
   export default {
     data() {
@@ -100,7 +100,7 @@
     },
   };
   </script>
-  
+
   <style>
   .bg-dark {
     background-color: #1e1e2f;
@@ -112,4 +112,3 @@
     color: #a0a0b0;
   }
   </style>
-  
