@@ -4,38 +4,60 @@
         show-if-above
         v-model="leftDrawerOpen"
         side="left"
-        width=260
+        width="260"
         class="bg-dark text-white"
       >
-        
         <div class="q-pa-md q-mb-md" style="height: 60px;">
           <!-- space to put logo later -->
         </div>
   
-        <!-- side bar -->
+        <!-- sidebar -->
         <q-list dense>
-          <q-item clickable v-ripple class="q-mb-sm">
+          <q-item
+            clickable
+            v-ripple
+            tag="router-link"
+            to="/dashboard"
+            class="q-mb-sm"
+          >
             <q-item-section avatar>
               <q-icon name="dashboard" />
             </q-item-section>
             <q-item-section>Dashboard</q-item-section>
           </q-item>
   
-          <q-item clickable v-ripple expand-separator>
+          <q-item
+            clickable
+            v-ripple
+            tag="router-link"
+            to="/manage-sites"
+            class="q-mb-sm"
+          >
             <q-item-section avatar>
-              <q-icon name="settings" />
+              <q-icon name="place" />
             </q-item-section>
-            <q-item-section>Configuration</q-item-section>
+            <q-item-section>Manage Sites</q-item-section>
           </q-item>
   
-          <q-item clickable v-ripple class="q-mb-sm">
+          <q-item
+            clickable
+            v-ripple
+            tag="router-link"
+            to="/alerts-console"
+            class="q-mb-sm"
+          >
             <q-item-section avatar>
               <q-icon name="notifications" />
             </q-item-section>
-            <q-item-section>Alerts Control</q-item-section>
+            <q-item-section>Alerts Console</q-item-section>
           </q-item>
   
-          <q-item clickable v-ripple>
+          <q-item
+            clickable
+            v-ripple
+            tag="router-link"
+            to="/action-settings"
+          >
             <q-item-section avatar>
               <q-icon name="layers" />
             </q-item-section>
@@ -43,12 +65,12 @@
           </q-item>
         </q-list>
   
-        
+        <!-- footer -->
         <div class="q-pa-md q-mt-auto">
-          <q-item clickable v-ripple>
+          <q-item clickable v-ripple @click ="handleLogout">
             <q-item-section avatar>
               <q-avatar>
-                <!-- can put user avatar here -->
+                <!-- placeholder for user avatar -->
                 <q-icon name="person" />
               </q-avatar>
             </q-item-section>
@@ -64,7 +86,7 @@
       </q-drawer>
   
       <q-page-container>
-        <router-view/>
+        <router-view />
       </q-page-container>
     </q-layout>
   </template>
@@ -73,7 +95,7 @@
   export default {
     data() {
       return {
-        leftDrawerOpen: true,
+        leftDrawerOpen: true, // drawer (sidebar) is open by default
       };
     },
   };
@@ -81,7 +103,7 @@
   
   <style>
   .bg-dark {
-    background-color: #1e1e2f; 
+    background-color: #1e1e2f;
   }
   .text-white {
     color: #ffffff;
@@ -90,3 +112,4 @@
     color: #a0a0b0;
   }
   </style>
+  

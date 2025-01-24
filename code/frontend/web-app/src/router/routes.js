@@ -1,44 +1,43 @@
-import Home from "src/pages/LoginPage.vue";
+import home from "src/pages/LoginPage.vue";
 import otp from "src/pages/otPage.vue";
-import sitesPage from "src/pages/SitesPage.vue";
-import actionsPage from "src/pages/ActionSettingsPage.vue"
-import ManageModelsPage from "src/pages/ManageModelsPage.vue"
-import ManageSitesPage from "src/pages/ManageSitesPage.vue"
+import DashboardPage from "src/pages/DashboardPage.vue";
+import ManageSitesPage from "src/pages/ManageSitesPage.vue";
+import ManageModelsPage from "src/pages/ManageModelsPage.vue";
+import ActionSettingsPage from "src/pages/ActionSettingsPage.vue";
 
 const routes = [
-  // minimal (blank) layout for login and otp pages
+  //start off at the login page as the default route
   {
-    path: '/app',
-    component: () => import('layouts/MinimalLayout.vue'),
+    path: "/",
+    component: () => import("layouts/MinimalLayout.vue"),
     children: [
-      { 
-        path: '', 
-        component: otp, 
+      {
+        path: "",
+        component: home, 
+      },
+      {
+        path: "otp",
+        component: otp, // OTP Page
       },
     ],
   },
 
-  
-  { 
-    //testing sidebar on SitesPage
-    path: '/',
-    component: () => import('layouts/SidebarLayout.vue'), 
+  // sidebar layout for all the other pages
+  {
+    path: "/app",
+    component: () => import("layouts/SidebarLayout.vue"),
     children: [
-      //route for dashboard{ path: 'dashboard', component: () => import('pages/DashboardPage.vue') }, 
-      { path: '',
-       component: ManageSitesPage
-      },
-      //route for camera { path: 'configuration/camera', component: () => import('pages/CameraPage.vue') },
-      //route for ai edge gateway { path: 'configuration/ai-gateway', component: () => import('pages/AIGatewayPage.vue') },
-      //route for alerts console{ path: 'alerts-console', component: () => import('pages/AlertsConsolePage.vue') },
-      //route for action settings{ path: 'action-settings', component: () => import('pages/ActionSettingsPage.vue') },
+      { path: "dashboard", component: DashboardPage }, // Dashboard page
+      { path: "manage-sites", component: ManageSitesPage }, // Manage Sites page
+      { path: "manage-models", component: ManageModelsPage }, // Manage Models page
+      { path: "action-settings", component: ActionSettingsPage }, // Action Settings page
     ],
   },
 
-  // for 404s
+  // Catch-all for 404 errors
   {
-    path: '/:catchAll(.*)*',
-    component: () => import('pages/ErrorNotFound.vue'),
+    path: "/:catchAll(.*)*",
+    component: () => import("pages/ErrorNotFound.vue"),
   },
 ];
 

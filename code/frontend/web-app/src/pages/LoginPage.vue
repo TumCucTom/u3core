@@ -30,7 +30,7 @@
       <!-- right column-->
       <div class="col-12 col-md-6">
         <div class="q-px-lg q-py-xl">
-          <!-- Title -->
+          <!-- title -->
           <h2 class="text-bold">{{ isLogin ? 'Welcome back' : 'Sign up' }}</h2>
           <p>{{ isLogin ? 'Welcome back! Please enter your details.' : 'Start your 30-day free trial.' }}</p>
 
@@ -73,6 +73,7 @@
               :label="isLogin ? 'Sign in' : 'Continue'"
               color="primary"
               class="full-width q-my-md"
+              @click="proceedToOtp"
             />
 
             
@@ -245,6 +246,9 @@ export default {
     toggleMode() {
       this.isLogin = !this.isLogin; // switches between login and register
     },
+    proceedToOtp() {
+      this.$router.push("/otp");
+    }
   },
 };
 
