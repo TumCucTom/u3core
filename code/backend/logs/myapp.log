@@ -81,3 +81,6 @@
 2025-01-24 12:10:35,353 - INFO - 172.18.0.1 - - [24/Jan/2025 12:10:35] "OPTIONS /api/sendVerifyEmail HTTP/1.1" 200 -
 2025-01-24 12:10:35,974 - INFO - 172.18.0.1 - - [24/Jan/2025 12:10:35] "POST /api/sendVerifyEmail HTTP/1.1" 200 -
 2025-01-24 12:10:44,897 - INFO - 172.18.0.1 - - [24/Jan/2025 12:10:44] "GET /api/getName?email=info@shopveloworks.com HTTP/1.1" 200 -
+2025-01-24 12:17:14,498 - INFO - 172.18.0.1 - - [24/Jan/2025 12:17:14] "GET /api/getName?email=info@shopveloworks.com HTTP/1.1" 200 -
+2025-01-24 12:18:06,013 - INFO - 172.18.0.1 - - [24/Jan/2025 12:18:06] "GET /api/getName?email=info@shopveloworks.com HTTP/1.1" 200 -
+2025-01-24 12:49:37,837 - INFO - 172.18.0.1 - - [24/Jan/2025 12:49:37] "GET /api/getName?email=info@shopveloworks.com HTTP/1.1" 200 -

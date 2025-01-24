@@ -1,7 +1,6 @@
 <template>
   <q-page class="q-px-lg q-py-md">
     <div>
-      
       <div class="row justify-between items-center q-mb-lg">
         <div>
           <h1 class="text-h4 text-bold">Manage Sites</h1>
@@ -9,7 +8,7 @@
             Track, manage and forecast your customers and orders.
           </p>
         </div>
-        <q-btn label="+ Add Camera" color="primary" text-color="white" />
+        <q-btn label="+ Add Camera" color="primary" text-color="white" @click="openAddRTSP"/>
       </div>
 
       <div class="row">
@@ -31,15 +30,11 @@
                 <q-item-section>CAM 04</q-item-section>
               </q-item>
             </q-expansion-item>
-
-            
             <q-expansion-item label="Site 02" dense />
             <q-expansion-item label="Site 03" dense />
             <q-expansion-item label="Site 04" dense />
             <q-expansion-item label="Site 05" dense />
             <q-expansion-item label="Site 06" dense />
-
-            
             <q-btn
               label="+ Add New Site"
               flat
@@ -49,17 +44,19 @@
           </q-list>
         </div>
 
-       
         <div class="col-12 col-md-9">
           <q-card bordered class="q-pa-md">
-            
             <div class="row justify-between items-center">
               <h2 class="text-h6">CAM 01 View</h2>
-              <q-btn label="Live View" color="amber" flat />
+              <q-btn label="Live View" color="amber" flat @click="startLiveStream"/>
             </div>
-            <div class="bg-grey-8 q-mt-md" style="height: 250px;"></div>
 
-            
+            <!-- This will be the video element showing the live stream or fallback to default MP4 -->
+            <div class="bg-grey-8 q-mt-md" style="height: 250px; position: relative;">
+              <video v-if="streaming" ref="videoPlayer" :src="videoSrc" controls autoplay loop style="width: 100%; height: 100%;"/>
+              <video v-else ref="videoPlayer" src="/public/default_video.mp4" controls autoplay loop style="width: 100%; height: 100%;"/>
+            </div>
+
             <div class="row q-mt-md">
               <q-card flat bordered class="col-6 q-pa-md">
                 <div class="text-caption text-grey-7">Latitude</div>
@@ -74,16 +71,14 @@
         </div>
       </div>
 
-      
+      <!-- Dialogs for adding site and RTSP camera -->
       <q-dialog v-model="addSiteDialog">
         <q-card style="min-width: 400px">
           <q-card-section>
             <div class="text-h6">Add New Site</div>
           </q-card-section>
-
           <q-card-section>
             <q-form>
-              
               <q-input
                 v-model="newSite.name"
                 outlined
@@ -91,8 +86,6 @@
                 class="q-mb-md"
                 placeholder="Enter site name"
               />
-
-              
               <q-input
                 v-model="newSite.latitude"
                 outlined
@@ -100,8 +93,6 @@
                 class="q-mb-md"
                 placeholder="Enter latitude"
               />
-
-             
               <q-input
                 v-model="newSite.longitude"
                 outlined
@@ -111,10 +102,39 @@
               />
             </q-form>
           </q-card-section>
-
           <q-card-actions align="right">
             <q-btn flat label="Cancel" color="primary" @click="closeAddSiteDialog" />
             <q-btn flat label="Save" color="primary" @click="saveNewSite" />
+          </q-card-actions>
+        </q-card>
+      </q-dialog>
+
+      <q-dialog v-model="addRTSP">
+        <q-card style="min-width: 400px">
+          <q-card-section>
+            <div class="text-h6">Add RTSP Camera</div>
+          </q-card-section>
+          <q-card-section>
+            <q-form>
+              <q-input
+                v-model="newCamera.name"
+                outlined
+                label="Camera Name"
+                class="q-mb-md"
+                placeholder="Enter camera name"
+              />
+              <q-input
+                v-model="newCamera.RTSPURL"
+                outlined
+                label="URL"
+                class="q-mb-md"
+                placeholder="Enter RTSP URL"
+              />
+            </q-form>
+          </q-card-section>
+          <q-card-actions align="right">
+            <q-btn flat label="Cancel" color="primary" @click="closeAddRTSP" />
+            <q-btn flat label="Save" color="primary" @click="saveNewRTSP" />
           </q-card-actions>
         </q-card>
       </q-dialog>
@@ -126,12 +146,19 @@
 export default {
   data() {
     return {
-      addSiteDialog: false, 
+      addSiteDialog: false,
+      addRTSP: false,
       newSite: {
         name: '',
         latitude: '',
         longitude: '',
       },
+      newCamera: {
+        name: '',
+        RTSPURL: '',
+      },
+      streaming: false, // To track if the video stream is active
+      videoSrc: '', // URL of the RTSP stream or MP4
     };
   },
   methods: {
@@ -142,8 +169,24 @@ export default {
       this.addSiteDialog = false;
       this.resetForm();
     },
+    openAddRTSP() {
+      this.addRTSP = true;
+      this.resetForm();
+    },
+    closeAddRTSP() {
+      this.addRTSP = false;
+      this.resetForm();
+    },
+    saveNewRTSP() {
+      console.log('New Camera Details:', this.newCamera);
+      this.closeAddRTSP();
+
+      // Set video source to the RTSP URL entered in the form
+      this.videoSrc = this.newCamera.RTSPURL;
+      this.startLiveStream();
+    },
     saveNewSite() {
-      console.log('New Site Details:', this.newSite); 
+      console.log('New Site Details:', this.newSite);
       this.closeAddSiteDialog();
     },
     resetForm() {
@@ -153,6 +196,10 @@ export default {
         longitude: '',
       };
     },
+    startLiveStream() {
+      this.streaming = true;
+      // Here, the video source is already set to the RTSP URL, so you can skip further modification
+    }
   },
 };
 </script>
@@ -167,6 +214,15 @@ export default {
 }
 
 .text-white {
+  color: white;
+}
+
+.loading-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 2rem;  /* Make the text large */
   color: white;
 }
 </style>

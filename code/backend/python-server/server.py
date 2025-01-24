@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from flask_socketio import SocketIO, emit
 import bcrypt
 import random
 import string
@@ -11,6 +12,8 @@ import pycurl
 import requests
 from io import BytesIO
 import json
+import cv2
+import base64
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG,
@@ -22,6 +25,7 @@ logging.basicConfig(level=logging.DEBUG,
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
+socketio = SocketIO(app)  # Add SocketIO support
 
 db_config = {
     "host": "db",
@@ -31,6 +35,7 @@ db_config = {
     "port": 3306
 }
 
+# Database connection attempt logic
 max_retries = 10
 for attempt in range(max_retries):
     try:
@@ -71,6 +76,36 @@ def test_add_entry():
         print(f"Error adding test entry: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
 
+# New route to start streaming
+@app.route('/api/start-stream', methods=['POST'])
+def start_stream():
+    rtsp_address = request.json.get('rtspAddress')
+    if not rtsp_address:
+        return jsonify({"error": "RTSP address is required"}), 400
+
+    # Start processing RTSP stream with OpenCV
+    cap = cv2.VideoCapture(rtsp_address)
+
+    if not cap.isOpened():
+        return jsonify({"error": "Failed to connect to RTSP stream"}), 400
+
+    # Stream feed to frontend via SocketIO
+    def generate_stream():
+        while True:
+            ret, frame = cap.read()
+            if not ret:
+                break
+
+            # Convert frame to base64 for streaming
+            _, jpeg = cv2.imencode('.jpg', frame)
+            base64_frame = base64.b64encode(jpeg.tobytes()).decode('utf-8')
+
+            # Emit the frame to the frontend
+            socketio.emit('video_frame', {'frame': base64_frame})
+            time.sleep(0.03)  # Approx 30fps
+
+    socketio.start_background_task(target=generate_stream)
+    return jsonify({"message": "Stream started successfully"})
 
 @app.route('/api/dbinfo', methods=['GET'])
 def get_db_info():
@@ -111,7 +146,6 @@ def get_db_info():
     except Exception as e:
         print(f"Error fetching database info: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
-
 
 @app.route('/api/emails', methods=['GET'])
 def get_emails():
