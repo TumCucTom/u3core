@@ -49,50 +49,56 @@ This is a ML/AI microservice top-layer that integrates on an already existing Io
 
 ## Project Structure
 ```
-📁 SEP project/                         #       
-├──📁 .github/                          #
-│   ├──📁 ISSUE_TEMPLATE/               #
-│   │   └──📄... *content               # all kinds of issue template files
-│   ├──📁 workflows/                    # 
-│   │   └──📄... *content               # all workflows files
-│   └──📄 pull_request_template.md      # PR template
-├──📁 ai-tools/                         # 
-│   └──📄 README.md                     # Information about AI technologies used
-├──📁 docs/                             #
-│   ├──📁 slides/                       #
-│   │   └──📄... *content               # ppts and mv it needs
-│   ├──📄 ethics.md                     #
-│   ├──📄 release.md                    #
-│   └──📄 meetings.md                   # Recording all the clients meetings and mentor meetings
-├──📁 code/                             #
-│   ├──📁 frontend/                     #
-│   │   ├──📁 web-app/                  # The web-app that users will interact with
-│   │   │   └──📄... *content           #
-│   │   ├──📄 requirements.txt          #
-│   │   └──📄 README.md                 # Info on how front end works and how to run
-│   ├──📁 backend/                      #
-│   │   ├──📁 python-features/          #
-│   │   │   ├──📄 alert_sys.py          #
-│   │   │   ├──📄 full_interation.py    #
-│   │   │   └──📄 image_get_prep.py     # OpenCV code for getting a preprocessing videostream 
-│   │   ├──📁 training/                 #
-│   │   │   └──📄 README.md             #
-│   │   ├──📁 web-server/               # Backend code - recieve RESTful calls from front-end
-│   │   │   └──📄... *content           #
-│   │   ├──📄 README.md                 # Info on how backend works and how to run
-│   │   └──📄 requirements.txt          # 
-│   ├──📁 preliminary/                  #
-│   │   ├──📁 Personcounter/            #
-│   │   │   ├──📄 counter.py            # Code adapted for counting people
-│   │   │   ├──📄 inferpi.py            # Code adapted for rasberry pi
-│   │   │   └──📄 infer.py              # People detection code
-│   │   └──📄 README.md                 # Details of preliminary task requests
-├──📁 node_modules/                     #
-│   └──📄... *content                   #
-├──📄 .gitignore                        #
-├──📄 LICENSE.md                        # License for this project
-├──📄 README.md                         # Overall description of the project
-└──📄 release.md                        #
+├── LICENSE                            # Licensing details for the project
+├── README.md                          # Main project overview and instructions
+├── ai-tools                           #
+│   └── README.md                      # Overview of AI tools included in the project
+├── code                               #
+│   ├── backend                        # Backend-related services and scripts
+│   │   ├── Dockerfile.backend         # Docker configuration for the backend server
+│   │   ├── Dockerfile.websocket       # Docker configuration for the websocket service
+│   │   ├── README.md                  # Overview of the backend setup
+│   │   ├── db                         #
+│   │   │   ├── Dockerfile             # Docker configuration for the database
+│   │   │   └── custom-shutdown.sh     # Custom script for database shutdown to preserve its state
+│   │   ├── docker-compose.yml         # Docker Compose setup for backend services
+│   │   ├── initdb                     #
+│   │   │   ├── README.md              # Overview of database initialization
+│   │   │   └── dump.sql               # SQL dump for initial database setup
+│   │   ├── python-features            #
+│   │   │   ├── alert_sys.py           # Script for alert system implementation
+│   │   │   ├── full_interation.py     # Script with all features integrated
+│   │   │   └── image_get_prep.py      # Script for image preprocessing only
+│   │   ├── python-server              # Backend server
+│   │   ├── requirements.txt           # Python dependencies for the backend
+│   │   ├── training                   #
+│   │   │   └── README.md              # Overview of training techniques and performance
+│   │   └── websocket-server           # Websocket server
+│   ├── frontend                       #
+│   │   ├── README.md                  # Overview of the frontend setup
+│   │   ├── requirements.txt           # Frontend dependencies
+│   │   └── web-app                    # Frontend quasar web application
+│   └── preliminary                    # Early-stage experimental code and prototypes
+│       ├── Personcounter              #
+│       │   ├── counter.py             # Person counting NN
+│       │   ├── infer.py               # NN for people detection
+│       │   └── inferpi.py             # Raspberry Pi-specific for above
+│       └── README.md                  # Overview of preliminary code
+├── docs                               #
+│   ├── ethics.md                      # Ethical considerations for the project
+│   ├── frontend                       #
+│   │   ├── UI-Design.md               # User interface design details
+│   │   └── figma_Designs              # Figma designs for the frontend
+│   ├── meetings.md                    # Meeting notes and summaries
+│   ├── release.md                     # Release notes and deployment information
+│   └── slides                         # VIVA demos
+│       ├── Demo.mov                   # Demo video for the project
+│       └── MVP-slides.pptx            # PowerPoint slides for the MVP presentation
+├── package-lock.json                  # Dependency tree lock file (npm/yarn)
+├── package.json                       # Project dependencies and metadata (npm/yarn)
+├── release.md                         # Release notes (duplicate of `docs/release.md`)
+└── yarn.lock                          # Dependency tree lock file (yarn)
+
 ```
 ## User Instructions
 ### Requirements and Prerequisites
