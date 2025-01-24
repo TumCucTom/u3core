@@ -4,31 +4,26 @@ FROM python:3.9-slim-bullseye
 # Set the working directory
 WORKDIR /usr/src/app
 
-# Install system dependencies for MySQL support and build tools
+# Install system dependencies for MySQL and FFmpeg (optional for Python)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     apt-transport-https \
     ca-certificates \
     gnupg \
     gcc \
-    ffmpeg \
     libmariadb-dev \
     libmariadb-dev-compat \
     mariadb-client \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements.txt
+# Copy requirements.txt and install Python dependencies
 COPY requirements.txt ./
-
-# Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-RUN mkdir -p /app/logs
-
-# Copy the backend code
+# Copy the Python backend code
 COPY python-server .
 
 # Expose the backend port
 EXPOSE 3000
 
-# Start the Python server
+# Run the Python backend server
 CMD ["python", "server.py"]

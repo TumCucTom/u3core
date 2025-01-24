@@ -234,16 +234,19 @@ export default {
       };
 
       // Send RTSP URL to server
+      /*
       try {
         const response = await axios.post('http://127.0.0.1:3002/startStream', {
           rtsp_url: this.videoSrc,
         });
         if (response.data.status === 'success') {
+          console.log("Streaming started!");
           this.streaming = true;
         }
       } catch (error) {
         console.error('Error starting live stream:', error);
       }
+       */
     },
     async fetchSites() {
       try {

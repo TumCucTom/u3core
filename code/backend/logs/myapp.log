@@ -166,3 +166,41 @@
 2025-01-24 21:15:26,473 - INFO - 172.18.0.1 - - [24/Jan/2025 21:15:26] "[35m[1mPOST /api/startStream HTTP/1.1[0m" 500 -
 2025-01-24 21:15:28,954 - INFO - 172.18.0.1 - - [24/Jan/2025 21:15:28] "[35m[1mPOST /api/startStream HTTP/1.1[0m" 500 -
 2025-01-24 21:15:34,045 - INFO - 172.18.0.1 - - [24/Jan/2025 21:15:34] "[35m[1mPOST /api/startStream HTTP/1.1[0m" 500 -
+2025-01-24 22:17:26,640 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:3000
+ * Running on http://172.18.0.3:3000
+2025-01-24 22:17:26,641 - INFO - [33mPress CTRL+C to quit[0m
+2025-01-24 22:17:26,641 - INFO -  * Restarting with stat
+2025-01-24 22:17:26,803 - WARNING -  * Debugger is active!
+2025-01-24 22:17:26,804 - INFO -  * Debugger PIN: 640-387-207
+2025-01-24 22:24:15,641 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:3000
+ * Running on http://172.18.0.3:3000
+2025-01-24 22:24:15,641 - INFO - [33mPress CTRL+C to quit[0m
+2025-01-24 22:24:15,642 - INFO -  * Restarting with stat
+2025-01-24 22:24:15,807 - WARNING -  * Debugger is active!
+2025-01-24 22:24:15,807 - INFO -  * Debugger PIN: 640-387-207
+2025-01-24 22:24:55,324 - INFO - 172.18.0.1 - - [24/Jan/2025 22:24:55] "OPTIONS /add-camera HTTP/1.1" 200 -
+2025-01-24 22:24:55,369 - INFO - 172.18.0.1 - - [24/Jan/2025 22:24:55] "[35m[1mPOST /add-camera HTTP/1.1[0m" 201 -
+2025-01-24 22:24:55,376 - INFO - 172.18.0.1 - - [24/Jan/2025 22:24:55] "[33mOPTIONS /startStream HTTP/1.1[0m" 404 -
+2025-01-24 22:24:56,793 - INFO - 172.18.0.1 - - [24/Jan/2025 22:24:56] "[33mOPTIONS /startStream HTTP/1.1[0m" 404 -
+2025-01-24 22:25:18,751 - INFO - 172.18.0.1 - - [24/Jan/2025 22:25:18] "OPTIONS /add-camera HTTP/1.1" 200 -
+2025-01-24 22:25:18,754 - INFO - 172.18.0.1 - - [24/Jan/2025 22:25:18] "[31m[1mPOST /add-camera HTTP/1.1[0m" 400 -
+2025-01-24 22:25:33,886 - INFO - 172.18.0.1 - - [24/Jan/2025 22:25:33] "OPTIONS /add-camera HTTP/1.1" 200 -
+2025-01-24 22:25:33,903 - INFO - 172.18.0.1 - - [24/Jan/2025 22:25:33] "[35m[1mPOST /add-camera HTTP/1.1[0m" 201 -
+2025-01-24 22:25:33,910 - INFO - 172.18.0.1 - - [24/Jan/2025 22:25:33] "[33mOPTIONS /startStream HTTP/1.1[0m" 404 -
+2025-01-24 22:27:15,725 - INFO - 172.18.0.1 - - [24/Jan/2025 22:27:15] "[35m[1mGET /sites HTTP/1.1[0m" 500 -
+2025-01-24 22:27:29,501 - INFO - 172.18.0.1 - - [24/Jan/2025 22:27:29] "OPTIONS /add-camera HTTP/1.1" 200 -
+2025-01-24 22:27:29,510 - INFO - 172.18.0.1 - - [24/Jan/2025 22:27:29] "[35m[1mPOST /add-camera HTTP/1.1[0m" 201 -
+2025-01-24 22:27:29,518 - INFO - 172.18.0.1 - - [24/Jan/2025 22:27:29] "[33mOPTIONS /startStream HTTP/1.1[0m" 404 -
+2025-01-24 22:29:12,291 - INFO - 172.18.0.1 - - [24/Jan/2025 22:29:12] "[35m[1mGET /sites HTTP/1.1[0m" 500 -
+2025-01-24 22:29:25,377 - INFO - 172.18.0.1 - - [24/Jan/2025 22:29:25] "OPTIONS /add-camera HTTP/1.1" 200 -
+2025-01-24 22:29:25,388 - INFO - 172.18.0.1 - - [24/Jan/2025 22:29:25] "[35m[1mPOST /add-camera HTTP/1.1[0m" 201 -
+2025-01-24 22:29:25,394 - INFO - 172.18.0.1 - - [24/Jan/2025 22:29:25] "[33mOPTIONS /startStream HTTP/1.1[0m" 404 -
+2025-01-24 22:29:27,158 - INFO - 172.18.0.1 - - [24/Jan/2025 22:29:27] "[33mOPTIONS /startStream HTTP/1.1[0m" 404 -
+2025-01-24 22:30:02,919 - INFO - 172.18.0.1 - - [24/Jan/2025 22:30:02] "OPTIONS /add-camera HTTP/1.1" 200 -
+2025-01-24 22:30:02,933 - INFO - 172.18.0.1 - - [24/Jan/2025 22:30:02] "[35m[1mPOST /add-camera HTTP/1.1[0m" 201 -
+2025-01-24 22:30:02,939 - INFO - 172.18.0.1 - - [24/Jan/2025 22:30:02] "[33mOPTIONS /startStream HTTP/1.1[0m" 404 -
+2025-01-24 22:31:40,997 - INFO - 172.18.0.1 - - [24/Jan/2025 22:31:40] "[35m[1mGET /sites HTTP/1.1[0m" 500 -
