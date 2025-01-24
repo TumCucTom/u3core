@@ -10,6 +10,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     gnupg \
     gcc \
+    ffmpeg \
     libmariadb-dev \
     libmariadb-dev-compat \
     mariadb-client \

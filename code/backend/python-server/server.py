@@ -1,16 +1,19 @@
-from flask import Flask, request, jsonify
 from flask_cors import CORS
 import bcrypt
 import random
 import string
 import secrets
-import time
 import pymysql
 import logging
 import pycurl
 import requests
 from io import BytesIO
 import json
+import os
+import time
+import ffmpeg
+from flask import Flask, request, jsonify, send_from_directory
+from tempfile import NamedTemporaryFile
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG,
@@ -42,6 +45,179 @@ for attempt in range(max_retries):
         time.sleep(5)
 else:
     raise Exception("Max retries exceeded. Could not connect to the database.")
+
+# Directory to store HLS files temporarily
+HLS_OUTPUT_DIR = '/tmp/hls_streams'
+os.makedirs(HLS_OUTPUT_DIR, exist_ok=True)
+
+@app.route('/api/start-stream', methods=['POST'])
+def start_stream():
+    """
+    Starts converting the RTSP stream to HLS format.
+    """
+    data = request.json
+    rtsp_url = data.get('rtsp_url')
+
+    if not rtsp_url:
+        return jsonify({"error": "RTSP URL is required"}), 400
+
+    # Generate a unique stream ID
+    stream_id = str(int(time.time()))  # Use timestamp as stream ID for uniqueness
+    stream_folder = os.path.join(HLS_OUTPUT_DIR, stream_id)
+
+    try:
+        # Create a folder to store HLS files (playlist and video segments)
+        os.makedirs(stream_folder)
+
+        # Generate paths for the HLS playlist and video segments
+        m3u8_file = os.path.join(stream_folder, 'index.m3u8')
+
+        # FFmpeg command to convert RTSP stream to HLS format
+        (
+            ffmpeg
+            .input(rtsp_url)
+            .output(
+                os.path.join(stream_folder, 'video_%03d.ts'),  # Video segment pattern
+                format='hls',
+                hls_time=10,  # Segment length in seconds
+                hls_list_size=0,  # Infinite list of segments in playlist
+                hls_segment_filename=os.path.join(stream_folder, 'video_%03d.ts')
+            )
+            .run()
+        )
+
+        return jsonify({"message": "Stream started successfully", "stream_id": stream_id}), 200
+
+    except ffmpeg.Error as e:
+        error_message = e.stderr.decode()
+        print(f"FFmpeg error: {error_message}")
+        return jsonify({"error": "Failed to start stream", "details": error_message}), 500
+
+@app.route('/api/stream/<stream_id>', methods=['GET'])
+def stream_video(stream_id):
+    """
+    Serves the HLS stream (m3u8 playlist and video segments) to the client.
+    """
+    stream_folder = os.path.join(HLS_OUTPUT_DIR, stream_id)
+
+    if not os.path.exists(stream_folder):
+        return jsonify({"error": "Stream not found"}), 404
+
+    # Serve the .m3u8 playlist file
+    return send_from_directory(stream_folder, 'index.m3u8')
+
+@app.route('/api/stream/<stream_id>/segment/<segment_name>', methods=['GET'])
+def stream_segment(stream_id, segment_name):
+    """
+    Serves the HLS video segment file.
+    """
+    stream_folder = os.path.join(HLS_OUTPUT_DIR, stream_id)
+
+    if not os.path.exists(stream_folder):
+        return jsonify({"error": "Stream not found"}), 404
+
+    # Serve the segment file (.ts)
+    return send_from_directory(stream_folder, segment_name)
+
+
+@app.route('/add-site', methods=['POST'])
+def add_site():
+    """
+    Adds a new site with name, latitude, and longitude to the database.
+    """
+    data = request.json
+    name = data.get('name')
+    latitude = data.get('latitude')
+    longitude = data.get('longitude')
+
+    if not all([name, latitude, longitude]):
+        return jsonify({"error": "Name, latitude, and longitude are required"}), 400
+
+    try:
+        with connection.cursor() as cursor:
+            # Create the Sites table if it doesn't exist
+            create_table_query = """
+            CREATE TABLE IF NOT EXISTS Sites (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                name VARCHAR(255),
+                latitude VARCHAR(50),
+                longitude VARCHAR(50)
+            );
+            """
+            cursor.execute(create_table_query)
+
+            # Insert the site data
+            cursor.execute(
+                "INSERT INTO Sites (name, latitude, longitude) VALUES (%s, %s, %s)",
+                (name, latitude, longitude)
+            )
+        connection.commit()
+        return jsonify({"message": "Site added successfully!"}), 201
+    except Exception as e:
+        print(f"Error adding site: {e}")
+        return jsonify({"error": "Internal Server Error"}), 500
+
+
+@app.route('/add-camera', methods=['POST'])
+def add_camera():
+    """
+    Adds a new RTSP camera to a site.
+    """
+    data = request.json
+    name = data.get('name')
+    rtsp_url = data.get('rtsp_url')
+
+    if not all([name, rtsp_url]):
+        return jsonify({"error": "Name and RTSP URL are required"}), 400
+
+    try:
+        with connection.cursor() as cursor:
+            # Create the Cameras table if it doesn't exist
+            create_table_query = """
+            CREATE TABLE IF NOT EXISTS Cameras (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                name VARCHAR(255),
+                rtsp_url TEXT
+            );
+            """
+            cursor.execute(create_table_query)
+
+            # Insert the camera data
+            cursor.execute(
+                "INSERT INTO Cameras (name, rtsp_url) VALUES (%s, %s)",
+                (name, rtsp_url)
+            )
+        connection.commit()
+        return jsonify({"message": "Camera added successfully!"}), 201
+    except Exception as e:
+        print(f"Error adding camera: {e}")
+        return jsonify({"error": "Internal Server Error"}), 500
+
+
+@app.route('/sites', methods=['GET'])
+def fetch_sites():
+    """
+    Fetches all sites and their associated cameras.
+    """
+    try:
+        with connection.cursor() as cursor:
+            # Fetch all sites
+            cursor.execute("SELECT id, name FROM Sites")
+            sites = cursor.fetchall()
+
+            # Fetch cameras for each site
+            result = []
+            for site in sites:
+                site_id, name = site
+                cursor.execute("SELECT id, name FROM Cameras WHERE site_id = %s", (site_id,))
+                cameras = [{"id": cam_id, "name": cam_name} for cam_id, cam_name in cursor.fetchall()]
+                result.append({"id": site_id, "name": name, "cameras": cameras})
+
+        return jsonify({"sites": result}), 200
+    except Exception as e:
+        print(f"Error fetching sites: {e}")
+        return jsonify({"error": "Internal Server Error"}), 500
+
 
 @app.route('/api/test', methods=['GET'])
 def test_server():

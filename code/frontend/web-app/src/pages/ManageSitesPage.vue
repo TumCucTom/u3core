@@ -16,29 +16,21 @@
         <div class="col-12 col-md-3">
           <q-list bordered>
             <!-- dropdown for each site -->
-            <q-expansion-item label="Site 01" dense>
-              <q-item clickable v-ripple>
-                <q-item-section>CAM 01</q-item-section>
-              </q-item>
-              <q-item clickable v-ripple>
-                <q-item-section>CAM 02</q-item-section>
-              </q-item>
-              <q-item clickable v-ripple>
-                <q-item-section>CAM 03</q-item-section>
-              </q-item>
-              <q-item clickable v-ripple>
-                <q-item-section>CAM 04</q-item-section>
+            <q-expansion-item
+              v-for="site in sites"
+              :key="site.id"
+              :label="site.name"
+              dense
+            >
+              <q-item v-for="camera in site.cameras" :key="camera.id" clickable v-ripple>
+                <q-item-section>{{ camera.name }}</q-item-section>
               </q-item>
             </q-expansion-item>
-            <q-expansion-item label="Site 02" dense />
-            <q-expansion-item label="Site 03" dense />
-            <q-expansion-item label="Site 04" dense />
-            <q-expansion-item label="Site 05" dense />
-            <q-expansion-item label="Site 06" dense />
+
             <q-btn
               label="+ Add New Site"
               flat
-              class="full-width bg-dark text-white q-mt-md"
+              class="bg-dark text-white q-mt-md"
               @click="openAddSiteDialog"
             />
           </q-list>
@@ -54,7 +46,7 @@
             <!-- This will be the video element showing the live stream or fallback to default MP4 -->
             <div class="bg-grey-8 q-mt-md" style="height: 250px; position: relative;">
               <video v-if="streaming" ref="videoPlayer" :src="videoSrc" controls autoplay loop style="width: 100%; height: 100%; object-fit: cover;"/>
-              <video v-else ref="videoPlayer" src="../../public/default_video.mp4" controls autoplay loop style="width: 100%; height: 100%; object-fit: cover;"/>
+              <video v-else ref="videoPlayer" src="/default_video.mp4" controls autoplay loop style="width: 100%; height: 100%; object-fit: cover;"/>
             </div>
 
             <div class="row q-mt-md">
@@ -143,6 +135,8 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   data() {
     return {
@@ -157,9 +151,13 @@ export default {
         name: '',
         RTSPURL: '',
       },
-      streaming: false, // To track if the video stream is active
-      videoSrc: '', // URL of the RTSP stream or MP4
+      streaming: false,
+      videoSrc: '',
+      sites: [], // List of sites fetched from the server
     };
+  },
+  created() {
+    this.fetchSites();
   },
   methods: {
     openAddSiteDialog() {
@@ -177,17 +175,54 @@ export default {
       this.addRTSP = false;
       this.resetForm();
     },
-    saveNewRTSP() {
-      console.log('New Camera Details:', this.newCamera);
-      this.closeAddRTSP();
+    async saveNewRTSP() {
+      try {
+        const response = await axios.post('http://127.0.0.1:3002/add-camera', {
+          name: this.newCamera.name,
+          rtsp_url: this.newCamera.RTSPURL,
+        });
+        console.log('Server Response:', response.data);
+        this.closeAddRTSP();
 
-      // Set video source to the RTSP URL entered in the form
-      this.videoSrc = this.newCamera.RTSPURL;
-      this.startLiveStream();
+        // Update video source and start live streaming
+        this.videoSrc = this.newCamera.RTSPURL;
+        this.startLiveStream();
+      } catch (error) {
+        console.error('Error saving new RTSP:', error);
+      }
     },
-    saveNewSite() {
-      console.log('New Site Details:', this.newSite);
-      this.closeAddSiteDialog();
+    async saveNewSite() {
+      try {
+        const response = await axios.post('http://127.0.0.1:3002/add-site', {
+          name: this.newSite.name,
+          latitude: this.newSite.latitude,
+          longitude: this.newSite.longitude,
+        });
+        console.log('Server Response:', response.data);
+        this.closeAddSiteDialog();
+      } catch (error) {
+        console.error('Error saving new site:', error);
+      }
+    },
+    async startLiveStream() {
+      try {
+        const response = await axios.post('http://127.0.0.1:3002/start-stream', {
+          rtsp_url: this.videoSrc,
+        });
+        if (response.data.status === 'success') {
+          this.streaming = true;
+        }
+      } catch (error) {
+        console.error('Error starting live stream:', error);
+      }
+    },
+    async fetchSites() {
+      try {
+        const response = await axios.get('http://127.0.0.1:3002/sites');
+        this.sites = response.data.sites;
+      } catch (error) {
+        console.error('Error fetching sites:', error);
+      }
     },
     resetForm() {
       this.newSite = {
@@ -195,12 +230,12 @@ export default {
         latitude: '',
         longitude: '',
       };
+      this.newCamera = {
+        name: '',
+        RTSPURL: '',
+      };
     },
-    startLiveStream() {
-      this.streaming = true;
-      // Here, the video source is already set to the RTSP URL, so you can skip further modification
-    }
-  },
+  }
 };
 </script>
 

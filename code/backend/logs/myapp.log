@@ -95,3 +95,39 @@
 2025-01-24 13:06:41,246 - INFO - 172.18.0.1 - - [24/Jan/2025 13:06:41] "OPTIONS /api/sendVerifyEmail HTTP/1.1" 200 -
 2025-01-24 13:06:41,694 - INFO - 172.18.0.1 - - [24/Jan/2025 13:06:41] "POST /api/sendVerifyEmail HTTP/1.1" 200 -
 2025-01-24 13:06:56,861 - INFO - 172.18.0.1 - - [24/Jan/2025 13:06:56] "GET /api/getName?email=info@shopveloworks.com HTTP/1.1" 200 -
+2025-01-24 19:58:50,610 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:3000
+ * Running on http://172.18.0.3:3000
+2025-01-24 19:58:50,610 - INFO - [33mPress CTRL+C to quit[0m
+2025-01-24 19:58:50,611 - INFO -  * Restarting with stat
+2025-01-24 19:58:50,780 - WARNING -  * Debugger is active!
+2025-01-24 19:58:50,781 - INFO -  * Debugger PIN: 640-387-207
+2025-01-24 20:25:13,434 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:3000
+ * Running on http://172.18.0.3:3000
+2025-01-24 20:25:13,435 - INFO - [33mPress CTRL+C to quit[0m
+2025-01-24 20:25:13,435 - INFO -  * Restarting with stat
+2025-01-24 20:25:13,700 - WARNING -  * Debugger is active!
+2025-01-24 20:25:13,701 - INFO -  * Debugger PIN: 640-387-207
+2025-01-24 20:26:06,283 - INFO - 172.18.0.1 - - [24/Jan/2025 20:26:06] "[33mOPTIONS /add-camera HTTP/1.1[0m" 404 -
+2025-01-24 20:27:04,786 - INFO - 172.18.0.1 - - [24/Jan/2025 20:27:04] "[33mGET /sites HTTP/1.1[0m" 404 -
+2025-01-24 20:35:13,168 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:3000
+ * Running on http://172.18.0.3:3000
+2025-01-24 20:35:13,168 - INFO - [33mPress CTRL+C to quit[0m
+2025-01-24 20:35:13,169 - INFO -  * Restarting with stat
+2025-01-24 20:35:13,335 - WARNING -  * Debugger is active!
+2025-01-24 20:35:13,336 - INFO -  * Debugger PIN: 640-387-207
+2025-01-24 20:35:35,808 - INFO - 172.18.0.1 - - [24/Jan/2025 20:35:35] "OPTIONS /add-camera HTTP/1.1" 200 -
+2025-01-24 20:35:50,825 - INFO - 172.18.0.1 - - [24/Jan/2025 20:35:50] "[33mOPTIONS /start-stream HTTP/1.1[0m" 404 -
+2025-01-24 20:39:26,696 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:3000
+ * Running on http://172.18.0.3:3000
+2025-01-24 20:39:26,696 - INFO - [33mPress CTRL+C to quit[0m
+2025-01-24 20:39:26,697 - INFO -  * Restarting with stat
+2025-01-24 20:39:26,879 - WARNING -  * Debugger is active!
+2025-01-24 20:39:26,879 - INFO -  * Debugger PIN: 640-387-207
