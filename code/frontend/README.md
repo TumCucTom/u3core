@@ -1,4 +1,7 @@
 # Front end
+You can see the outline in the [docs](../../docs/frontend) and
+the [Figma Link](https://www.figma.com/design/0JBvMzvd6paWzBFzhuWlZX/U3-Core-App)
+for progress on the UI.
 
 ## Run and Test
 To open the web app, run the following in your terminal:

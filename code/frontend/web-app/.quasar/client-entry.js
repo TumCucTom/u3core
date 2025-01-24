@@ -44,7 +44,6 @@ import quasarUserOptions from './quasar-user-options.js'
 
 
 
-
 const publicPath = `/`
 
 async function start ({

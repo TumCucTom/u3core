@@ -1,4 +1,5 @@
 .idea
 venv/
 .DS_store
+code/backend/path
 code/backend/env

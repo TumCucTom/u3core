@@ -26,6 +26,9 @@ This is a ML/AI microservice top-layer that integrates on an already existing Io
 ### Tasks / Features
 
 #### Frontend
+
+A more in detail document can be found in the [docs](/docs/frontend), but a summary follows:
+
 - There should be Email ID setup and an authentication workflow
 - User friendly UI
 - UI integration with the backend 
