@@ -66,10 +66,10 @@ This is a ML/AI microservice top-layer that integrates on an already existing Io
 │   └──📄 meetings.md                   # Recording all the clients meetings and mentor meetings
 ├──📁 code/                             #
 │   ├──📁 frontend/                     #
-│   │   ├──📁 web-app/                  #
+│   │   ├──📁 web-app/                  # The web-app that users will interact with
 │   │   │   └──📄... *content           #
 │   │   ├──📄 requirements.txt          #
-│   │   └──📄 README.md                 #
+│   │   └──📄 README.md                 # Info on how front end works and how to run
 │   ├──📁 backend/                      #
 │   │   ├──📁 python-features/          #
 │   │   │   ├──📄 alert_sys.py          #
@@ -77,9 +77,9 @@ This is a ML/AI microservice top-layer that integrates on an already existing Io
 │   │   │   └──📄 image_get_prep.py     # OpenCV code for getting a preprocessing videostream 
 │   │   ├──📁 training/                 #
 │   │   │   └──📄 README.md             #
-│   │   ├──📁 web-server/               #
+│   │   ├──📁 web-server/               # Backend code - recieve RESTful calls from front-end
 │   │   │   └──📄... *content           #
-│   │   ├──📄 README.md                 #
+│   │   ├──📄 README.md                 # Info on how backend works and how to run
 │   │   └──📄 requirements.txt          # 
 │   ├──📁 preliminary/                  #
 │   │   ├──📁 Personcounter/            #
