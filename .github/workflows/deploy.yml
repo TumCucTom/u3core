@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - dev
+      - bug-fix-cd
 
 permissions:
   contents: write
