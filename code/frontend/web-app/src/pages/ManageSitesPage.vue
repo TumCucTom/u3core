@@ -54,7 +54,7 @@
             <!-- This will be the video element showing the live stream or fallback to default MP4 -->
             <div class="bg-grey-8 q-mt-md" style="height: 250px; position: relative;">
               <video v-if="streaming" ref="videoPlayer" :src="videoSrc" controls autoplay loop style="width: 100%; height: 100%;"/>
-              <video v-else ref="videoPlayer" src="/public/default_video.mp4" controls autoplay loop style="width: 100%; height: 100%;"/>
+              <video v-else ref="videoPlayer" src="../../public/default_video.mp4" controls autoplay loop style="width: 100%; height: 100%;"/>
             </div>
 
             <div class="row q-mt-md">
