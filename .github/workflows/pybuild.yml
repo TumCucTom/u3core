@@ -15,38 +15,61 @@ permissions:
   contents: read
 
 jobs:
-  build:
-
+  # Job for installing dependencies and caching them
+  install-dependencies:
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v4
-    - name: Cache pip dependencies
-      uses: actions/cache@v3
-      with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-pip-
-    - name: Set up Python 3.10
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.x'
-    - name: Install dependencies
-      run: |
-        sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev
-        python -m pip install --upgrade pip
-        pip install flake8
-        pip install -r code/frontend/requirements.txt
-        pip install -r code/backend/requirements.txt
-    - name: Lint with flake8
-      run: |
-        # stop the build if there are Python syntax errors or undefined names
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    - name: Test with pytest
-      run: |
-        #pip install pytest pytest-cov
-        #pytest code/ --doctest-modules --junitxml=junit/test-results.xml --cov=com --cov-report=xml --cov-report=html
+      - uses: actions/checkout@v4
+      - name: Cache pip dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Install dependencies
+        run: |
+          sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev
+          python -m pip install --upgrade pip
+          pip install flake8
+          pip install -r code/frontend/requirements.txt
+          pip install -r code/backend/requirements.txt
+
+  # Job for linting the code
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Lint with flake8
+        run: |
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+  # Job for running tests
+  test:
+    runs-on: ubuntu-22.04
+    needs: [install-dependencies, lint]  # Ensure that both install and lint jobs are completed before running tests
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - name: Install dependencies
+        run: |
+          pip install -r code/frontend/requirements.txt
+          pip install -r code/backend/requirements.txt
+      - name: Test with pytest
+        run: |
+          pytest code/ --doctest-modules --cov=com --cov-report=xml --cov-report=html
+
+  
         
