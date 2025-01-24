@@ -8,15 +8,45 @@
 # 2024-ML/AI Prediction Microservices
 ## Table of Contents
 - [2024-ML/AI Prediction Microservices](#2024-mlai-prediction-microservices)
-  - [Project Overview & structure](#project-overview)
-  - [User/ Developer Instructions](#user-instructions)
-  - [Stakeholders and User stories](#stakeholders)
-  - [Releases and Technologies](#releases)
+  - [Table of Contents](#table-of-contents)
+  - [Project Overview](#project-overview)
+    - [Tasks / Features](#tasks--features)
+      - [Frontend](#frontend)
+      - [Backend](#backend)
+    - [Project Links](#project-links)
+  - [Project Structure](#project-structure)
+  - [User Instructions](#user-instructions)
+    - [Requirements and Prerequisites](#requirements-and-prerequisites)
+    - [Cloud Deployment Usage](#cloud-deployment-usage)
+    - [AI Edge Deployment Usage](#ai-edge-deployment-usage)
+  - [Developer Instructions](#developer-instructions)
+    - [Requirements and Prerequisites](#requirements-and-prerequisites-1)
+    - [Contributing](#contributing)
+    - [Testing with RTSP](#testing-with-rtsp)
+  - [Stakeholders](#stakeholders)
+    - [DigitalU3](#digitalu3)
+    - [Unnamed client](#unnamed-client)
+  - [User stories](#user-stories)
+  - [Releases](#releases)
+  - [Technologies Used](#technologies-used)
     - [Tech Stack Analysis](#tech-stack-analysis)
+      - [Front end](#front-end)
+      - [Back end](#back-end)
+      - [Hardware](#hardware)
+      - [Development Tools](#development-tools)
     - [Experience in Team](#experience-in-team)
     - [Risks](#risks)
-  - [Architecture and Information](#architecture-diagram)
-  - [License and Contributors](#license)
+  - [Architecture Diagram](#architecture-diagram)
+  - [Flow of Information](#flow-of-information)
+    - [AI Edge](#ai-edge)
+    - [Cloud system](#cloud-system)
+    - [At any time](#at-any-time)
+  - [Additional Information](#additional-information)
+    - [Testing](#testing)
+  - [License](#license)
+  - [Contributors](#contributors)
+    - [Names and information](#names-and-information)
+    - [Responsbilities](#responsbilities)
 
 ## Project Overview
 This is a ML/AI microservice top-layer that integrates on an already existing IoT platform for detection of fire, smoke and oil leaks.
@@ -49,29 +79,50 @@ This is a ML/AI microservice top-layer that integrates on an already existing Io
 
 ## Project Structure
 ```
-📁 project/                            #                    
-├── 📁 ai-tools/                       # Information about AI technologies used
-│    └──📄 README.md                   #
-├── 📁 docs/                           #
-│    ├──📄 ethics.md                   #
-│    └──📄 meetings.md                 # Recording all the clients meetings and mentor meetings
-├── 📁 frontend/                       #
-│    └──📄 README.md                   #
-├── 📁 backend/                        #
-│    ├──📄 imageGetPrep.py             # OpenCV code for getting a preprocessing videostream
-│    └──📄 README.md                   # 
-├──📁 preliminary/                     #
-│   ├──📁 Personcounter/               #
-│   │   ├──📁 dataset/                 # First training dataset used
-│   │   ├──📁 dataset2/                # Second training dataset used
-│   │   ├──📁 roboflow-python/         #
-│   │   ├──📄 counter.py               # Code adapted for counting people
-│   │   ├──📄 inferpi.py               # Code adapted for rasberry pi
-│   │   └──📄 infer.py                 # People detection code
-│   └──📄 README.md                    # Details of preliminary task requests
-├──📄 .gitignore                       #
-├──📄 LICENSE.md                       # License for this project
-└──📄 README.md                        # Overall description of the project
+📁 SEP project/                         #       
+├──📁 .github/                          #
+│   ├──📁 ISSUE_TEMPLATE/               #
+│   │   └──📄... *content               # all kinds of issue template files
+│   ├──📁 workflows/                    # 
+│   │   └──📄... *content               # all workflows files
+│   └──📄 pull_request_template.md      # PR template
+├──📁 ai-tools/                         # 
+│   └──📄 README.md                     # Information about AI technologies used
+├──📁 docs/                             #
+│   ├──📁 slides/                       #
+│   │   └──📄... *content               # ppts and mv it needs
+│   ├──📄 ethics.md                     #
+│   ├──📄 release.md                    #
+│   └──📄 meetings.md                   # Recording all the clients meetings and mentor meetings
+├──📁 code/                             #
+│   ├──📁 frontend/                     #
+│   │   ├──📁 web-app/                  #
+│   │   │   └──📄... *content           #
+│   │   ├──📄 requirements.txt          #
+│   │   └──📄 README.md                 #
+│   ├──📁 backend/                      #
+│   │   ├──📁 python-features/          #
+│   │   │   ├──📄 alert_sys.py          #
+│   │   │   ├──📄 full_interation.py    #
+│   │   │   └──📄 image_get_prep.py     # OpenCV code for getting a preprocessing videostream 
+│   │   ├──📁 training/                 #
+│   │   │   └──📄 README.md             #
+│   │   ├──📁 web-server/               #
+│   │   │   └──📄... *content           #
+│   │   ├──📄 README.md                 #
+│   │   └──📄 requirements.txt          # 
+│   ├──📁 preliminary/                  #
+│   │   ├──📁 Personcounter/            #
+│   │   │   ├──📄 counter.py            # Code adapted for counting people
+│   │   │   ├──📄 inferpi.py            # Code adapted for rasberry pi
+│   │   │   └──📄 infer.py              # People detection code
+│   │   └──📄 README.md                 # Details of preliminary task requests
+├──📁 node_modules/                     #
+│   └──📄... *content                   #
+├──📄 .gitignore                        #
+├──📄 LICENSE.md                        # License for this project
+├──📄 README.md                         # Overall description of the project
+└──📄 release.md                        #
 ```
 ## User Instructions
 ### Requirements and Prerequisites
