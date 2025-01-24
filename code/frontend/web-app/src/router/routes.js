@@ -1,4 +1,5 @@
 import Home from "src/pages/LoginPage.vue";
+import HomeLayout from "layouts/HomeLayout.vue";
 import otp from "src/pages/otPage.vue";
 import sitesPage from "src/pages/SitesPage.vue";
 import actionsPage from "src/pages/ActionSettingsPage.vue"
@@ -6,25 +7,37 @@ import ManageModelsPage from "src/pages/ManageModelsPage.vue"
 import ManageSitesPage from "src/pages/ManageSitesPage.vue"
 
 const routes = [
-  // minimal (blank) layout for login and otp pages
   {
-    path: '/app',
-    component: () => import('layouts/MinimalLayout.vue'),
+    path: '/',
+    component: () => import('layouts/MainLayout.vue'),
     children: [
-      { 
-        path: '', 
-        component: otp, 
-      },
-    ],
+      { path: '',
+        component: () => import('pages/IndexPage.vue'),
+        component: HomeLayout,
+        children: [
+          { path: '', component: Home },
+        ]}
+    ]
   },
+  { path: '/ResetPassword', component: () => import('src/pages/ResetPassword.vue') },
+  { path: '/VerifiedPassword', component: () => import('src/pages/VerifiedPassword.vue') },
+  { path: '/Dashboard', component: () => import('src/pages/DashBoard.vue') },
+  { path: '/OTPVerification', component: () => import('src/pages/OTPVerification.vue') },
+  { path: '/SetupResetPassword', component: () => import('src/pages/ForgotPassword.vue') },
 
+  // Always leave this as last one,
+  // but you can also remove it
+  {
+    path: '/:catchAll(.*)*',
+    component: () => import('pages/ErrorNotFound.vue')
+  },
   
-  { 
+  {
     //testing sidebar on SitesPage
     path: '/',
-    component: () => import('layouts/SidebarLayout.vue'), 
+    component: () => import('layouts/SidebarLayout.vue'),
     children: [
-      //route for dashboard{ path: 'dashboard', component: () => import('pages/DashboardPage.vue') }, 
+      //route for dashboard{ path: 'dashboard', component: () => import('pages/DashboardPage.vue') },
       { path: '',
        component: ManageSitesPage
       },
