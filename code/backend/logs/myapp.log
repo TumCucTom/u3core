@@ -228,3 +228,14 @@
 2025-01-25 17:57:12,725 - INFO -  * Restarting with stat
 2025-01-25 17:57:13,016 - WARNING -  * Debugger is active!
 2025-01-25 17:57:13,017 - INFO -  * Debugger PIN: 640-387-207
+2025-01-25 18:10:20,638 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:3000
+ * Running on http://172.18.0.3:3000
+2025-01-25 18:10:20,639 - INFO - [33mPress CTRL+C to quit[0m
+2025-01-25 18:10:20,639 - INFO -  * Restarting with stat
+2025-01-25 18:10:20,895 - WARNING -  * Debugger is active!
+2025-01-25 18:10:20,895 - INFO -  * Debugger PIN: 640-387-207
+2025-01-25 18:12:28,254 - INFO - 172.18.0.1 - - [25/Jan/2025 18:12:28] "[35m[1mGET /sites HTTP/1.1[0m" 500 -
+2025-01-25 18:13:17,997 - INFO - 172.18.0.1 - - [25/Jan/2025 18:13:17] "OPTIONS /add-camera HTTP/1.1" 200 -
+2025-01-25 18:13:18,056 - INFO - 172.18.0.1 - - [25/Jan/2025 18:13:18] "[35m[1mPOST /add-camera HTTP/1.1[0m" 201 -
