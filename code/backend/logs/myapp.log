@@ -204,3 +204,19 @@
 2025-01-24 22:30:02,933 - INFO - 172.18.0.1 - - [24/Jan/2025 22:30:02] "[35m[1mPOST /add-camera HTTP/1.1[0m" 201 -
 2025-01-24 22:30:02,939 - INFO - 172.18.0.1 - - [24/Jan/2025 22:30:02] "[33mOPTIONS /startStream HTTP/1.1[0m" 404 -
 2025-01-24 22:31:40,997 - INFO - 172.18.0.1 - - [24/Jan/2025 22:31:40] "[35m[1mGET /sites HTTP/1.1[0m" 500 -
+2025-01-25 17:22:32,766 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:3000
+ * Running on http://172.18.0.3:3000
+2025-01-25 17:22:32,766 - INFO - [33mPress CTRL+C to quit[0m
+2025-01-25 17:22:32,767 - INFO -  * Restarting with stat
+2025-01-25 17:22:32,950 - WARNING -  * Debugger is active!
+2025-01-25 17:22:32,952 - INFO -  * Debugger PIN: 640-387-207
+2025-01-25 17:24:55,514 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:3000
+ * Running on http://172.18.0.3:3000
+2025-01-25 17:24:55,514 - INFO - [33mPress CTRL+C to quit[0m
+2025-01-25 17:24:55,515 - INFO -  * Restarting with stat
+2025-01-25 17:24:55,696 - WARNING -  * Debugger is active!
+2025-01-25 17:24:55,697 - INFO -  * Debugger PIN: 640-387-207

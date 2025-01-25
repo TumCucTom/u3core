@@ -13,7 +13,10 @@ import os
 import time
 import ffmpeg
 from flask import Flask, request, jsonify, send_from_directory
+import multiprocessing
 from tempfile import NamedTemporaryFile
+
+from fire_detection_script import process_rtsp_stream_with_url
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG,
@@ -158,6 +161,10 @@ def add_site():
         return jsonify({"error": "Internal Server Error"}), 500
 
 
+def run_fire_detection(rtsp_url):
+    """Run the fire detection script for a given RTSP URL."""
+    process_rtsp_stream_with_url(rtsp_url)
+
 @app.route('/add-camera', methods=['POST'])
 def add_camera():
     """
@@ -188,7 +195,12 @@ def add_camera():
                 (name, rtsp_url)
             )
         connection.commit()
-        return jsonify({"message": "Camera added successfully!"}), 201
+
+        # Start the fire detection process
+        process = multiprocessing.Process(target=run_fire_detection, args=(rtsp_url,))
+        process.start()
+
+        return jsonify({"message": "Camera added and fire detection started!"}), 201
     except Exception as e:
         print(f"Error adding camera: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
