@@ -44,13 +44,14 @@ jobs:
   # Job for linting the code
   lint:
     runs-on: ubuntu-latest
-    needs: [install-dependencies]
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python 3.10
         uses: actions/setup-python@v5
         with:
           python-version: '3.x'
+      - name: Use pip cache
+        run: cp -r ~/.cache/pip .cache
       - name: Lint with flake8
         run: |
           flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
