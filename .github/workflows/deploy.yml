@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - dev
+      - bug-fix-cd
 
 permissions:
   contents: write
@@ -24,4 +25,4 @@ jobs:
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: code/frontend/web-app # The folder the action should deploy.
+          folder: code/frontend/web-app/dist/spa # The folder the action should deploy.
