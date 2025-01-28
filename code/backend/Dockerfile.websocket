@@ -4,6 +4,14 @@ FROM node:14-slim
 # Set the working directory
 WORKDIR /usr/src/app
 
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    apt-transport-https \
+    ca-certificates \
+    gnupg \
+    gcc \
+    ffmpeg \
+    && rm -rf /var/lib/apt/lists/*
+
 # Copy the WebSocket server code
 COPY websocket-server .
 
