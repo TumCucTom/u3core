@@ -54,29 +54,56 @@ A more in detail document can be found in the [docs](/docs/frontend), but a summ
 
 ## Project Structure
 ```
-📁 project/                            #                    
-├── 📁 ai-tools/                       # Information about AI technologies used
-│    └──📄 README.md                   #
-├── 📁 docs/                           #
-│    ├──📄 ethics.md                   #
-│    └──📄 meetings.md                 # Recording all the clients meetings and mentor meetings
-├── 📁 frontend/                       #
-│    └──📄 README.md                   #
-├── 📁 backend/                        #
-│    ├──📄 imageGetPrep.py             # OpenCV code for getting a preprocessing videostream
-│    └──📄 README.md                   # 
-├──📁 preliminary/                     #
-│   ├──📁 Personcounter/               #
-│   │   ├──📁 dataset/                 # First training dataset used
-│   │   ├──📁 dataset2/                # Second training dataset used
-│   │   ├──📁 roboflow-python/         #
-│   │   ├──📄 counter.py               # Code adapted for counting people
-│   │   ├──📄 inferpi.py               # Code adapted for rasberry pi
-│   │   └──📄 infer.py                 # People detection code
-│   └──📄 README.md                    # Details of preliminary task requests
-├──📄 .gitignore                       #
-├──📄 LICENSE.md                       # License for this project
-└──📄 README.md                        # Overall description of the project
+├── LICENSE                            # Licensing details for the project
+├── README.md                          # Main project overview and instructions
+├── ai-tools                           #
+│   └── README.md                      # Overview of AI tools included in the project
+├── code                               #
+│   ├── backend                        # Backend-related services and scripts
+│   │   ├── Dockerfile.backend         # Docker configuration for the backend server
+│   │   ├── Dockerfile.websocket       # Docker configuration for the websocket service
+│   │   ├── README.md                  # Overview of the backend setup
+│   │   ├── db                         #
+│   │   │   ├── Dockerfile             # Docker configuration for the database
+│   │   │   └── custom-shutdown.sh     # Custom script for database shutdown to preserve its state
+│   │   ├── docker-compose.yml         # Docker Compose setup for backend services
+│   │   ├── initdb                     #
+│   │   │   ├── README.md              # Overview of database initialization
+│   │   │   └── dump.sql               # SQL dump for initial database setup
+│   │   ├── python-features            #
+│   │   │   ├── alert_sys.py           # Script for alert system implementation
+│   │   │   ├── full_interation.py     # Script with all features integrated
+│   │   │   └── image_get_prep.py      # Script for image preprocessing only
+│   │   ├── python-server              # Backend server
+│   │   ├── requirements.txt           # Python dependencies for the backend
+│   │   ├── training                   #
+│   │   │   └── README.md              # Overview of training techniques and performance
+│   │   └── websocket-server           # Websocket server
+│   ├── frontend                       #
+│   │   ├── README.md                  # Overview of the frontend setup
+│   │   ├── requirements.txt           # Frontend dependencies
+│   │   └── web-app                    # Frontend quasar web application
+│   └── preliminary                    # Early-stage experimental code and prototypes
+│       ├── Personcounter              #
+│       │   ├── counter.py             # Person counting NN
+│       │   ├── infer.py               # NN for people detection
+│       │   └── inferpi.py             # Raspberry Pi-specific for above
+│       └── README.md                  # Overview of preliminary code
+├── docs                               #
+│   ├── ethics.md                      # Ethical considerations for the project
+│   ├── frontend                       #
+│   │   ├── UI-Design.md               # User interface design details
+│   │   └── figma_Designs              # Figma designs for the frontend
+│   ├── meetings.md                    # Meeting notes and summaries
+│   ├── release.md                     # Release notes and deployment information
+│   └── slides                         # VIVA demos
+│       ├── Demo.mov                   # Demo video for the project
+│       └── MVP-slides.pptx            # PowerPoint slides for the MVP presentation
+├── package-lock.json                  # Dependency tree lock file (npm/yarn)
+├── package.json                       # Project dependencies and metadata (npm/yarn)
+├── release.md                         # Release notes (duplicate of `docs/release.md`)
+└── yarn.lock                          # Dependency tree lock file (yarn)
+
 ```
 ## User Instructions
 ### Requirements and Prerequisites
