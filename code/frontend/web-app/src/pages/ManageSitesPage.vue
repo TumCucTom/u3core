@@ -43,11 +43,21 @@
               <q-btn label="Live View" color="amber" flat @click="startLiveStream"/>
             </div>
 
-            <!-- Video element to show live stream or fallback to default MP4 -->
             <div class="bg-grey-8 q-mt-md" style="height: 250px; position: relative;">
-              <video v-if="streaming" ref="videoPlayer" controls autoplay loop style="width: 100%; height: 100%; object-fit: cover;"/>
-              <video v-else ref="videoPlayer" src="/default_video.mp4" controls autoplay loop style="width: 100%; height: 100%; object-fit: cover;"/>
+              <img
+                v-if="streaming"
+                ref="imagePlayer"
+                style="width: 100%; height: 100%; object-fit: cover;"
+                :src="currentFrame"
+                alt="Live Stream"
+              />
+              <div
+                v-else
+                style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: black; color: white; font-size: 2rem;">
+                Loading stream...
+              </div>
             </div>
+
 
             <div class="row q-mt-md">
               <q-card flat bordered class="col-6 q-pa-md">
@@ -56,7 +66,7 @@
               </q-card>
               <q-card flat bordered class="col-6 q-pa-md">
                 <div class="text-caption text-grey-7">Longitude</div>
-                <div class="text-h5 text-bold">48.8584° N</div>
+                <div class="text-h5 text-bold">48.8584° E</div>
               </q-card>
             </div>
           </q-card>
@@ -152,15 +162,66 @@ export default {
         RTSPURL: '',
       },
       streaming: false,
-      videoSrc: '',
+      videoSrc: '', // RTSP URL
       sites: [], // List of sites fetched from the server
       socket: null, // WebSocket instance
+      currentFrame: '', // Current frame as blob URL
     };
   },
   created() {
     this.fetchSites();
   },
   methods: {
+    async startLiveStream() {
+      // Set up WebSocket for live stream
+      if (this.socket) {
+        this.socket.close(); // Close any existing socket
+      }
+
+      this.socket = new WebSocket('ws://localhost:8080'); // Adjust to your WebSocket server
+      this.socket.binaryType = 'blob'; // Handle binary data
+
+      this.socket.onopen = () => {
+        console.log('WebSocket connection established');
+        this.streaming = true;
+
+        // Send RTSP URL to the WebSocket server
+        if (this.videoSrc) {
+          this.socket.send(this.videoSrc);
+          console.log('RTSP URL sent to WebSocket server:', this.videoSrc);
+        }
+      };
+
+      this.socket.onmessage = (event) => {
+        console.log('Received video frame from WebSocket server:', event.data);
+        // Handle received video frames
+        const blob = event.data;
+        const newBlobUrl = URL.createObjectURL(blob);
+
+        // Clean up old frame memory
+        if (this.currentFrame) {
+          URL.revokeObjectURL(this.currentFrame);
+        }
+
+        // Set the new frame
+        this.currentFrame = newBlobUrl;
+      };
+
+      this.socket.onerror = (error) => {
+        console.error('WebSocket error:', error);
+      };
+
+      this.socket.onclose = () => {
+        console.log('WebSocket connection closed');
+        this.streaming = false;
+
+        // Clean up current frame memory
+        if (this.currentFrame) {
+          URL.revokeObjectURL(this.currentFrame);
+          this.currentFrame = '';
+        }
+      };
+    },
     openAddSiteDialog() {
       this.addSiteDialog = true;
     },
@@ -174,7 +235,6 @@ export default {
     },
     closeAddRTSP() {
       this.addRTSP = false;
-      this.resetForm();
     },
     async saveNewRTSP() {
       try {
@@ -187,7 +247,8 @@ export default {
 
         // Update video source and start live streaming
         this.videoSrc = this.newCamera.RTSPURL;
-        this.startLiveStream();
+        console.log('Video Source:', this.videoSrc)
+        await this.startLiveStream();
       } catch (error) {
         console.error('Error saving new RTSP:', error);
       }
@@ -204,49 +265,6 @@ export default {
       } catch (error) {
         console.error('Error saving new site:', error);
       }
-    },
-    async startLiveStream() {
-      // Set up WebSocket for live stream
-      if (this.socket) {
-        this.socket.close(); // Close any existing socket
-      }
-
-      this.socket = new WebSocket('ws://localhost:8080'); // Adjust to your WebSocket server
-      this.socket.binaryType = 'blob'; // Set to handle binary data
-
-      this.socket.onopen = () => {
-        console.log('WebSocket connection established');
-      };
-
-      this.socket.onmessage = (event) => {
-        // Handle received video frames and display them in the video element
-        const blob = event.data;
-        const url = URL.createObjectURL(blob);
-        this.$refs.videoPlayer.src = url;
-      };
-
-      this.socket.onerror = (error) => {
-        console.error('WebSocket error:', error);
-      };
-
-      this.socket.onclose = () => {
-        console.log('WebSocket connection closed');
-      };
-
-      // Send RTSP URL to server
-      /*
-      try {
-        const response = await axios.post('http://127.0.0.1:3002/startStream', {
-          rtsp_url: this.videoSrc,
-        });
-        if (response.data.status === 'success') {
-          console.log("Streaming started!");
-          this.streaming = true;
-        }
-      } catch (error) {
-        console.error('Error starting live stream:', error);
-      }
-       */
     },
     async fetchSites() {
       try {
