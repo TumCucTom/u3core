@@ -238,7 +238,7 @@ export default {
     },
     async saveNewRTSP() {
       try {
-        const response = await axios.post('http://127.0.0.1:3002/add-camera', {
+        const response = await axios.post('http://127.0.0.1:3002/api/add-camera', {
           name: this.newCamera.name,
           rtsp_url: this.newCamera.RTSPURL,
         });

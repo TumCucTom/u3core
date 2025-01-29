@@ -4,25 +4,25 @@ import random
 import string
 import secrets
 import pymysql
-import logging
 import pycurl
 import requests
 from io import BytesIO
 import json
-import os
 import time
-import ffmpeg
+import logging
+import sys
 from flask import Flask, request, jsonify, send_from_directory
 import multiprocessing
 from fire_detection_script import process_rtsp_stream_with_url
 
 # Configure logging
-logging.basicConfig(level=logging.DEBUG,
-                    format='%(asctime)s - %(levelname)s - %(message)s',
-                    handlers=[
-                        logging.StreamHandler(),  # Console output
-                        logging.FileHandler('/app/logs/myapp.log')  # Log to a file
-                    ])
+logging.basicConfig(
+    level=logging.INFO,  # Set log level (INFO, DEBUG, ERROR, etc.)
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    handlers=[
+        logging.StreamHandler(sys.stdout)  # Log to Docker console (stdout)
+    ]
+)
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
@@ -47,8 +47,94 @@ for attempt in range(max_retries):
 else:
     raise Exception("Max retries exceeded. Could not connect to the database.")
 
+# Dictionary to track running fire detection processes
+fire_detection_processes = {}
 
-@app.route('/add-site', methods=['POST'])
+def run_fire_detection(rtsp_url):
+    """Run the fire detection script for a given RTSP URL."""
+    logging.info("Running fire detection on {rtsp_url}")
+    process_rtsp_stream_with_url(rtsp_url)
+
+def start_fire_detection_for_all_cameras():
+    """
+    Fetch all cameras from the database and start fire detection concurrently.
+    Ensures each RTSP stream is monitored independently.
+    """
+    global fire_detection_processes
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT rtsp_url FROM Cameras")
+            cameras = cursor.fetchall()
+
+        for (rtsp_url,) in cameras:
+            if rtsp_url not in fire_detection_processes:  # Avoid duplicate processes
+                process = multiprocessing.Process(target=run_fire_detection, args=(rtsp_url,))
+                process.start()
+                fire_detection_processes[rtsp_url] = process
+                logging.info(f"Started fire detection for: {rtsp_url}")
+
+        logging.info("Started fire detection for all cameras")
+    except Exception as e:
+        print(f"Error starting fire detection processes: {e}")
+
+@app.route('/api/add-camera', methods=['POST'])
+def add_camera():
+    """
+    Adds a new RTSP camera to the database and starts fire detection for it.
+    Converts tcp:// to rtsp:// if necessary and updates existing records.
+    """
+    data = request.json
+    name = data.get('name')
+    rtsp_url = data.get('rtsp_url')
+
+    if not all([name, rtsp_url]):
+        return jsonify({"error": "Name and RTSP URL are required"}), 400
+
+    # Convert tcp:// to rtsp://
+    if rtsp_url.startswith("tcp://"):
+        rtsp_url = "rtsp://" + rtsp_url[6:]
+
+    try:
+        with connection.cursor() as cursor:
+            # Create the Cameras table if it doesn't exist
+            create_table_query = """
+            CREATE TABLE IF NOT EXISTS Cameras (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                name VARCHAR(255),
+                rtsp_url TEXT
+            );
+            """
+            cursor.execute(create_table_query)
+
+            # Update any existing entries that start with tcp://
+            update_query = """
+            UPDATE Cameras
+            SET rtsp_url = CONCAT('rtsp://', SUBSTRING(rtsp_url, 7))
+            WHERE rtsp_url LIKE 'tcp://%';
+            """
+            cursor.execute(update_query)
+
+            # Insert the new camera data
+            cursor.execute(
+                "INSERT INTO Cameras (name, rtsp_url) VALUES (%s, %s)",
+                (name, rtsp_url)
+            )
+        connection.commit()
+
+        # Start fire detection for the new camera
+        if rtsp_url not in fire_detection_processes:
+            process = multiprocessing.Process(target=run_fire_detection, args=(rtsp_url,))
+            process.start()
+            fire_detection_processes[rtsp_url] = process
+            print(f"Started fire detection for new camera: {rtsp_url}")
+
+        return jsonify({"message": "Camera added, TCP URLs updated, and fire detection started!"}), 201
+    except Exception as e:
+        print(f"Error adding camera: {e}")
+        return jsonify({"error": "Internal Server Error"}), 500
+
+
+@app.route('/api/add-site', methods=['POST'])
 def add_site():
     """
     Adds a new site with name, latitude, and longitude to the database.
@@ -86,52 +172,7 @@ def add_site():
         return jsonify({"error": "Internal Server Error"}), 500
 
 
-def run_fire_detection(rtsp_url):
-    """Run the fire detection script for a given RTSP URL."""
-    process_rtsp_stream_with_url(rtsp_url)
-
-@app.route('/add-camera', methods=['POST'])
-def add_camera():
-    """
-    Adds a new RTSP camera to a site.
-    """
-    data = request.json
-    name = data.get('name')
-    rtsp_url = data.get('rtsp_url')
-
-    if not all([name, rtsp_url]):
-        return jsonify({"error": "Name and RTSP URL are required"}), 400
-
-    try:
-        with connection.cursor() as cursor:
-            # Create the Cameras table if it doesn't exist
-            create_table_query = """
-            CREATE TABLE IF NOT EXISTS Cameras (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                name VARCHAR(255),
-                rtsp_url TEXT
-            );
-            """
-            cursor.execute(create_table_query)
-
-            # Insert the camera data
-            cursor.execute(
-                "INSERT INTO Cameras (name, rtsp_url) VALUES (%s, %s)",
-                (name, rtsp_url)
-            )
-        connection.commit()
-
-        # Start the fire detection process
-        process = multiprocessing.Process(target=run_fire_detection, args=(rtsp_url,))
-        process.start()
-
-        return jsonify({"message": "Camera added and fire detection started!"}), 201
-    except Exception as e:
-        print(f"Error adding camera: {e}")
-        return jsonify({"error": "Internal Server Error"}), 500
-
-
-@app.route('/sites', methods=['GET'])
+@app.route('/api/sites', methods=['GET'])
 def fetch_sites():
     """
     Fetches all sites and their associated cameras.
@@ -449,5 +490,6 @@ def send_email(to_email, subject, link, code=None):
 
 
 if __name__ == '__main__':
+    start_fire_detection_for_all_cameras()  # Start fire detection for all cameras on launch
     app.run(host='0.0.0.0', port=3000, debug=True)
 
