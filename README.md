@@ -10,15 +10,45 @@
 # 2024-ML/AI Prediction Microservices
 ## Table of Contents
 - [2024-ML/AI Prediction Microservices](#2024-mlai-prediction-microservices)
-  - [Project Overview & structure](#project-overview)
-  - [User/ Developer Instructions](#user-instructions)
-  - [Stakeholders and User stories](#stakeholders)
-  - [Releases and Technologies](#releases)
+  - [Table of Contents](#table-of-contents)
+  - [Project Overview](#project-overview)
+    - [Tasks / Features](#tasks--features)
+      - [Frontend](#frontend)
+      - [Backend](#backend)
+    - [Project Links](#project-links)
+  - [Project Structure](#project-structure)
+  - [User Instructions](#user-instructions)
+    - [Requirements and Prerequisites](#requirements-and-prerequisites)
+    - [Cloud Deployment Usage](#cloud-deployment-usage)
+    - [AI Edge Deployment Usage](#ai-edge-deployment-usage)
+  - [Developer Instructions](#developer-instructions)
+    - [Requirements and Prerequisites](#requirements-and-prerequisites-1)
+    - [Contributing](#contributing)
+    - [Testing with RTSP](#testing-with-rtsp)
+  - [Stakeholders](#stakeholders)
+    - [DigitalU3](#digitalu3)
+    - [Unnamed client](#unnamed-client)
+  - [User stories](#user-stories)
+  - [Releases](#releases)
+  - [Technologies Used](#technologies-used)
     - [Tech Stack Analysis](#tech-stack-analysis)
+      - [Front end](#front-end)
+      - [Back end](#back-end)
+      - [Hardware](#hardware)
+      - [Development Tools](#development-tools)
     - [Experience in Team](#experience-in-team)
     - [Risks](#risks)
-  - [Architecture and Information](#architecture-diagram)
-  - [License and Contributors](#license)
+  - [Architecture Diagram](#architecture-diagram)
+  - [Flow of Information](#flow-of-information)
+    - [AI Edge](#ai-edge)
+    - [Cloud system](#cloud-system)
+    - [At any time](#at-any-time)
+  - [Additional Information](#additional-information)
+    - [Testing](#testing)
+  - [License](#license)
+  - [Contributors](#contributors)
+    - [Names and information](#names-and-information)
+    - [Responsbilities](#responsbilities)
 
 ## Project Overview
 This is a ML/AI microservice top-layer that integrates on an already existing IoT platform for detection of fire, smoke and oil leaks.
@@ -99,6 +129,10 @@ A more in detail document can be found in the [docs](/docs/frontend), but a summ
 │   └── slides                         # VIVA demos
 │       ├── Demo.mov                   # Demo video for the project
 │       └── MVP-slides.pptx            # PowerPoint slides for the MVP presentation
+├── test                               #
+│   ├── _init_.py                      # Module function
+│   ├── pytest.ini                     # configuration function for pytest
+│   └── test_exapmle.py                # pytest template
 ├── package-lock.json                  # Dependency tree lock file (npm/yarn)
 ├── package.json                       # Project dependencies and metadata (npm/yarn)
 ├── release.md                         # Release notes (duplicate of `docs/release.md`)
