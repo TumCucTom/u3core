@@ -64,7 +64,7 @@
 - Told us that cameras will still be supplied
 
 
-## Client 15th Octiber
+## Client 15th October
 - Announced the MVP
 - Show the client the roboflowmodel
 
