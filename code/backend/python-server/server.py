@@ -13,6 +13,7 @@ import time
 import logging
 import sys
 import cv2
+from twilio.rest import Client
 from flask import Flask, request, jsonify, send_from_directory
 import multiprocessing
 from fire_detection_script import process_rtsp_stream_with_url
