@@ -75,7 +75,8 @@ for attempt in range(max_retries):
         time.sleep(5)
 else:
     raise Exception("Max retries exceeded. Could not connect to the database.")
-
+    
+# detecting fire with roboflow
 def detect_fire_with_roboflow(frame):
     """Detect fire using Roboflow API."""
     _, img_encoded = cv2.imencode(".jpg", frame)
@@ -93,7 +94,7 @@ def detect_fire_with_roboflow(frame):
             return True
     return False
 
-
+# Sending message via whatsapp
 def send_whatsapp_via_twilio(to_number, message):
     """Send WhatsApp message via Twilio."""
     client = Client(T_ACCOUNT_SID, T_AUTH_TOKEN)
