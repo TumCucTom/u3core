@@ -1,3 +1,4 @@
+from flask import Flask, request, jsonify,Response
 from flask_cors import CORS
 import bcrypt
 import random
@@ -14,6 +15,7 @@ import sys
 from flask import Flask, request, jsonify, send_from_directory
 import multiprocessing
 from fire_detection_script import process_rtsp_stream_with_url
+
 
 # Configure logging
 logging.basicConfig(
@@ -46,6 +48,35 @@ for attempt in range(max_retries):
         time.sleep(5)
 else:
     raise Exception("Max retries exceeded. Could not connect to the database.")
+    
+# detecting fire with roboflow
+def detect_fire_with_roboflow(frame):
+    """Detect fire using Roboflow API."""
+    _, img_encoded = cv2.imencode(".jpg", frame)
+    response = requests.post(
+        R_MODEL_URL,
+        params=R_PARAMS,
+        files={"file": img_encoded.tobytes()},
+        timeout=5.0
+    )
+    response_data = response.json()
+    predictions = response_data.get("predictions", [])
+
+    for prediction in predictions:
+        if prediction["class"] == "fire" and prediction["confidence"] >= R_PARAMS["confidence"]:
+            return True
+    return False
+
+# Sending message via whatsapp
+def send_whatsapp_via_twilio(to_number, message):
+    """Send WhatsApp message via Twilio."""
+    client = Client(T_ACCOUNT_SID, T_AUTH_TOKEN)
+    message = client.messages.create(
+        from_=TWILO_NUMBER,
+        body=message,
+        to=to_number
+    )
+    print(f"WhatsApp message sent! Message SID: {message.sid}")
 
 # Dictionary to track running fire detection processes
 fire_detection_processes = {}
@@ -224,6 +255,37 @@ def test_add_entry():
     except Exception as e:
         print(f"Error adding test entry: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
+    
+@app.route('/api/stream',methods = ['GET'])
+def stream():
+    video = cv2.VideoCapture(RTSP_URL)
+    if not video.isOpened:
+        print("Error : Camera is not opened")
+    
+    last_alert = 0
+    alert_interval = 30
+
+    while True:
+        ret,frame = video.read()
+        if not ret:
+            break
+        fire_detected = detect_fire_with_roboflow(frame)
+        if fire_detected:
+            current_time = time.time()
+            if current_time - last_alert > alert_interval:
+                print("Sending message")
+                send_whatsapp_via_twilio(REC_WHATSAPP_NUMBER,ALERT_MESSAGE)
+                last_alert = current_time
+
+        cv2.imshow("webcam stream",frame)
+        if cv2.waitKey(1) & 0xff == ord('q'):
+            break
+    video.release()
+    cv2.destroyAllWindows()
+if __name__ == "__main__":
+    stream()
+
+
 
 
 @app.route('/api/dbinfo', methods=['GET'])
@@ -335,6 +397,7 @@ def login():
     except Exception as e:
         print(f"Error during login: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
+
 
 @app.route('/api/addToCustomer', methods=['POST'])
 def add_to_customer():
@@ -492,4 +555,3 @@ def send_email(to_email, subject, link, code=None):
 if __name__ == '__main__':
     start_fire_detection_for_all_cameras()  # Start fire detection for all cameras on launch
     app.run(host='0.0.0.0', port=3000, debug=True)
-
