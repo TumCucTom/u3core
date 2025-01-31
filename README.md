@@ -99,6 +99,10 @@ A more in detail document can be found in the [docs](/docs/frontend), but a summ
 │   └── slides                         # VIVA demos
 │       ├── Demo.mov                   # Demo video for the project
 │       └── MVP-slides.pptx            # PowerPoint slides for the MVP presentation
+├── test                               #
+│   ├── _init_.py                      # Module function
+│   ├── pytest.ini                     # configuration function for pytest
+│   └── test_exapmle.py                # pytest template
 ├── package-lock.json                  # Dependency tree lock file (npm/yarn)
 ├── package.json                       # Project dependencies and metadata (npm/yarn)
 ├── release.md                         # Release notes (duplicate of `docs/release.md`)

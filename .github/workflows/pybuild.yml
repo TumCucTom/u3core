@@ -67,7 +67,7 @@ jobs:
           pip install pytest pytest-cov pytest-html
       - name: Run tests with coverage and generate reports
         run: |
-#          pytest code/ --doctest-modules --cov=com --cov-report=xml --cov-report=html --maxfail=5 --disable-warnings
+           pytest test/ --doctest-modules --cov=com --cov-report=xml --cov-report=html --maxfail=5 --disable-warnings
       - name: Upload coverage report to Codecov 
         uses: codecov/codecov-action@v3
         with:
