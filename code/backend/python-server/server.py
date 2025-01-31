@@ -17,6 +17,35 @@ from flask import Flask, request, jsonify, send_from_directory
 import multiprocessing
 from fire_detection_script import process_rtsp_stream_with_url
 
+# Load configuration from JSON
+with open("config.json", "r") as config_file:
+    config = json.load(config_file)
+
+# AWS SNS setup
+AWS_REGION = config["aws"]["region"]
+AWS_ACCESS_KEY = config["aws"]["access_key"]
+AWS_SECRET_KEY = config["aws"]["secret_key"]
+
+# Twilio setup
+T_ACCOUNT_SID = config["twilio"]["account_sid"]
+T_AUTH_TOKEN = config["twilio"]["auth_token"]
+TWILO_NUMBER = config["twilio"]["number"]
+
+# Recipient setup
+REC_NUMBER = config["recipient"]["phone_number"]
+REC_WHATSAPP_NUMBER = config["recipient"]["whatsapp_number"]
+
+# Roboflow setup
+R_API_KEY = config["roboflow"]["api_key"]
+R_MODEL_URL = config["roboflow"]["model_url"]
+R_PARAMS = {
+    "api_key": R_API_KEY,
+    "confidence": config["roboflow"]["confidence"]
+}
+
+# Alert message
+ALERT_MESSAGE = "Abnormal detected"
+
 
 # Configure logging
 logging.basicConfig(
