@@ -177,7 +177,7 @@ export default createComponent({
 
     function recalculateScroll () {
       registerScrollTick(() => {
-        updateContainer({
+        rootRef.value && updateContainer({
           width: rootRef.value.offsetWidth,
           height: rootRef.value.offsetHeight
         })

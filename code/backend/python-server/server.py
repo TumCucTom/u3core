@@ -1,24 +1,61 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify,Response
 from flask_cors import CORS
 import bcrypt
 import random
 import string
 import secrets
-import time
 import pymysql
-import logging
 import pycurl
 import requests
 from io import BytesIO
 import json
+import time
+import logging
+import sys
+import cv2
+from twilio.rest import Client
+from flask import Flask, request, jsonify, send_from_directory
+import multiprocessing
+from fire_detection_script import process_rtsp_stream_with_url
+
+# Load configuration from JSON
+with open("config.json", "r") as config_file:
+    config = json.load(config_file)
+
+# AWS SNS setup
+AWS_REGION = config["aws"]["region"]
+AWS_ACCESS_KEY = config["aws"]["access_key"]
+AWS_SECRET_KEY = config["aws"]["secret_key"]
+
+# Twilio setup
+T_ACCOUNT_SID = config["twilio"]["account_sid"]
+T_AUTH_TOKEN = config["twilio"]["auth_token"]
+TWILO_NUMBER = config["twilio"]["number"]
+
+# Recipient setup
+REC_NUMBER = config["recipient"]["phone_number"]
+REC_WHATSAPP_NUMBER = config["recipient"]["whatsapp_number"]
+
+# Roboflow setup
+R_API_KEY = config["roboflow"]["api_key"]
+R_MODEL_URL = config["roboflow"]["model_url"]
+R_PARAMS = {
+    "api_key": R_API_KEY,
+    "confidence": config["roboflow"]["confidence"]
+}
+
+# Alert message
+ALERT_MESSAGE = "Abnormal detected"
+
 
 # Configure logging
-logging.basicConfig(level=logging.DEBUG,
-                    format='%(asctime)s - %(levelname)s - %(message)s',
-                    handlers=[
-                        logging.StreamHandler(),  # Console output
-                        logging.FileHandler('/app/logs/myapp.log')  # Log to a file
-                    ])
+logging.basicConfig(
+    level=logging.INFO,  # Set log level (INFO, DEBUG, ERROR, etc.)
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    handlers=[
+        logging.StreamHandler(sys.stdout)  # Log to Docker console (stdout)
+    ]
+)
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
@@ -42,6 +79,185 @@ for attempt in range(max_retries):
         time.sleep(5)
 else:
     raise Exception("Max retries exceeded. Could not connect to the database.")
+    
+# detecting fire with roboflow
+def detect_fire_with_roboflow(frame):
+    """Detect fire using Roboflow API."""
+    _, img_encoded = cv2.imencode(".jpg", frame)
+    response = requests.post(
+        R_MODEL_URL,
+        params=R_PARAMS,
+        files={"file": img_encoded.tobytes()},
+        timeout=5.0
+    )
+    response_data = response.json()
+    predictions = response_data.get("predictions", [])
+
+    for prediction in predictions:
+        if prediction["class"] == "fire" and prediction["confidence"] >= R_PARAMS["confidence"]:
+            return True
+    return False
+
+# Sending message via whatsapp
+def send_whatsapp_via_twilio(to_number, message):
+    """Send WhatsApp message via Twilio."""
+    client = Client(T_ACCOUNT_SID, T_AUTH_TOKEN)
+    message = client.messages.create(
+        from_=TWILO_NUMBER,
+        body=message,
+        to=to_number
+    )
+    print(f"WhatsApp message sent! Message SID: {message.sid}")
+
+# Dictionary to track running fire detection processes
+fire_detection_processes = {}
+
+def run_fire_detection(rtsp_url):
+    """Run the fire detection script for a given RTSP URL."""
+    logging.info("Running fire detection on {rtsp_url}")
+    process_rtsp_stream_with_url(rtsp_url)
+
+def start_fire_detection_for_all_cameras():
+    """
+    Fetch all cameras from the database and start fire detection concurrently.
+    Ensures each RTSP stream is monitored independently.
+    """
+    global fire_detection_processes
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT rtsp_url FROM Cameras")
+            cameras = cursor.fetchall()
+
+        for (rtsp_url,) in cameras:
+            if rtsp_url not in fire_detection_processes:  # Avoid duplicate processes
+                process = multiprocessing.Process(target=run_fire_detection, args=(rtsp_url,))
+                process.start()
+                fire_detection_processes[rtsp_url] = process
+                logging.info(f"Started fire detection for: {rtsp_url}")
+
+        logging.info("Started fire detection for all cameras")
+    except Exception as e:
+        print(f"Error starting fire detection processes: {e}")
+
+@app.route('/api/add-camera', methods=['POST'])
+def add_camera():
+    """
+    Adds a new RTSP camera to the database and starts fire detection for it.
+    Converts tcp:// to rtsp:// if necessary and updates existing records.
+    """
+    data = request.json
+    name = data.get('name')
+    rtsp_url = data.get('rtsp_url')
+
+    if not all([name, rtsp_url]):
+        return jsonify({"error": "Name and RTSP URL are required"}), 400
+
+    # Convert tcp:// to rtsp://
+    if rtsp_url.startswith("tcp://"):
+        rtsp_url = "rtsp://" + rtsp_url[6:]
+
+    try:
+        with connection.cursor() as cursor:
+            # Create the Cameras table if it doesn't exist
+            create_table_query = """
+            CREATE TABLE IF NOT EXISTS Cameras (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                name VARCHAR(255),
+                rtsp_url TEXT
+            );
+            """
+            cursor.execute(create_table_query)
+
+            # Update any existing entries that start with tcp://
+            update_query = """
+            UPDATE Cameras
+            SET rtsp_url = CONCAT('rtsp://', SUBSTRING(rtsp_url, 7))
+            WHERE rtsp_url LIKE 'tcp://%';
+            """
+            cursor.execute(update_query)
+
+            # Insert the new camera data
+            cursor.execute(
+                "INSERT INTO Cameras (name, rtsp_url) VALUES (%s, %s)",
+                (name, rtsp_url)
+            )
+        connection.commit()
+
+        # Start fire detection for the new camera
+        if rtsp_url not in fire_detection_processes:
+            process = multiprocessing.Process(target=run_fire_detection, args=(rtsp_url,))
+            process.start()
+            fire_detection_processes[rtsp_url] = process
+            print(f"Started fire detection for new camera: {rtsp_url}")
+
+        return jsonify({"message": "Camera added, TCP URLs updated, and fire detection started!"}), 201
+    except Exception as e:
+        print(f"Error adding camera: {e}")
+        return jsonify({"error": "Internal Server Error"}), 500
+
+
+@app.route('/api/add-site', methods=['POST'])
+def add_site():
+    """
+    Adds a new site with name, latitude, and longitude to the database.
+    """
+    data = request.json
+    name = data.get('name')
+    latitude = data.get('latitude')
+    longitude = data.get('longitude')
+
+    if not all([name, latitude, longitude]):
+        return jsonify({"error": "Name, latitude, and longitude are required"}), 400
+
+    try:
+        with connection.cursor() as cursor:
+            # Create the Sites table if it doesn't exist
+            create_table_query = """
+            CREATE TABLE IF NOT EXISTS Sites (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                name VARCHAR(255),
+                latitude VARCHAR(50),
+                longitude VARCHAR(50)
+            );
+            """
+            cursor.execute(create_table_query)
+
+            # Insert the site data
+            cursor.execute(
+                "INSERT INTO Sites (name, latitude, longitude) VALUES (%s, %s, %s)",
+                (name, latitude, longitude)
+            )
+        connection.commit()
+        return jsonify({"message": "Site added successfully!"}), 201
+    except Exception as e:
+        print(f"Error adding site: {e}")
+        return jsonify({"error": "Internal Server Error"}), 500
+
+
+@app.route('/api/sites', methods=['GET'])
+def fetch_sites():
+    """
+    Fetches all sites and their associated cameras.
+    """
+    try:
+        with connection.cursor() as cursor:
+            # Fetch all sites
+            cursor.execute("SELECT id, name FROM Sites")
+            sites = cursor.fetchall()
+
+            # Fetch cameras for each site
+            result = []
+            for site in sites:
+                site_id, name = site
+                cursor.execute("SELECT id, name FROM Cameras WHERE site_id = %s", (site_id,))
+                cameras = [{"id": cam_id, "name": cam_name} for cam_id, cam_name in cursor.fetchall()]
+                result.append({"id": site_id, "name": name, "cameras": cameras})
+
+        return jsonify({"sites": result}), 200
+    except Exception as e:
+        print(f"Error fetching sites: {e}")
+        return jsonify({"error": "Internal Server Error"}), 500
+
 
 @app.route('/api/test', methods=['GET'])
 def test_server():
@@ -70,6 +286,48 @@ def test_add_entry():
     except Exception as e:
         print(f"Error adding test entry: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
+    
+@app.route('/api/stream',methods = ['POST'])
+def stream():
+    data = request.json
+    name = data.get('name')
+    rtsp_url = data.get('rtsp_url')
+
+    if not all([name, rtsp_url]):
+        return jsonify({"error": "Name and RTSP URL are required"}), 400
+
+    # Convert tcp:// to rtsp://
+    if rtsp_url.startswith("tcp://"):
+        rtsp_url = "rtsp://" + rtsp_url[6:]
+
+    video = cv2.VideoCapture(rtsp_url)
+    if not video.isOpened:
+        print("Error : Camera is not opened")
+    
+    last_alert = 0
+    alert_interval = 30
+
+    while True:
+        ret,frame = video.read()
+        if not ret:
+            break
+        fire_detected = detect_fire_with_roboflow(frame)
+        if fire_detected:
+            current_time = time.time()
+            if current_time - last_alert > alert_interval:
+                print("Sending message")
+                send_whatsapp_via_twilio(REC_WHATSAPP_NUMBER,ALERT_MESSAGE)
+                last_alert = current_time
+
+        cv2.imshow("webcam stream",frame)
+        if cv2.waitKey(1) & 0xff == ord('q'):
+            break
+    video.release()
+    cv2.destroyAllWindows()
+if __name__ == "__main__":
+    stream()
+
+
 
 
 @app.route('/api/dbinfo', methods=['GET'])
@@ -181,6 +439,7 @@ def login():
     except Exception as e:
         print(f"Error during login: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
+
 
 @app.route('/api/addToCustomer', methods=['POST'])
 def add_to_customer():
@@ -336,5 +595,5 @@ def send_email(to_email, subject, link, code=None):
 
 
 if __name__ == '__main__':
+    start_fire_detection_for_all_cameras()  # Start fire detection for all cameras on launch
     app.run(host='0.0.0.0', port=3000, debug=True)
-

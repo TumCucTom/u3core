@@ -311,9 +311,7 @@ export default function (state) {
           || state.controlRef.value === null
           || state.controlRef.value.contains(document.activeElement) !== false
         )
-      ) {
-        return
-      }
+      ) return
 
       if (state.focused.value === true) {
         state.focused.value = false
@@ -502,9 +500,11 @@ export default function (state) {
 
     const hasCounter = props.counter === true || slots.counter !== void 0
 
-    if (props.hideBottomSpace === true && hasCounter === false && msg === void 0) {
-      return
-    }
+    if (
+      props.hideBottomSpace === true
+      && hasCounter === false
+      && msg === void 0
+    ) return
 
     const main = h('div', {
       key,

@@ -4,9 +4,10 @@ services:
   backend:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.backend
     volumes:
       - ./logs:/app/logs  # Mount the host machine's ./logs directory to the container
+      - ./initdb:/initdb  # This mounts ./host-initdb on the host to /initdb in the container
     ports:
       - "3002:3000"
     environment:
@@ -17,6 +18,15 @@ services:
     depends_on:
       db:
         condition: service_healthy
+
+  websocket:
+    build:
+      context: .
+      dockerfile: Dockerfile.websocket
+    ports:
+      - "8080:8080"
+    depends_on:
+      - backend
 
   db:
     build:
@@ -33,6 +43,7 @@ services:
     volumes:
       - db_data:/var/lib/mysql
       - ./initdb:/docker-entrypoint-initdb.d
+      - ./initdb:/initdb  # This mounts ./host-initdb on the host to /initdb in the container
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 15s
