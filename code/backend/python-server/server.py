@@ -286,9 +286,20 @@ def test_add_entry():
         print(f"Error adding test entry: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
     
-@app.route('/api/stream',methods = ['GET'])
+@app.route('/api/stream',methods = ['POST'])
 def stream():
-    video = cv2.VideoCapture(RTSP_URL)
+    data = request.json
+    name = data.get('name')
+    rtsp_url = data.get('rtsp_url')
+
+    if not all([name, rtsp_url]):
+        return jsonify({"error": "Name and RTSP URL are required"}), 400
+
+    # Convert tcp:// to rtsp://
+    if rtsp_url.startswith("tcp://"):
+        rtsp_url = "rtsp://" + rtsp_url[6:]
+
+    video = cv2.VideoCapture(rtsp_url)
     if not video.isOpened:
         print("Error : Camera is not opened")
     
