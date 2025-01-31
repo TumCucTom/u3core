@@ -4,7 +4,6 @@ FROM python:3.9-slim-bullseye
 # Set the working directory
 WORKDIR /usr/src/app
 
-# Install system dependencies for MySQL and FFmpeg (optional for Python)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     apt-transport-https \
     ca-certificates \
