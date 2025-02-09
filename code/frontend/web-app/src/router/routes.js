@@ -6,6 +6,7 @@ import ManageModelsPage from "src/pages/ManageModelsPage.vue";
 import ActionSettingsPage from "src/pages/ActionSettingsPage.vue";
 import Verified from "src/pages/VerifiedPassword.vue";
 import AlertsPage from "src/pages/AlertsPage.vue"
+import TrainingPage from "src/pages/TrainingPage.vue"
 
 const routes = [
   //start off at the login page as the default route
@@ -31,7 +32,8 @@ const routes = [
       { path: "manage-sites", component: ManageSitesPage }, // Manage Sites page
       { path: "manage-models", component: ManageModelsPage }, // Manage Models page
       { path: "action-settings", component: ActionSettingsPage }, // Action Settings page
-      {path : "alerts-page", component: AlertsPage} // Alerts page
+      {path : "alerts-page", component: AlertsPage} ,// Alerts page
+      {path : "training-page", component :TrainingPage},
     ],
   },
 
