@@ -51,7 +51,7 @@
         <q-item
           clickable
           tag="router-link"
-          to="/app/upload-training-data"
+          to="/app/training-page"
           v-ripple
         >
           <q-item-section avatar>
@@ -127,7 +127,7 @@
           </div>
         </transition>
 
-        <!-- The rest of the navigation -->
+        <!-- Cloud settings-->
         <q-item
           clickable
           tag="router-link"
@@ -140,10 +140,11 @@
           <q-item-section>Cloud Settings</q-item-section>
         </q-item>
 
+         <!-- Alerts console-->
         <q-item
           clickable
           tag="router-link"
-          to="/app/alerts-console"
+          to="/app/alerts-page"
           v-ripple
         >
           <q-item-section avatar>
@@ -152,10 +153,11 @@
           <q-item-section>Alerts Console</q-item-section>
         </q-item>
 
+        <!-- alerts settings/action settings-->
         <q-item
           clickable
           tag="router-link"
-          to="/app/alerts-settings"
+          to="/app/action-settings"
           v-ripple
         >
           <q-item-section avatar>
