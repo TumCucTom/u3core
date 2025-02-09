@@ -7,6 +7,7 @@ import ActionSettingsPage from "src/pages/ActionSettingsPage.vue";
 import Verified from "src/pages/VerifiedPassword.vue";
 import AlertsPage from "src/pages/AlertsPage.vue"
 import TrainingPage from "src/pages/TrainingPage.vue"
+import CloudSettingsPage from "src/pages/CloudSettings.vue"
 
 const routes = [
   //start off at the login page as the default route
@@ -34,6 +35,7 @@ const routes = [
       { path: "action-settings", component: ActionSettingsPage }, // Action Settings page
       {path : "alerts-page", component: AlertsPage} ,// Alerts page
       {path : "training-page", component :TrainingPage},
+      {path : "cloud-settings", component :CloudSettingsPage},
     ],
   },
 
