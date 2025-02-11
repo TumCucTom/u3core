@@ -4,6 +4,7 @@ import boto3
 from twilio.rest import Client
 import requests
 import json
+import datetime
 
 # Load configuration from JSON
 with open("config.json", "r") as config_file:
@@ -33,6 +34,29 @@ R_PARAMS = {
 
 # Alert message
 ALERT_MESSAGE = "Abnormal detected"
+
+def send_hazard_log(rtsp_url, hazard):
+    """
+    Sends a POST request to the /api/add-hazard endpoint with the given camera RTSP URL and hazard type.
+    """
+    url = "http://127.0.0.1:3000/api/add-hazard"
+
+    # Generate current timestamp in "YYYY-MM-DD HH:MM:SS" format
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    # Prepare the request payload
+    payload = {
+        "timestamp": timestamp,
+        "type": hazard,
+        "cameraAddress": rtsp_url
+    }
+
+    try:
+        response = requests.post(url, json=payload)
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        print(f"Error sending request: {e}")
+        return {"error": "Failed to send request"}
 
 # Send SMS via AWS SNS
 def send_sms_via_sns(phone_number, message):
@@ -72,8 +96,8 @@ def detect_fire_with_roboflow(frame):
 
     for prediction in predictions:
         if prediction["class"] == "fire" and prediction["confidence"] >= R_PARAMS["confidence"]:
-            return True
-    return False
+            return True , "fire"
+    return False, "none"
 
 # Process RTSP stream
 def process_rtsp_stream_with_url(rtsp_url):
@@ -91,7 +115,7 @@ def process_rtsp_stream_with_url(rtsp_url):
             print("Error: Unable to read frame from webcam.")
             break
 
-        fire_detected = detect_fire_with_roboflow(frame)
+        fire_detected, alert_type = detect_fire_with_roboflow(frame)
 
         if fire_detected:
             current_time = time.time()
@@ -99,6 +123,9 @@ def process_rtsp_stream_with_url(rtsp_url):
                 print("Fire detected! Sending alerts...")
                 send_sms_via_sns(REC_NUMBER, ALERT_MESSAGE)
                 send_whatsapp_via_twilio(REC_WHATSAPP_NUMBER, ALERT_MESSAGE)
+
+                send_hazard_log(rtsp_url,alert_type)
+
                 last_alert_time = current_time
 
         cv2.imshow("Webcam Stream", frame)
