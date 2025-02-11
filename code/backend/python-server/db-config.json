@@ -1,0 +1,7 @@
+{
+  "host": "db",
+  "user": "general-user",
+  "password": "MLAI2024",
+  "database": "MLAIDB",
+  "port": 3306
+}
