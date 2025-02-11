@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify,Response
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 import bcrypt
 import random
@@ -14,9 +14,9 @@ import logging
 import sys
 import cv2
 from twilio.rest import Client
-from flask import Flask, request, jsonify, send_from_directory
 import multiprocessing
 from fire_detection_script import process_rtsp_stream_with_url
+import datetime
 
 # Load configuration from JSON
 with open("config.json", "r") as config_file:
