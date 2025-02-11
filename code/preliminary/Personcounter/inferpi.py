@@ -4,8 +4,12 @@ import io
 import cv2
 import numpy as np
 import requests
+import os
+from dotenv import load_dotenv
 
-ROBOFLOW_API_KEY = "OQUMCshci7SNfgmSiNDY"
+load_dotenv()
+
+ROBOFLOW_API_KEY = os.getenv('COUNTER_API')
 ROBOFLOW_MODEL = "people-counter-mk3"
 ROBOFLOW_VERSION = "1"  # Add your model version here
 ROBOFLOW_SIZE = 416
