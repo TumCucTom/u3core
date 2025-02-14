@@ -264,30 +264,6 @@ def fetch_sites():
 @app.route('/api/test', methods=['GET'])
 def test_server():
     return jsonify({"message": "Server is running!", "status": "success"}), 200
-
-@app.route('/api/testAddEntry', methods=['POST'])
-def test_add_entry():
-    test_data = request.json.get('testData', 'Default Test Data')
-
-    try:
-        with connection.cursor() as cursor:
-            # Create the TestTable if it doesn't exist
-            create_table_query = """
-            CREATE TABLE IF NOT EXISTS TestTable (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                testData VARCHAR(255)
-            );
-            """
-            cursor.execute(create_table_query)
-
-            # Insert the test data
-            cursor.execute("INSERT INTO TestTable (testData) VALUES (%s)", (test_data,))
-
-        connection.commit()
-        return jsonify({"message": "Test entry added successfully!"})
-    except Exception as e:
-        print(f"Error adding test entry: {e}")
-        return jsonify({"error": "Internal Server Error"}), 500
     
 @app.route('/api/stream',methods = ['POST'])
 def stream():
