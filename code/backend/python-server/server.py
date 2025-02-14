@@ -260,10 +260,6 @@ def fetch_sites():
         print(f"Error fetching sites: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
 
-
-@app.route('/api/test', methods=['GET'])
-def test_server():
-    return jsonify({"message": "Server is running!", "status": "success"}), 200
     
 @app.route('/api/stream',methods = ['POST'])
 def stream():
