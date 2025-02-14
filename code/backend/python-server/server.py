@@ -60,13 +60,15 @@ logging.basicConfig(
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 
-db_config = {
-    "host": "db",
-    "user": "general-user",
-    "password": "MLAI2024",
-    "database": "MLAIDB",
-    "port": 3306
-}
+# Load configuration from config.json
+def load_db_config(filename="db-config.json"):
+    with open(filename, "r") as db_config_file:
+        db_config_fi = json.load(db_config_file)
+    return db_config_fi
+
+# Retrieve the database configuration
+db_config = load_db_config()
+
 
 max_retries = 10
 for attempt in range(max_retries):
