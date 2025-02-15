@@ -1,19 +1,19 @@
-from flask import Flask, request, jsonify,Response
-from flask_cors import CORS
-import bcrypt
 import random
 import string
 import secrets
-import pymysql
-import pycurl
-import requests
 from io import BytesIO
-import json
 import time
 import logging
 import sys
 import multiprocessing
+import json
+import pymysql
+import pycurl
+import requests
 from fire_detection_script import process_rtsp_stream_with_url
+from flask import Flask, request, jsonify,Response
+from flask_cors import CORS
+import bcrypt
 
 # Load configuration from JSON
 with open("config.json", "r") as config_file:
@@ -138,7 +138,7 @@ def add_camera():
             fire_detection_processes[rtsp_url] = process
             print(f"Started fire detection for new camera: {rtsp_url}")
 
-        return jsonify({"message": "Camera added, TCP URLs updated, and fire detection started!"}), 201
+        return jsonify({"message": "Camera added, TCP URLs updated, and fire detection started!"}), 201 # pylint: disable=<C0301>
     except Exception as e:
         print(f"Error adding camera: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
@@ -198,7 +198,7 @@ def fetch_sites():
             for site in sites:
                 site_id, name = site
                 cursor.execute("SELECT id, name FROM Cameras WHERE site_id = %s", (site_id,))
-                cameras = [{"id": cam_id, "name": cam_name} for cam_id, cam_name in cursor.fetchall()]
+                cameras = [{"id": cam_id, "name": cam_name} for cam_id, cam_name in cursor.fetchall()] # pylint: disable=<C0301>
                 result.append({"id": site_id, "name": name, "cameras": cameras})
 
         return jsonify({"sites": result}), 200
@@ -353,7 +353,7 @@ def add_to_customer():
             cursor.execute(create_custlogin_table)
 
             # Insert into Customer table
-            cursor.execute("INSERT INTO Customer (firstname, lastname) VALUES (%s, %s)", (first_name, last_name))
+            cursor.execute("INSERT INTO Customer (firstname, lastname) VALUES (%s, %s)", (first_name, last_name)) # pylint: disable=<C0301>
             customer_id = cursor.lastrowid
 
             # Insert into CustLogin table
@@ -405,7 +405,7 @@ def send_verify_email():
         token = secrets.token_hex(20)
         verification_link = f"http://localhost:9000/#/verified-email?token={token}&email={email}"
         otp_code = ''.join(random.choices(string.digits, k=6))
-        #return jsonify({"error": send_email(email, "Password Reset Request", verification_link)}), 500
+        #return jsonify({"error": send_email(email, "Password Reset Request", verification_link)}), 500 # pylint: disable=<C0301>
         send_email(email, "Email Verification", verification_link, otp_code)
         return jsonify({"message": "Verification email sent successfully"})
     except Exception as e:
@@ -414,7 +414,7 @@ def send_verify_email():
 
 
 def send_email(to_email, subject, link, code=None):
-    postmark_token = "d4763cf8-6f26-46e0-8442-9c3274e51a5b"  # Replace with your Postmark server token
+    postmark_token = "d4763cf8-6f26-46e0-8442-9c3274e51a5b"  # Replace with your Postmark server token # pylint: disable=<C0301>
     sender_email = "info@shopveloworks.com"  # Replace with your verified sender email
 
     html_content = f"""
