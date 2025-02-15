@@ -82,17 +82,6 @@ for attempt in range(max_retries):
 else:
     raise Exception("Max retries exceeded. Could not connect to the database.")
 
-# Sending message via whatsapp
-def send_whatsapp_via_twilio(to_number, message):
-    """Send WhatsApp message via Twilio."""
-    client = Client(T_ACCOUNT_SID, T_AUTH_TOKEN)
-    message = client.messages.create(
-        from_=TWILO_NUMBER,
-        body=message,
-        to=to_number
-    )
-    print(f"WhatsApp message sent! Message SID: {message.sid}")
-
 # Dictionary to track running fire detection processes
 fire_detection_processes = {}
 
