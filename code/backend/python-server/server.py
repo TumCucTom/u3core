@@ -12,7 +12,6 @@ import json
 import time
 import logging
 import sys
-from twilio.rest import Client
 import multiprocessing
 from fire_detection_script import process_rtsp_stream_with_url
 
