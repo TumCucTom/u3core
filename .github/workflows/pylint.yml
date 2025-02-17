@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'code/backend/python-features/**'
+      - 'code/backend/python-server/**'
       - '.github/workflows/pylint.yml'
       - 'code/backend/python-server/**'
 
@@ -29,4 +30,5 @@ jobs:
     - name: Analysing the code with pylint
       run: |
         pylint $(git ls-files 'code/backend/python-features/*.py') --rcfile=.github/workflows/.pylintrc
+        pylint $(git ls-files 'code/backend/python-server/*.py') --rcfile=.github/workflows/.pylintrc
         
