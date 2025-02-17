@@ -11,8 +11,6 @@ import json
 import time
 import logging
 import sys
-import cv2
-from twilio.rest import Client
 from flask import Flask, request, jsonify
 import multiprocessing
 from fire_detection_script import process_rtsp_stream_with_url
@@ -233,44 +231,6 @@ def test_add_entry():
     except Exception as e:
         print(f"Error adding test entry: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
-    
-@app.route('/api/stream',methods = ['POST'])
-def stream():
-    data = request.json
-    name = data.get('name')
-    rtsp_url = data.get('rtsp_url')
-
-    if not all([name, rtsp_url]):
-        return jsonify({"error": "Name and RTSP URL are required"}), 400
-
-    # Convert tcp:// to rtsp://
-    if rtsp_url.startswith("tcp://"):
-        rtsp_url = "rtsp://" + rtsp_url[6:]
-
-    video = cv2.VideoCapture(rtsp_url)
-    if not video.isOpened:
-        print("Error : Camera is not opened")
-    
-    last_alert = 0
-    alert_interval = 30
-
-    while True:
-        ret,frame = video.read()
-        if not ret:
-            break
-        fire_detected = detect_fire_with_roboflow(frame)
-        if fire_detected:
-            current_time = time.time()
-            if current_time - last_alert > alert_interval:
-                print("Sending message")
-                send_whatsapp_via_twilio(REC_WHATSAPP_NUMBER,ALERT_MESSAGE)
-                last_alert = current_time
-
-        cv2.imshow("webcam stream",frame)
-        if cv2.waitKey(1) & 0xff == ord('q'):
-            break
-    video.release()
-    cv2.destroyAllWindows()
 
 
 @app.route('/api/emails', methods=['GET'])
