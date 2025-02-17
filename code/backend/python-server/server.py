@@ -1,4 +1,3 @@
-from flask import Flask, request, jsonify,Response
 from flask_cors import CORS
 import bcrypt
 import random
@@ -14,39 +13,9 @@ import logging
 import sys
 import cv2
 from twilio.rest import Client
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify
 import multiprocessing
 from fire_detection_script import process_rtsp_stream_with_url
-
-# Load configuration from JSON
-with open("config.json", "r") as config_file:
-    config = json.load(config_file)
-
-# AWS SNS setup
-AWS_REGION = config["aws"]["region"]
-AWS_ACCESS_KEY = config["aws"]["access_key"]
-AWS_SECRET_KEY = config["aws"]["secret_key"]
-
-# Twilio setup
-T_ACCOUNT_SID = config["twilio"]["account_sid"]
-T_AUTH_TOKEN = config["twilio"]["auth_token"]
-TWILO_NUMBER = config["twilio"]["number"]
-
-# Recipient setup
-REC_NUMBER = config["recipient"]["phone_number"]
-REC_WHATSAPP_NUMBER = config["recipient"]["whatsapp_number"]
-
-# Roboflow setup
-R_API_KEY = config["roboflow"]["api_key"]
-R_MODEL_URL = config["roboflow"]["model_url"]
-R_PARAMS = {
-    "api_key": R_API_KEY,
-    "confidence": config["roboflow"]["confidence"]
-}
-
-# Alert message
-ALERT_MESSAGE = "Abnormal detected"
-
 
 # Configure logging
 logging.basicConfig(
@@ -81,35 +50,9 @@ for attempt in range(max_retries):
         time.sleep(5)
 else:
     raise Exception("Max retries exceeded. Could not connect to the database.")
-    
-# detecting fire with roboflow
-def detect_fire_with_roboflow(frame):
-    """Detect fire using Roboflow API."""
-    _, img_encoded = cv2.imencode(".jpg", frame)
-    response = requests.post(
-        R_MODEL_URL,
-        params=R_PARAMS,
-        files={"file": img_encoded.tobytes()},
-        timeout=5.0
-    )
-    response_data = response.json()
-    predictions = response_data.get("predictions", [])
 
-    for prediction in predictions:
-        if prediction["class"] == "fire" and prediction["confidence"] >= R_PARAMS["confidence"]:
-            return True
-    return False
 
-# Sending message via whatsapp
-def send_whatsapp_via_twilio(to_number, message):
-    """Send WhatsApp message via Twilio."""
-    client = Client(T_ACCOUNT_SID, T_AUTH_TOKEN)
-    message = client.messages.create(
-        from_=TWILO_NUMBER,
-        body=message,
-        to=to_number
-    )
-    print(f"WhatsApp message sent! Message SID: {message.sid}")
+# Auto fire detection startup
 
 # Dictionary to track running fire detection processes
 fire_detection_processes = {}
@@ -140,6 +83,8 @@ def start_fire_detection_for_all_cameras():
         logging.info("Started fire detection for all cameras")
     except Exception as e:
         print(f"Error starting fire detection processes: {e}")
+
+# API endpoints
 
 @app.route('/api/add-camera', methods=['POST'])
 def add_camera():
@@ -326,51 +271,6 @@ def stream():
             break
     video.release()
     cv2.destroyAllWindows()
-if __name__ == "__main__":
-    stream()
-
-
-
-
-@app.route('/api/dbinfo', methods=['GET'])
-def get_db_info():
-    try:
-        with connection.cursor() as cursor:
-            # Fetch all table names
-            cursor.execute("SHOW TABLES")
-            tables = cursor.fetchall()
-
-            db_info = {}
-
-            for (table_name,) in tables:
-                # Fetch column details for each table
-                cursor.execute(f"DESCRIBE {table_name}")
-                columns = cursor.fetchall()
-                column_info = [
-                    {
-                        "Field": col[0],
-                        "Type": col[1],
-                        "Null": col[2],
-                        "Key": col[3],
-                        "Default": col[4],
-                        "Extra": col[5]
-                    } for col in columns
-                ]
-
-                # Fetch all rows for each table
-                cursor.execute(f"SELECT * FROM {table_name}")
-                rows = cursor.fetchall()
-
-                db_info[table_name] = {
-                    "columns": column_info,
-                    "entries": rows
-                }
-
-        return jsonify(db_info)
-
-    except Exception as e:
-        print(f"Error fetching database info: {e}")
-        return jsonify({"error": "Internal Server Error"}), 500
 
 
 @app.route('/api/emails', methods=['GET'])
