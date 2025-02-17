@@ -1,18 +1,19 @@
-from flask_cors import CORS
-import bcrypt
+"""Backend python server for api endpoints and fire detection"""
 import random
 import string
 import secrets
-import pymysql
-import pycurl
-import requests
 from io import BytesIO
+import multiprocessing
 import json
 import time
 import logging
 import sys
+import bcrypt
+import pymysql
+import pycurl
+import requests
 from flask import Flask, request, jsonify
-import multiprocessing
+from flask_cors import CORS
 from fire_detection_script import process_rtsp_stream_with_url
 
 # Configure logging
@@ -37,14 +38,15 @@ def load_db_config(filename="db-config.json"):
 db_config = load_db_config()
 
 
-max_retries = 10
-for attempt in range(max_retries):
+MAX_RETRIES = 10
+for attempt in range(MAX_RETRIES):
     try:
         connection = pymysql.connect(**db_config)
         print("Database connection successful!")
         break
     except pymysql.err.OperationalError as e:
-        print(f"Attempt {attempt + 1}/{max_retries}: Unable to connect to the database. Retrying...")
+        print(f"Attempt {attempt + 1}/{MAX_RETRIES}: "
+              f"Unable to connect to the database. Retrying...")
         time.sleep(5)
 else:
     raise Exception("Max retries exceeded. Could not connect to the database.")
@@ -135,7 +137,8 @@ def add_camera():
             fire_detection_processes[rtsp_url] = process
             print(f"Started fire detection for new camera: {rtsp_url}")
 
-        return jsonify({"message": "Camera added, TCP URLs updated, and fire detection started!"}), 201
+        return jsonify(
+            {"message": "Camera added, TCP URLs updated, and fire detection started!"}), 201
     except Exception as e:
         print(f"Error adding camera: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
@@ -194,7 +197,8 @@ def fetch_sites():
             result = []
             for site in sites:
                 site_id, name = site
-                cursor.execute("SELECT id, name FROM Cameras WHERE site_id = %s", (site_id,))
+                cursor.execute(
+                    "SELECT id, name FROM Cameras WHERE site_id = %s", (site_id,))
                 cameras = [{"id": cam_id, "name": cam_name} for cam_id, cam_name in cursor.fetchall()]
                 result.append({"id": site_id, "name": name, "cameras": cameras})
 
@@ -337,7 +341,8 @@ def add_to_customer():
             cursor.execute(create_custlogin_table)
 
             # Insert into Customer table
-            cursor.execute("INSERT INTO Customer (firstname, lastname) VALUES (%s, %s)", (first_name, last_name))
+            cursor.execute("INSERT INTO Customer (firstname, lastname) VALUES (%s, %s)",
+                           (first_name, last_name))
             customer_id = cursor.lastrowid
 
             # Insert into CustLogin table
@@ -398,8 +403,8 @@ def send_verify_email():
 
 
 def send_email(to_email, subject, link, code=None):
-    postmark_token = "d4763cf8-6f26-46e0-8442-9c3274e51a5b"  # Replace with your Postmark server token
-    sender_email = "info@shopveloworks.com"  # Replace with your verified sender email
+    postmark_token = "d4763cf8-6f26-46e0-8442-9c3274e51a5b"
+    sender_email = "info@shopveloworks.com"
 
     html_content = f"""
     <div>

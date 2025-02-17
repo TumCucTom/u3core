@@ -1,12 +1,21 @@
+"""
+Fire Detection and Alert System
+
+This script captures video from an RTSP stream, detects fire using the Roboflow API,
+and sends alerts via AWS SNS (SMS) and Twilio (WhatsApp) when fire is detected.
+
+Configuration values are loaded from `config.json`, which should contain AWS, Twilio,
+and Roboflow credentials, as well as recipient contact details.
+"""
+import json
 import time
 import cv2
 import boto3
 from twilio.rest import Client
 import requests
-import json
 
 # Load configuration from JSON
-with open("config.json", "r") as config_file:
+with open("config.json", "r", encoding="utf-8") as config_file:
     config = json.load(config_file)
 
 # AWS SNS setup
@@ -34,22 +43,10 @@ R_PARAMS = {
 # Alert message
 ALERT_MESSAGE = "Abnormal detected"
 
-# Send SMS via AWS SNS
-def send_sms_via_sns(phone_number, message):
-    sns_client = boto3.client(
-        "sns",
-        region_name=AWS_REGION,
-        aws_access_key_id=AWS_ACCESS_KEY,
-        aws_secret_access_key=AWS_SECRET_KEY
-    )
-    response = sns_client.publish(
-        PhoneNumber=phone_number,
-        Message=message
-    )
-    print(f"SMS sent! Message ID: {response['MessageId']}")
 
 # Send WhatsApp message via Twilio
 def send_whatsapp_via_twilio(to_number, message):
+    """Send WhatsApp message via Twilio."""
     client = Client(T_ACCOUNT_SID, T_AUTH_TOKEN)
     message = client.messages.create(
         from_=TWILO_NUMBER,
@@ -60,6 +57,7 @@ def send_whatsapp_via_twilio(to_number, message):
 
 # Detect fire using Roboflow
 def detect_fire_with_roboflow(frame):
+    """Detect fire using Roboflow API."""
     _, img_encoded = cv2.imencode(".jpg", frame)
     response = requests.post(
         R_MODEL_URL,
@@ -77,6 +75,7 @@ def detect_fire_with_roboflow(frame):
 
 # Process RTSP stream
 def process_rtsp_stream_with_url(rtsp_url):
+    """Process RTSP stream for fire detection."""
     cap = cv2.VideoCapture(rtsp_url)
     if not cap.isOpened():
         print("Error: Unable to open RTSP stream.")
@@ -123,32 +122,3 @@ def send_sms_via_sns(phone_number, message):
         Message=message
     )
     print(f"SMS sent! Message ID: {response['MessageId']}")
-
-# Send message through Twilio
-def send_whatsapp_via_twilio(to_number, message):
-    """Send WhatsApp message via Twilio."""
-    client = Client(T_ACCOUNT_SID, T_AUTH_TOKEN)
-    message = client.messages.create(
-        from_=TWILO_NUMBER,
-        body=message,
-        to=to_number
-    )
-    print(f"WhatsApp message sent! Message SID: {message.sid}")
-
-# Detect fire by using Roboflow
-def detect_fire_with_roboflow(frame):
-    """Detect fire using Roboflow API."""
-    _, img_encoded = cv2.imencode(".jpg", frame)
-    response = requests.post(
-        R_MODEL_URL,
-        params=R_PARAMS,
-        files={"file": img_encoded.tobytes()},
-        timeout=5.0
-    )
-    response_data = response.json()
-    predictions = response_data.get("predictions", [])
-
-    for prediction in predictions:
-        if prediction["class"] == "fire" and prediction["confidence"] >= R_PARAMS["confidence"]:
-            return True
-    return False
