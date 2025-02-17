@@ -1,3 +1,4 @@
+"""Main python backend server for API endpoints"""
 import random
 import string
 import secrets
