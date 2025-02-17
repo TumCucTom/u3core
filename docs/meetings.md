@@ -48,6 +48,7 @@
 
 ## [No mentor meeting on reading week]
 
+
 ## Client 25th October
 - Met new members of the team (Vikram and Precurance)
 - Discussed issues with sharing githubs (Justice subsequently emailed Sarah)
@@ -63,7 +64,34 @@
 - Told us that cameras will still be supplied
 
 
-## Client 15th Octiber
+## Client 15th October
 - Announced the MVP
 - Show the client the roboflowmodel
 
+
+## Client 4th Novemeber 
+- Canceled
+
+
+## Client 2nd December
+- Last meeting before Chirstmas
+- Make a conclusion of year's progress and plan future
+
+
+## Client 20th January
+- Front-End Development: 
+  PP has worked on multiple screens.
+  Feedback was provided by Bouquet and Dheeraj.
+  Final UI updates expected in a day or two.
+- Back-End Development: 
+  A demo was shared, showcasing fire detection using a lighter and an alert system.
+  Back-end work is nearly complete; waiting for additional training data and AI Edge cameras for deployment.
+- Next Steps:
+  Continue refining the UI based on feedback.
+  Ensure AI Edge cameras are set up for deployment.
+  Next meeting scheduled for Friday, with ongoing communication during the week.
+
+
+## Client 24th January
+- Second meeting in week
+- Futher discussion based on the meeting on Monday (20th Jan)

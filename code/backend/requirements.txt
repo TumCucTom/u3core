@@ -4,3 +4,12 @@ requests
 roboflow
 twilio
 boto3
+flask
+flask-cors
+pymysql
+cryptography
+bcrypt
+email-validator
+pycurl
+ffmpeg-python
+python-dotenv

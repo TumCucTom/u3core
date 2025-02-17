@@ -1,9 +1,11 @@
 ![Roboflow](https://img.shields.io/badge/roboflow-6706CE?style=for-the-badge&logo=roboflow&logoColor=#6706CE)
 ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
-![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB) 
-![Git](https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white) 
-![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white) 
-![AWS](https://img.shields.io/badge/aws-%23232f3e.svg?style=for-the-badge&logo=amazon-web-services&logoColor=white) 
+![AWS](https://img.shields.io/badge/aws-%23232f3e.svg?style=for-the-badge&logo=amazon-web-services&logoColor=white)
+![Quasar](https://img.shields.io/badge/Quasar-050A14.svg?style=for-the-badge&logo=Quasar&logoColor=white)
+![Vue.Js](https://img.shields.io/badge/Vue.js-4FC08D.svg?style=for-the-badge&logo=vuedotjs&logoColor=white)
+![Twilio](https://img.shields.io/badge/Twilio-F22F46.svg?style=for-the-badge&logo=Twilio&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-5FA04E.svg?style=for-the-badge&logo=nodedotjs&logoColor=white)
+
 
 # 2024-ML/AI Prediction Microservices
 ## Table of Contents
@@ -24,6 +26,9 @@ This is a ML/AI microservice top-layer that integrates on an already existing Io
 ### Tasks / Features
 
 #### Frontend
+
+A more in detail document can be found in the [docs](/docs/frontend), but a summary follows:
+
 - There should be Email ID setup and an authentication workflow
 - User friendly UI
 - UI integration with the backend 
@@ -49,29 +54,60 @@ This is a ML/AI microservice top-layer that integrates on an already existing Io
 
 ## Project Structure
 ```
-📁 project/                            #                    
-├── 📁 ai-tools/                       # Information about AI technologies used
-│    └──📄 README.md                   #
-├── 📁 docs/                           #
-│    ├──📄 ethics.md                   #
-│    └──📄 meetings.md                 # Recording all the clients meetings and mentor meetings
-├── 📁 frontend/                       #
-│    └──📄 README.md                   #
-├── 📁 backend/                        #
-│    ├──📄 imageGetPrep.py             # OpenCV code for getting a preprocessing videostream
-│    └──📄 README.md                   # 
-├──📁 preliminary/                     #
-│   ├──📁 Personcounter/               #
-│   │   ├──📁 dataset/                 # First training dataset used
-│   │   ├──📁 dataset2/                # Second training dataset used
-│   │   ├──📁 roboflow-python/         #
-│   │   ├──📄 counter.py               # Code adapted for counting people
-│   │   ├──📄 inferpi.py               # Code adapted for rasberry pi
-│   │   └──📄 infer.py                 # People detection code
-│   └──📄 README.md                    # Details of preliminary task requests
-├──📄 .gitignore                       #
-├──📄 LICENSE.md                       # License for this project
-└──📄 README.md                        # Overall description of the project
+├── LICENSE                            # Licensing details for the project
+├── README.md                          # Main project overview and instructions
+├── ai-tools                           #
+│   └── README.md                      # Overview of AI tools included in the project
+├── code                               #
+│   ├── backend                        # Backend-related services and scripts
+│   │   ├── Dockerfile.backend         # Docker configuration for the backend server
+│   │   ├── Dockerfile.websocket       # Docker configuration for the websocket service
+│   │   ├── README.md                  # Overview of the backend setup
+│   │   ├── db                         #
+│   │   │   ├── Dockerfile             # Docker configuration for the database
+│   │   │   └── custom-shutdown.sh     # Custom script for database shutdown to preserve its state
+│   │   ├── docker-compose.yml         # Docker Compose setup for backend services
+│   │   ├── initdb                     #
+│   │   │   ├── README.md              # Overview of database initialization
+│   │   │   └── dump.sql               # SQL dump for initial database setup
+│   │   ├── python-features            #
+│   │   │   ├── alert_sys.py           # Script for alert system implementation
+│   │   │   ├── full_interation.py     # Script with all features integrated
+│   │   │   └── image_get_prep.py      # Script for image preprocessing only
+│   │   ├── python-server              # Backend server
+│   │   ├── requirements.txt           # Python dependencies for the backend
+│   │   ├── training                   #
+│   │   │   └── README.md              # Overview of training techniques and performance
+│   │   └── websocket-server           # Websocket server
+│   ├── frontend                       #
+│   │   ├── README.md                  # Overview of the frontend setup
+│   │   ├── requirements.txt           # Frontend dependencies
+│   │   └── web-app                    # Frontend quasar web application
+│   └── preliminary                    # Early-stage experimental code and prototypes
+│       ├── Personcounter              #
+│       │   ├── counter.py             # Person counting NN
+│       │   ├── infer.py               # NN for people detection
+│       │   └── inferpi.py             # Raspberry Pi-specific for above
+│       └── README.md                  # Overview of preliminary code
+├── docs                               #
+│   ├── ethics.md                      # Ethical considerations for the project
+│   ├── frontend                       #
+│   │   ├── UI-Design.md               # User interface design details
+│   │   └── figma_Designs              # Figma designs for the frontend
+│   ├── meetings.md                    # Meeting notes and summaries
+│   ├── release.md                     # Release notes and deployment information
+│   └── slides                         # VIVA demos
+│       ├── Demo.mov                   # Demo video for the project
+│       └── MVP-slides.pptx            # PowerPoint slides for the MVP presentation
+├── test                               #
+│   ├── _init_.py                      # Module function
+│   ├── pytest.ini                     # configuration function for pytest
+│   └── test_exapmle.py                # pytest template
+├── package-lock.json                  # Dependency tree lock file (npm/yarn)
+├── package.json                       # Project dependencies and metadata (npm/yarn)
+├── release.md                         # Release notes (duplicate of `docs/release.md`)
+└── yarn.lock                          # Dependency tree lock file (yarn)
+
 ```
 ## User Instructions
 ### Requirements and Prerequisites
@@ -101,10 +137,35 @@ wget https://github.com/spe-uob/2024-MLAIPredictionMicroservices/archive/main.zi
 - An appropriate IDE that can run Python (e.g. VSCode, Intellij)
   - To edit on your IDE you will need to download the dependencies:
   - Run ``` pip3 install opencv-python numpy requests ``` in your terminal
+  - You will also need to install node.js, docker and npm to run the backend:
+    - Run:
+      ```
+      brew install node
+      brew install docker
+      brew install docker-compose
+      brew install npm
+      ```
 - Access to the Roboflow account for backend.
 - Access to the Figma project for design collaboration.
 - Access to the GitHub repository for development. 
   - To gain access to these resources and contribute to the project, you will need approval from the current [developers](#contributors).
+
+To run the backend server:
+```
+cd code/backend
+docker compose build
+docker compose up
+```
+
+For the frontend:
+```
+cd code/frontend
+npm run dev
+```
+
+Also see the [backend README](code/backend/README.md) for more information on the backend server.
+
+and the [frontend README](code/frontend/README.md) for more information on the frontend server.
 
 ### Contributing
 
@@ -251,7 +312,8 @@ To start the stream:
 |AWS deployment for cloud-based anomaly detection system||
 
 ## License
-[type of license](LICENSE.md)
+
+This project is licensed under a custom license. Please see the [LICENSE](./LICENSE) file for more details.
 
 ## Contributors
 
