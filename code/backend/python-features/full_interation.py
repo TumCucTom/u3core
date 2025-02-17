@@ -1,4 +1,4 @@
-"""Fully integrated feature script"""
+"""Fully integrated script"""
 import os
 import time
 import cv2
