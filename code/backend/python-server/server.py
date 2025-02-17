@@ -1,48 +1,24 @@
-from flask import Flask, request, jsonify,Response
-from flask_cors import CORS
-import bcrypt
+"""Main python backend server for API endpoints"""
 import random
 import string
 import secrets
-import pymysql
-import pycurl
-import requests
 from io import BytesIO
-import json
 import time
 import logging
 import sys
-import cv2
-from twilio.rest import Client
-from flask import Flask, request, jsonify, send_from_directory
 import multiprocessing
+import json
+import pymysql
+import pycurl
+import requests
 from fire_detection_script import process_rtsp_stream_with_url
+from flask import Flask, request, jsonify,Response
+from flask_cors import CORS
+import bcrypt
 
 # Load configuration from JSON
 with open("config.json", "r") as config_file:
     config = json.load(config_file)
-
-# AWS SNS setup
-AWS_REGION = config["aws"]["region"]
-AWS_ACCESS_KEY = config["aws"]["access_key"]
-AWS_SECRET_KEY = config["aws"]["secret_key"]
-
-# Twilio setup
-T_ACCOUNT_SID = config["twilio"]["account_sid"]
-T_AUTH_TOKEN = config["twilio"]["auth_token"]
-TWILO_NUMBER = config["twilio"]["number"]
-
-# Recipient setup
-REC_NUMBER = config["recipient"]["phone_number"]
-REC_WHATSAPP_NUMBER = config["recipient"]["whatsapp_number"]
-
-# Roboflow setup
-R_API_KEY = config["roboflow"]["api_key"]
-R_MODEL_URL = config["roboflow"]["model_url"]
-R_PARAMS = {
-    "api_key": R_API_KEY,
-    "confidence": config["roboflow"]["confidence"]
-}
 
 # Alert message
 ALERT_MESSAGE = "Abnormal detected"
@@ -81,35 +57,6 @@ for attempt in range(max_retries):
         time.sleep(5)
 else:
     raise Exception("Max retries exceeded. Could not connect to the database.")
-    
-# detecting fire with roboflow
-def detect_fire_with_roboflow(frame):
-    """Detect fire using Roboflow API."""
-    _, img_encoded = cv2.imencode(".jpg", frame)
-    response = requests.post(
-        R_MODEL_URL,
-        params=R_PARAMS,
-        files={"file": img_encoded.tobytes()},
-        timeout=5.0
-    )
-    response_data = response.json()
-    predictions = response_data.get("predictions", [])
-
-    for prediction in predictions:
-        if prediction["class"] == "fire" and prediction["confidence"] >= R_PARAMS["confidence"]:
-            return True
-    return False
-
-# Sending message via whatsapp
-def send_whatsapp_via_twilio(to_number, message):
-    """Send WhatsApp message via Twilio."""
-    client = Client(T_ACCOUNT_SID, T_AUTH_TOKEN)
-    message = client.messages.create(
-        from_=TWILO_NUMBER,
-        body=message,
-        to=to_number
-    )
-    print(f"WhatsApp message sent! Message SID: {message.sid}")
 
 # Dictionary to track running fire detection processes
 fire_detection_processes = {}
@@ -192,7 +139,7 @@ def add_camera():
             fire_detection_processes[rtsp_url] = process
             print(f"Started fire detection for new camera: {rtsp_url}")
 
-        return jsonify({"message": "Camera added, TCP URLs updated, and fire detection started!"}), 201
+        return jsonify({"message": "Camera added, TCP URLs updated, and fire detection started!"}), 201 # pylint: disable=<C0301>
     except Exception as e:
         print(f"Error adding camera: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
@@ -252,7 +199,7 @@ def fetch_sites():
             for site in sites:
                 site_id, name = site
                 cursor.execute("SELECT id, name FROM Cameras WHERE site_id = %s", (site_id,))
-                cameras = [{"id": cam_id, "name": cam_name} for cam_id, cam_name in cursor.fetchall()]
+                cameras = [{"id": cam_id, "name": cam_name} for cam_id, cam_name in cursor.fetchall()] # pylint: disable=<C0301>
                 result.append({"id": site_id, "name": name, "cameras": cameras})
 
         return jsonify({"sites": result}), 200
@@ -260,77 +207,7 @@ def fetch_sites():
         print(f"Error fetching sites: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
 
-
-@app.route('/api/test', methods=['GET'])
-def test_server():
-    return jsonify({"message": "Server is running!", "status": "success"}), 200
-
-@app.route('/api/testAddEntry', methods=['POST'])
-def test_add_entry():
-    test_data = request.json.get('testData', 'Default Test Data')
-
-    try:
-        with connection.cursor() as cursor:
-            # Create the TestTable if it doesn't exist
-            create_table_query = """
-            CREATE TABLE IF NOT EXISTS TestTable (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                testData VARCHAR(255)
-            );
-            """
-            cursor.execute(create_table_query)
-
-            # Insert the test data
-            cursor.execute("INSERT INTO TestTable (testData) VALUES (%s)", (test_data,))
-
-        connection.commit()
-        return jsonify({"message": "Test entry added successfully!"})
-    except Exception as e:
-        print(f"Error adding test entry: {e}")
-        return jsonify({"error": "Internal Server Error"}), 500
     
-@app.route('/api/stream',methods = ['POST'])
-def stream():
-    data = request.json
-    name = data.get('name')
-    rtsp_url = data.get('rtsp_url')
-
-    if not all([name, rtsp_url]):
-        return jsonify({"error": "Name and RTSP URL are required"}), 400
-
-    # Convert tcp:// to rtsp://
-    if rtsp_url.startswith("tcp://"):
-        rtsp_url = "rtsp://" + rtsp_url[6:]
-
-    video = cv2.VideoCapture(rtsp_url)
-    if not video.isOpened:
-        print("Error : Camera is not opened")
-    
-    last_alert = 0
-    alert_interval = 30
-
-    while True:
-        ret,frame = video.read()
-        if not ret:
-            break
-        fire_detected = detect_fire_with_roboflow(frame)
-        if fire_detected:
-            current_time = time.time()
-            if current_time - last_alert > alert_interval:
-                print("Sending message")
-                send_whatsapp_via_twilio(REC_WHATSAPP_NUMBER,ALERT_MESSAGE)
-                last_alert = current_time
-
-        cv2.imshow("webcam stream",frame)
-        if cv2.waitKey(1) & 0xff == ord('q'):
-            break
-    video.release()
-    cv2.destroyAllWindows()
-if __name__ == "__main__":
-    stream()
-
-
-
 
 @app.route('/api/dbinfo', methods=['GET'])
 def get_db_info():
@@ -477,7 +354,7 @@ def add_to_customer():
             cursor.execute(create_custlogin_table)
 
             # Insert into Customer table
-            cursor.execute("INSERT INTO Customer (firstname, lastname) VALUES (%s, %s)", (first_name, last_name))
+            cursor.execute("INSERT INTO Customer (firstname, lastname) VALUES (%s, %s)", (first_name, last_name)) # pylint: disable=<C0301>
             customer_id = cursor.lastrowid
 
             # Insert into CustLogin table
@@ -529,7 +406,7 @@ def send_verify_email():
         token = secrets.token_hex(20)
         verification_link = f"http://localhost:9000/#/verified-email?token={token}&email={email}"
         otp_code = ''.join(random.choices(string.digits, k=6))
-        #return jsonify({"error": send_email(email, "Password Reset Request", verification_link)}), 500
+        #return jsonify({"error": send_email(email, "Password Reset Request", verification_link)}), 500 # pylint: disable=<C0301>
         send_email(email, "Email Verification", verification_link, otp_code)
         return jsonify({"message": "Verification email sent successfully"})
     except Exception as e:
@@ -538,7 +415,7 @@ def send_verify_email():
 
 
 def send_email(to_email, subject, link, code=None):
-    postmark_token = "d4763cf8-6f26-46e0-8442-9c3274e51a5b"  # Replace with your Postmark server token
+    postmark_token = "d4763cf8-6f26-46e0-8442-9c3274e51a5b"  # Replace with your Postmark server token # pylint: disable=<C0301>
     sender_email = "info@shopveloworks.com"  # Replace with your verified sender email
 
     html_content = f"""
