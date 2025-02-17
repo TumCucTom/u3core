@@ -1,5 +1,4 @@
 """Alert users when a user when a hazard is detected"""
-import os
 import time
 import os
 import cv2
