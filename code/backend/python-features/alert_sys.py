@@ -1,9 +1,10 @@
+"""Alert users when a user when a hazard is detected"""
+import os
 import time
 import cv2
 import boto3
 from twilio.rest import Client
 import requests
-import os
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
@@ -26,7 +27,7 @@ REC_WHATSAPP_NUMBER = os.getenv("REC_WHATSAPP_NUMBER")
 # Roboflow set up
 R_API_KEY = os.getenv("R_API_KEY")
 R_MODEL_URL = os.getenv("R_MODEL_URL")
-R_CONFIDENCE = float(os.getenv("R_CONFIDENCE", 0.5))  # Default to 0.5 if not set
+R_CONFIDENCE = float(os.getenv("R_CONFIDENCE"))  # Default to 0.5 if not set
 R_PARAMS = {
     "api_key": R_API_KEY,
     "confidence": R_CONFIDENCE
