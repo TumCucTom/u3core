@@ -17,7 +17,7 @@ import pymysql
 import pycurl
 import requests
 from fire_detection_script import process_rtsp_stream_with_url
-from flask import Flask, request, jsonify 
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 
 
