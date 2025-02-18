@@ -10,7 +10,7 @@
             <p class="q-my-md text-h5">
               {{ isLogin
                 ? "We've been using Untitled to kick start every new project and can't imagine working without it."
-                : "Untitled has saved us thousands of hours of work. We’re able to spin up projects and features much faster."
+                : "U3Core's safety compliance features helped us monitor workplace conditions more efficiently. We've not only reduced risks but also met the regulatory requirements with ease.'"
               }}
             </p>
             <q-avatar size="80px">
@@ -19,6 +19,7 @@
                 alt="User Image"
               />
             </q-avatar>
+            <img src="/frontend/web-app/src/assets/Lori.png" alt="Logo">
             <p class="q-mt-sm text-bold">{{ isLogin ? 'Pippa Wilkinson' : 'Lori Bryson' }}</p>
             <p class="text-caption">
               {{ isLogin ? 'Head of Design, Layers' : 'Product Designer, Sisyphus' }}
