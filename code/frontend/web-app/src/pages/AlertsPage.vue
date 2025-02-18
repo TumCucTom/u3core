@@ -14,19 +14,19 @@
 
         >
 
-          <template v-slot:body-cell-siteName="{ _row }">
-            <q-td>{{ _row.siteName }}</q-td>
+          <template v-slot:body-cell-cameraName="{ _row }">
+            <q-td>{{ _row.cameraName }}</q-td>
           </template>
   
           
-          <template v-slot:body-cell-siteLocation="{ _row }">
-            <q-td>{{ _row.siteLocation }}</q-td>
+          <template v-slot:body-cell-cameraAddress="{ _row }">
+            <q-td>{{ _row.cameraAddress }}</q-td>
           </template>
 
 
           
-          <template v-slot:body-cell-cameraID="{ _row }">
-            <q-td>{{ _row.cameraID }}</q-td>
+          <template v-slot:body-cell-timestamp="{ _row }">
+            <q-td>{{ _row.timestamp }}</q-td>
           </template>
   
          
@@ -38,15 +38,15 @@
           </template>
   
           
-          <template v-slot:body-cell-timestamp="{ _row }">
-            <q-td>{{ _row.timestamp }}</q-td>
+          <template v-slot:body-cell-numberOfHazards="{ _row }">
+            <q-td>{{ _row.numberOfHazards }}</q-td>
+          </template>
+
+          <template v-slot:body-cell-falsePositives="{ _row }">
+            <q-td>{{ _row.falsePositives }}</q-td>
           </template>
   
           
-          <template v-slot:body-cell-resourceLink>
-            <q-td>
-            </q-td>
-          </template>
         </q-table>
       </div>
     </q-page>
@@ -59,12 +59,12 @@
       return {
 
         columns: [
-          { name: 'siteName', label: 'Site Name', field: 'siteName', sortable: true },
-          { name: 'siteLocation', label: 'Site Location', field: 'siteLocation', sortable: true },
-          { name: 'cameraID', label: 'Camera ID', field: 'cameraID', sortable: true },
-          { name: 'faultType', label: 'Fault Type', field: 'faultType', sortable: true },
+          { name: 'cameraName', label: 'Site Name', field: 'cameraName', sortable: true },
+          { name: 'cameraAddress', label: 'Site Location', field: 'cameraAddress', sortable: true },
           { name: 'timestamp', label: 'Timestamp', field: 'timestamp', sortable: true },
-          { name: 'resourceLink', label: 'Resource Link', field: 'resourceLink' }
+          { name: 'faultType', label: 'Fault Type', field: 'faultType', sortable: true },
+          { name: 'numberOfHazards', label: 'Hazard count', field: 'numberOfHazards' },
+          { name: 'falsePositives', label: 'False positive?', field: 'falsePositives' },
         ],
         alertsData: [], 
         pagination: {
