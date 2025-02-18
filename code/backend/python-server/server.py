@@ -19,6 +19,10 @@ import requests
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from fire_detection_script import process_rtsp_stream_with_url
+from flask import Flask, request, jsonify, Response
+from flask_cors import CORS
+import bcrypt
+
 
 # Configure logging
 logging.basicConfig(
@@ -58,6 +62,7 @@ else:
 
 
 # Auto fire detection startup
+
 
 # Dictionary to track running fire detection processes
 fire_detection_processes = {}
@@ -140,9 +145,9 @@ def add_camera():
             process.start()
             fire_detection_processes[rtsp_url] = process
             print(f"Started fire detection for new camera: {rtsp_url}")
-
         return jsonify(
             {"message": "Camera added, TCP URLs updated, and fire detection started!"}), 201
+
     except Exception as e:
         print(f"Error adding camera: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
@@ -372,7 +377,7 @@ def send_verify_email():
         token = secrets.token_hex(20)
         verification_link = f"http://localhost:9000/#/verified-email?token={token}&email={email}"
         otp_code = ''.join(random.choices(string.digits, k=6))
-        #return jsonify({"error": send_email(email, "Password Reset Request", verification_link)}), 500
+        #return jsonify({"error": send_email(email, "Password Reset Request", verification_link)}), 500 # pylint: disable=<C0301>
         send_email(email, "Email Verification", verification_link, otp_code)
         return jsonify({"message": "Verification email sent successfully"})
     except Exception as e:
