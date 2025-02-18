@@ -19,7 +19,8 @@
                 alt="User Image"
               />
             </q-avatar>
-            <img src="/frontend/web-app/src/assets/Lori.png" alt="Logo">
+            <img src="/src/assets/Lori.png" alt="Logo">
+
             <p class="q-mt-sm text-bold">{{ isLogin ? 'Pippa Wilkinson' : 'Lori Bryson' }}</p>
             <p class="text-caption">
               {{ isLogin ? 'Head of Design, Layers' : 'Product Designer, Sisyphus' }}
@@ -141,6 +142,8 @@
     data() {
       return {
         isLogin: false, // sees if page is in login or register mode
+        obamaImage: require('@/assets/obama.jpg')
+        ,anotherUserImage: require('@/assets/Lori.png')
       };
     },
     methods: {
@@ -277,6 +280,11 @@
 </script>
 
 <style scoped>
+
+.move-left {
+  position-try: relative;
+  left: -2000px;
+}
 
 .bg-light {
   background-color: #f9fafb;
