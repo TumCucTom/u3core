@@ -20,7 +20,6 @@ from fire_detection_script import process_rtsp_stream_with_url
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
-
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,  # Set log level (INFO, DEBUG, ERROR, etc.)
@@ -59,7 +58,6 @@ else:
 
 
 # Auto fire detection startup
-
 
 # Dictionary to track running fire detection processes
 fire_detection_processes = {}
