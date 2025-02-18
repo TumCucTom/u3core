@@ -1,4 +1,8 @@
 """Backend python server for api endpoints and fire detection"""
+# pylint: disable=line-too-long
+# pylint: disable=broad-except
+# pylint: disable=logging-fstring-interpolation
+# pylint: disable=c-extension-no-member
 import random
 import string
 import secrets
@@ -30,7 +34,8 @@ CORS(app)  # Enable CORS for all routes
 
 # Load configuration from config.json
 def load_db_config(filename="db-config.json"):
-    with open(filename, "r") as db_config_file:
+    """Load db information from config.json"""
+    with open(filename, "r", encoding="utf8") as db_config_file:
         db_config_fi = json.load(db_config_file)
     return db_config_fi
 
@@ -49,7 +54,7 @@ for attempt in range(MAX_RETRIES):
               f"Unable to connect to the database. Retrying...")
         time.sleep(5)
 else:
-    raise Exception("Max retries exceeded. Could not connect to the database.")
+    logging.critical("Max retries exceeded. Could not connect to the database.")
 
 
 # Auto fire detection startup
@@ -67,7 +72,6 @@ def start_fire_detection_for_all_cameras():
     Fetch all cameras from the database and start fire detection concurrently.
     Ensures each RTSP stream is monitored independently.
     """
-    global fire_detection_processes
     try:
         with connection.cursor() as cursor:
             cursor.execute("SELECT rtsp_url FROM Cameras")
@@ -208,35 +212,6 @@ def fetch_sites():
         return jsonify({"error": "Internal Server Error"}), 500
 
 
-@app.route('/api/test', methods=['GET'])
-def test_server():
-    return jsonify({"message": "Server is running!", "status": "success"}), 200
-
-@app.route('/api/testAddEntry', methods=['POST'])
-def test_add_entry():
-    test_data = request.json.get('testData', 'Default Test Data')
-
-    try:
-        with connection.cursor() as cursor:
-            # Create the TestTable if it doesn't exist
-            create_table_query = """
-            CREATE TABLE IF NOT EXISTS TestTable (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                testData VARCHAR(255)
-            );
-            """
-            cursor.execute(create_table_query)
-
-            # Insert the test data
-            cursor.execute("INSERT INTO TestTable (testData) VALUES (%s)", (test_data,))
-
-        connection.commit()
-        return jsonify({"message": "Test entry added successfully!"})
-    except Exception as e:
-        print(f"Error adding test entry: {e}")
-        return jsonify({"error": "Internal Server Error"}), 500
-
-
 @app.route('/api/emails', methods=['GET'])
 def get_emails():
     """
@@ -309,6 +284,7 @@ def login():
 
 @app.route('/api/addToCustomer', methods=['POST'])
 def add_to_customer():
+    """Add a customer to DB"""
     data = request.json.get('items', [])
     if len(data) < 4:
         return jsonify({"error": "Invalid input"}), 400
@@ -361,6 +337,7 @@ def add_to_customer():
 
 @app.route('/api/sendResetEmail', methods=['POST'])
 def send_reset_email():
+    """Send a reset password email"""
     email = request.json.get('email')
     if not email:
         return jsonify({"error": "Email is required"}), 400
@@ -371,8 +348,8 @@ def send_reset_email():
             if not cursor.fetchone():
                 return jsonify({"message": "Email not found"}), 404
 
-        token = secrets.token_hex(20)
-        verification_link = f"http://localhost:9000/#/ResetPassword?token={token}&email={email}"
+        # token = secrets.token_hex(20)
+        # verification_link = f"http://localhost:9000/#/ResetPassword?token={token}&email={email}"
         return jsonify({"message": "Email sent successfully"})
     except Exception as e:
         print(f"Error sending reset email: {e}")
@@ -381,6 +358,7 @@ def send_reset_email():
 
 @app.route('/api/sendVerifyEmail', methods=['POST'])
 def send_verify_email():
+    """Send a verify email"""
     email = request.json.get('email')
     if not email:
         return jsonify({"error": "Email is required"}), 400
@@ -403,6 +381,7 @@ def send_verify_email():
 
 
 def send_email(to_email, subject, link, code=None):
+    """Sends an email"""
     postmark_token = "d4763cf8-6f26-46e0-8442-9c3274e51a5b"
     sender_email = "info@shopveloworks.com"
 
