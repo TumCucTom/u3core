@@ -415,8 +415,8 @@ def send_verify_email():
 
 
 def send_email(to_email, subject, link, code=None):
-    postmark_token = "a8afbe3b-194e-4733-8a86-3c903f341ef8"  # Replace with your Postmark server token # pylint: disable=<C0301>
-    sender_email = "info@digitalU3.com"  # Replace with your verified sender email
+    postmark_token = "a8afbe3b-194e-4733-8a86-3c903f341ef8"  # Client's Postmark server API token
+    sender_email = "info@digitalU3.com"  # Client's Sender email
 
     html_content = f"""
     <div>
