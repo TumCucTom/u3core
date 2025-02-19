@@ -19,8 +19,6 @@
                 alt="User Image"
               />
             </q-avatar>
-            <img src="/src/assets/Lori.png" alt="Logo">
-
             <p class="q-mt-sm text-bold">{{ isLogin ? 'Pippa Wilkinson' : 'Lori Bryson' }}</p>
             <p class="text-caption">
               {{ isLogin ? 'Head of Design, Layers' : 'Product Designer, Sisyphus' }}
@@ -137,13 +135,16 @@
   import { useRouter } from 'vue-router';
   import bcrypt from 'bcryptjs';
   import {colors} from 'quasar';
-
+  import obamaImage from '@/assets/obama.jpg';
+  import anotherUserImage from '@/assets/Lori.png';
+  
+  
   export default {
     data() {
       return {
         isLogin: false, // sees if page is in login or register mode
-        obamaImage: require('@/assets/obama.jpg')
-        ,anotherUserImage: require('@/assets/Lori.png')
+        obamaImage,
+        anotherUserImage,
       };
     },
     methods: {
