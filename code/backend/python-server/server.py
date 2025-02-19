@@ -402,6 +402,46 @@ def add_hazard():
         print(f"Error adding log: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
 
+@app.route('/api/get-logs', methods=['GET'])
+def get_logs():
+    """
+    Fetch all hazard log entries from the logs table and return them in a format
+    compatible with the front end
+    """
+    try:
+        with connection.cursor() as cursor:
+            # Retrieve all log entries sorted by most recent first
+            cursor.execute("""
+                SELECT id, cameraIP, cameraName, hourTime, hazardType, number, falsePositive
+                FROM Logs
+                ORDER BY id DESC
+            """)
+            rows = cursor.fetchall()
+
+            # Transform rows into a list of dictionaries
+            data = []
+            for row in rows:
+                log_id, camera_ip, camera_name, hour_time, hazard_type, number, false_positive = row
+
+                data.append({
+                    "id": log_id,                          
+                    "cameraName": camera_name,
+                    "cameraAddress": camera_ip,
+                    "timestamp": hour_time,                
+                    "faultType": hazard_type,
+                    "numberOfHazards": number,
+                    
+                    "falsePositives": "Yes" if false_positive else "No"
+                })
+
+        return jsonify(data), 200
+
+    except Exception as e:
+        print("Error retrieving logs:", e)
+        return jsonify({"error": "Internal Server Error"}), 500
+
+
+
 
 @app.route('/api/dbinfo', methods=['GET'])
 def get_db_info():
