@@ -1,4 +1,5 @@
 """Main python backend server for API endpoints"""
+import os
 import random
 import string
 import secrets
@@ -15,6 +16,11 @@ from fire_detection_script import process_rtsp_stream_with_url
 from flask import Flask, request, jsonify,Response
 from flask_cors import CORS
 import bcrypt
+from dotenv import load_dotenv
+
+
+load_dotenv()
+POSTMARK_API = os.getenv("POSTMARK_API")
 
 # Load configuration from JSON
 with open("config.json", "r") as config_file:
@@ -415,7 +421,8 @@ def send_verify_email():
 
 
 def send_email(to_email, subject, link, code=None):
-    postmark_token = "a8afbe3b-194e-4733-8a86-3c903f341ef8"  # Client's Postmark server API token
+
+    postmark_token = POSTMARK_API  # Client's Postmark server API token
     sender_email = "info@digitalU3.com"  # Client's Sender email
 
     html_content = f"""
