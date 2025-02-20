@@ -32,7 +32,7 @@ jobs:
           
           # Navigate to home directory and remove any existing repo
           cd ~
-          rm -rf 2024-MLAIPrediction-Microservices
+          rm -r 2024-MLAIPredictionMicroservices
 
           # Clone the latest version
           git clone git@github.com:spe-uob/2024-MLAIPredictionMicroservices.git
