@@ -26,7 +26,7 @@ jobs:
       run: |
         ssh ${{ secrets.AWS_USER }}@${{ secrets.AWS_HOST }} << 'EOF'
           set -e  # Exit on any error
-          sudo apt update && sudo apt install -y git  # Ensure git is installed
+          sudo yum update && sudo yum install -y git  # Ensure git is installed
           
           # Navigate to home directory and remove any existing repo
           cd ~
