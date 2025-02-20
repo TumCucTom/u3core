@@ -1,0 +1,42 @@
+name: Deploy to AWS
+
+on:
+  push:
+    branches:
+      - dev
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up SSH
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.AWS_SSH_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -H ${{ secrets.AWS_HOST }} >> ~/.ssh/known_hosts
+
+    - name: Deploy to AWS
+      run: |
+        ssh ${{ secrets.AWS_USER }}@${{ secrets.AWS_HOST }} << 'EOF'
+          set -e  # Exit on any error
+          sudo apt update && sudo apt install -y git  # Ensure git is installed
+          
+          # Navigate to home directory and remove any existing repo
+          cd ~
+          rm -rf repo  # Change 'repo' to your actual repo name if needed
+
+          # Clone the latest version
+          git clone https://github.com/${{ github.repository }} repo
+          cd repo/code/backend
+
+          # Start the service using Docker Compose
+          docker-compose down
+          docker-compose pull
+          docker-compose up -d --build
+        EOF
