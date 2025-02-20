@@ -30,7 +30,8 @@ jobs:
           
           # Navigate to home directory and remove any existing repo
           cd ~
-          rm -rf repo  # Change 'repo' to your actual repo name if needed
+          cat ~/.ssh/id_rsa.pub
+          rm -rf 2024-MLAIPrediction-Microservices
 
           # Clone the latest version
           git clone https://github.com/${{ github.repository }} repo
