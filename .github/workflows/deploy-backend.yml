@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - dev
+      - cd-backend
   workflow_dispatch:
 
 jobs:
