@@ -39,7 +39,7 @@ jobs:
           cd 2024-MLAIPredictionMicroservices/code/backend
 
           # Start the service using Docker Compose
-          docker-compose down
-          docker-compose pull
-          docker-compose up -d --build
+          docker compose down
+          docker compose pull
+          docker compose up -d --build
         EOF
