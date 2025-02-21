@@ -4,6 +4,7 @@ on:
     branches:
       - dev
       - bug-fix-cd
+      - deploy-to-domain
   pull_request:
     branches:
       - dev
@@ -29,3 +30,20 @@ jobs:
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           folder: code/frontend/web-app/dist/spa # The folder the action should deploy.
+
+  domain-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          ref: gh-pages
+
+      - name: Deploy via FTP
+        uses: SamKirkland/FTP-Deploy-Action@4.3.0
+        with:
+          server: ftp.u3core.com
+          username: info
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./
+          server-dir: /public_html/ai-u3core-com
