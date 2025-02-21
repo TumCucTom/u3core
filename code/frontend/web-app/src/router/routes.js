@@ -19,9 +19,10 @@ const routes = [
       {
         path: "",
         component: Home,
+        meta: { title: 'U3 Core' },
       },
       {path: "otp", component: otp},
-      { path: "verified-email", component: Verified }, // Action Settings page
+      { path: "verified-email", component: Verified, meta: { title: 'U3 Core' }, }, // Action Settings page
     ],
   },
 
@@ -30,14 +31,14 @@ const routes = [
     path: "/app",
     component: () => import("layouts/SidebarLayout.vue"),
     children: [
-      { path: "dashboard", component: DashboardPage }, // Dashboard page
-      { path: "manage-sites", component: ManageSitesPage }, // Manage Sites page
-      { path: "manage-models", component: ManageModelsPage }, // Manage Models page
-      { path: "action-settings", component: ActionSettingsPage }, // Action Settings page
-      {path : "alerts-page", component: AlertsPage} ,// Alerts page
-      {path : "training-page", component :TrainingPage},
-      {path : "cloud-settings", component :CloudSettingsPage},
-      {path : "settings", component:SettingsPage},
+      { path: "dashboard", component: DashboardPage,meta: { title: 'U3 Core' }, }, // Dashboard page
+      { path: "manage-sites", component: ManageSitesPage,meta: { title: 'U3 Core' }, }, // Manage Sites page
+      { path: "manage-models", component: ManageModelsPage,meta: { title: 'U3 Core' }, }, // Manage Models page
+      { path: "action-settings", component: ActionSettingsPage,meta: { title: 'U3 Core' }, }, // Action Settings page
+      {path : "alerts-page", component: AlertsPage,meta: { title: 'U3 Core' },} ,// Alerts page
+      {path : "training-page", component :TrainingPage,meta: { title: 'U3 Core' },},
+      {path : "cloud-settings", component :CloudSettingsPage,meta: { title: 'U3 Core' },},
+      {path : "settings", component:SettingsPage,meta: { title: 'U3 Core' },},
     ],
   },
 
@@ -45,6 +46,7 @@ const routes = [
   {
     path: "/:catchAll(.*)*",
     component: () => import("pages/ErrorNotFound.vue"),
+    meta: { title: 'U3 Core' },
   },
 ];
 
