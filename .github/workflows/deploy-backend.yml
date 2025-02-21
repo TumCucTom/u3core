@@ -35,7 +35,7 @@ jobs:
           rm -r 2024-MLAIPredictionMicroservices
 
           # Clone the latest version
-          git clone -b cd-backend git@github.com:spe-uob/2024-MLAIPredictionMicroservices.git
+          git clone git@github.com:spe-uob/2024-MLAIPredictionMicroservices.git
           cd 2024-MLAIPredictionMicroservices/code/backend
 
           # Start the service using Docker Compose
