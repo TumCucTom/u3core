@@ -1,19 +1,25 @@
-"""Main python backend server for API endpoints"""
+"""Backend python server for api endpoints and fire detection"""
+# pylint: disable=line-too-long
+# pylint: disable=broad-except
+# pylint: disable=logging-fstring-interpolation
+# pylint: disable=c-extension-no-member
+
 import os
 import random
 import string
 import secrets
 from io import BytesIO
+import multiprocessing
+import json
 import time
 import logging
 import sys
-import multiprocessing
-import json
+import bcrypt
 import pymysql
 import pycurl
 import requests
 from fire_detection_script import process_rtsp_stream_with_url
-from flask import Flask, request, jsonify,Response
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 import bcrypt
 from dotenv import load_dotenv
@@ -29,40 +35,43 @@ with open("config.json", "r") as config_file:
 # Alert message
 ALERT_MESSAGE = "Abnormal detected"
 
+# Load environment variables from ../../../.env
+dotenv_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../.env"))
+load_dotenv(dotenv_path)
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,  # Set log level (INFO, DEBUG, ERROR, etc.)
+    level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s",
-    handlers=[
-        logging.StreamHandler(sys.stdout)  # Log to Docker console (stdout)
-    ]
+    handlers=[logging.StreamHandler(sys.stdout)]
 )
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 
-# Load configuration from config.json
-def load_db_config(filename="db-config.json"):
-    with open(filename, "r") as db_config_file:
-        db_config_fi = json.load(db_config_file)
-    return db_config_fi
+# Database Configuration
+db_config = {
+    "host": os.getenv("DB_HOST"),
+    "user": os.getenv("DB_USER"),
+    "password": os.getenv("DB_PASSWORD"),
+    "database": os.getenv("DB_NAME"),
+    "port": int(os.getenv("DB_PORT"))
+}
 
-# Retrieve the database configuration
-db_config = load_db_config()
-
-
-max_retries = 10
-for attempt in range(max_retries):
+MAX_RETRIES = 10
+for attempt in range(MAX_RETRIES):
     try:
         connection = pymysql.connect(**db_config)
-        print("Database connection successful!")
+        logging.info("Database connection successful!")
         break
     except pymysql.err.OperationalError as e:
-        print(f"Attempt {attempt + 1}/{max_retries}: Unable to connect to the database. Retrying...")
+        logging.warning(f"Attempt {attempt + 1}/{MAX_RETRIES}: Unable to connect to the database. Retrying...")
         time.sleep(5)
 else:
-    raise Exception("Max retries exceeded. Could not connect to the database.")
+    logging.critical("Max retries exceeded. Could not connect to the database.")
+
+
+# Auto fire detection startup
 
 # Dictionary to track running fire detection processes
 fire_detection_processes = {}
@@ -77,7 +86,6 @@ def start_fire_detection_for_all_cameras():
     Fetch all cameras from the database and start fire detection concurrently.
     Ensures each RTSP stream is monitored independently.
     """
-    global fire_detection_processes
     try:
         with connection.cursor() as cursor:
             cursor.execute("SELECT rtsp_url FROM Cameras")
@@ -93,6 +101,8 @@ def start_fire_detection_for_all_cameras():
         logging.info("Started fire detection for all cameras")
     except Exception as e:
         print(f"Error starting fire detection processes: {e}")
+
+# API endpoints
 
 @app.route('/api/add-camera', methods=['POST'])
 def add_camera():
@@ -144,8 +154,9 @@ def add_camera():
             process.start()
             fire_detection_processes[rtsp_url] = process
             print(f"Started fire detection for new camera: {rtsp_url}")
+        return jsonify(
+            {"message": "Camera added, TCP URLs updated, and fire detection started!"}), 201
 
-        return jsonify({"message": "Camera added, TCP URLs updated, and fire detection started!"}), 201 # pylint: disable=<C0301>
     except Exception as e:
         print(f"Error adding camera: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
@@ -204,55 +215,14 @@ def fetch_sites():
             result = []
             for site in sites:
                 site_id, name = site
-                cursor.execute("SELECT id, name FROM Cameras WHERE site_id = %s", (site_id,))
-                cameras = [{"id": cam_id, "name": cam_name} for cam_id, cam_name in cursor.fetchall()] # pylint: disable=<C0301>
+                cursor.execute(
+                    "SELECT id, name FROM Cameras WHERE site_id = %s", (site_id,))
+                cameras = [{"id": cam_id, "name": cam_name} for cam_id, cam_name in cursor.fetchall()]
                 result.append({"id": site_id, "name": name, "cameras": cameras})
 
         return jsonify({"sites": result}), 200
     except Exception as e:
         print(f"Error fetching sites: {e}")
-        return jsonify({"error": "Internal Server Error"}), 500
-
-    
-
-@app.route('/api/dbinfo', methods=['GET'])
-def get_db_info():
-    try:
-        with connection.cursor() as cursor:
-            # Fetch all table names
-            cursor.execute("SHOW TABLES")
-            tables = cursor.fetchall()
-
-            db_info = {}
-
-            for (table_name,) in tables:
-                # Fetch column details for each table
-                cursor.execute(f"DESCRIBE {table_name}")
-                columns = cursor.fetchall()
-                column_info = [
-                    {
-                        "Field": col[0],
-                        "Type": col[1],
-                        "Null": col[2],
-                        "Key": col[3],
-                        "Default": col[4],
-                        "Extra": col[5]
-                    } for col in columns
-                ]
-
-                # Fetch all rows for each table
-                cursor.execute(f"SELECT * FROM {table_name}")
-                rows = cursor.fetchall()
-
-                db_info[table_name] = {
-                    "columns": column_info,
-                    "entries": rows
-                }
-
-        return jsonify(db_info)
-
-    except Exception as e:
-        print(f"Error fetching database info: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
 
 
@@ -328,6 +298,7 @@ def login():
 
 @app.route('/api/addToCustomer', methods=['POST'])
 def add_to_customer():
+    """Add a customer to DB"""
     data = request.json.get('items', [])
     if len(data) < 4:
         return jsonify({"error": "Invalid input"}), 400
@@ -360,7 +331,8 @@ def add_to_customer():
             cursor.execute(create_custlogin_table)
 
             # Insert into Customer table
-            cursor.execute("INSERT INTO Customer (firstname, lastname) VALUES (%s, %s)", (first_name, last_name)) # pylint: disable=<C0301>
+            cursor.execute("INSERT INTO Customer (firstname, lastname) VALUES (%s, %s)",
+                           (first_name, last_name))
             customer_id = cursor.lastrowid
 
             # Insert into CustLogin table
@@ -379,6 +351,7 @@ def add_to_customer():
 
 @app.route('/api/sendResetEmail', methods=['POST'])
 def send_reset_email():
+    """Send a reset password email"""
     email = request.json.get('email')
     if not email:
         return jsonify({"error": "Email is required"}), 400
@@ -389,8 +362,8 @@ def send_reset_email():
             if not cursor.fetchone():
                 return jsonify({"message": "Email not found"}), 404
 
-        token = secrets.token_hex(20)
-        verification_link = f"http://localhost:9000/#/ResetPassword?token={token}&email={email}"
+        # token = secrets.token_hex(20)
+        # verification_link = f"http://localhost:9000/#/ResetPassword?token={token}&email={email}"
         return jsonify({"message": "Email sent successfully"})
     except Exception as e:
         print(f"Error sending reset email: {e}")
@@ -399,6 +372,7 @@ def send_reset_email():
 
 @app.route('/api/sendVerifyEmail', methods=['POST'])
 def send_verify_email():
+    """Send a verify email"""
     email = request.json.get('email')
     if not email:
         return jsonify({"error": "Email is required"}), 400
@@ -421,7 +395,6 @@ def send_verify_email():
 
 
 def send_email(to_email, subject, link, code=None):
-
     postmark_token = POSTMARK_API  # Client's Postmark server API token
     sender_email = "info@digitalU3.com"  # Client's Sender email
 
