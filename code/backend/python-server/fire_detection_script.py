@@ -8,7 +8,6 @@ Configuration values are loaded from `config.json`, which should contain AWS, Tw
 and Roboflow credentials, as well as recipient contact details.
 """
 import os
-import json
 import time
 import cv2
 import boto3
