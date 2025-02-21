@@ -14,7 +14,6 @@ import json
 import time
 import logging
 import sys
-import bcrypt
 import pymysql
 import pycurl
 import requests
@@ -29,7 +28,7 @@ load_dotenv()
 POSTMARK_API = os.getenv("POSTMARK_API")
 
 # Load configuration from JSON
-with open("config.json", "r") as config_file:
+with open("config.json", "r", encoding="utf-8") as config_file:
     config = json.load(config_file)
 
 # Alert message
@@ -395,6 +394,7 @@ def send_verify_email():
 
 
 def send_email(to_email, subject, link, code=None):
+    """Send an email using the Postmark API"""
     postmark_token = POSTMARK_API  # Client's Postmark server API token
     sender_email = "info@digitalU3.com"  # Client's Sender email
 
