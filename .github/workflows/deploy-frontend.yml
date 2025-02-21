@@ -43,7 +43,7 @@ jobs:
         uses: SamKirkland/FTP-Deploy-Action@4.3.0
         with:
           server: ftp.u3core.com
-          username: info@u3core.com
+          username: ai@u3core.com
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./
-          server-dir: /public_html/ai-u3core-com/
+          server-dir: ./
