@@ -96,7 +96,7 @@ export default {
       email.value = decodeURIComponent(route.query.email || '');
       if (email.value) {
         axios
-          .get(`http://127.0.0.1:3002/api/getName`, {
+          .get(`http://16.171.224.57:3002/api/getName`, {
             params: { email: email.value }, // Pass the email as a query parameter
           })
           .then((response) => {
