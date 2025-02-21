@@ -7,42 +7,45 @@ and sends alerts via AWS SNS (SMS) and Twilio (WhatsApp) when fire is detected.
 Configuration values are loaded from `config.json`, which should contain AWS, Twilio,
 and Roboflow credentials, as well as recipient contact details.
 """
+import os
 import json
 import time
 import cv2
 import boto3
 from twilio.rest import Client
 import requests
+from dotenv import load_dotenv
 
-# Load configuration from JSON
-with open("config.json", "r", encoding="utf-8") as config_file:
-    config = json.load(config_file)
+# Load environment variables from ../../../.env
+dotenv_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../.env"))
+load_dotenv(dotenv_path)
 
 # AWS SNS setup
-AWS_REGION = config["aws"]["region"]
-AWS_ACCESS_KEY = config["aws"]["access_key"]
-AWS_SECRET_KEY = config["aws"]["secret_key"]
+AWS_REGION = os.getenv("AWS_REGION")
+AWS_ACCESS_KEY = os.getenv("AWS_ACCESS_KEY")
+AWS_SECRET_KEY = os.getenv("AWS_SECRET_KEY")
 
 # Twilio setup
-T_ACCOUNT_SID = config["twilio"]["account_sid"]
-T_AUTH_TOKEN = config["twilio"]["auth_token"]
-TWILO_NUMBER = config["twilio"]["number"]
+T_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
+T_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
+TWILO_NUMBER = os.getenv("TWILIO_WHATSAPP_NUMBER")
 
 # Recipient setup
-REC_NUMBER = config["recipient"]["phone_number"]
-REC_WHATSAPP_NUMBER = config["recipient"]["whatsapp_number"]
+REC_NUMBER = os.getenv("RECIPIENT_PHONE_NUMBER")
+REC_WHATSAPP_NUMBER = os.getenv("RECIPIENT_WHATSAPP_NUMBER")
 
 # Roboflow setup
-R_API_KEY = config["roboflow"]["api_key"]
-R_MODEL_URL = config["roboflow"]["model_url"]
+R_API_KEY = os.getenv("ROBOFLOW_API_KEY")
+R_MODEL_URL = os.getenv("ROBOFLOW_MODEL_URL")
+R_CONFIDENCE = float(os.getenv("ROBOFLOW_CONFIDENCE", 0.5))
+
 R_PARAMS = {
     "api_key": R_API_KEY,
-    "confidence": config["roboflow"]["confidence"]
+    "confidence": R_CONFIDENCE
 }
 
 # Alert message
-ALERT_MESSAGE = "Abnormal detected"
-
+ALERT_MESSAGE = "Fire detected! Immediate action required."
 
 # Send WhatsApp message via Twilio
 def send_whatsapp_via_twilio(to_number, message):

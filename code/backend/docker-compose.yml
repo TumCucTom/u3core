@@ -6,15 +6,12 @@ services:
       context: .
       dockerfile: Dockerfile.backend
     volumes:
-      - ./logs:/app/logs  # Mount the host machine's ./logs directory to the container
-      - ./initdb:/initdb  # This mounts ./host-initdb on the host to /initdb in the container
+      - ./logs:/app/logs
+      - ./initdb:/initdb
     ports:
       - "3002:3000"
-    environment:
-      DB_HOST: ${DB_HOST}
-      DB_USER: ${DB_USER}
-      DB_PASSWORD: ${DB_PASSWORD}
-      DB_NAME: ${DB_NAME}
+    env_file:
+      - ../../../.env  # <-- Will be injected dynamically
     depends_on:
       db:
         condition: service_healthy
@@ -35,15 +32,12 @@ services:
     container_name: mysql_container
     ports:
       - "3307:3306"
-    environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    env_file:
+      - ../../../.env  # <-- Will be injected dynamically
     volumes:
       - db_data:/var/lib/mysql
       - ./initdb:/docker-entrypoint-initdb.d
-      - ./initdb:/initdb  # This mounts ./host-initdb on the host to /initdb in the container
+      - ./initdb:/initdb
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 15s
