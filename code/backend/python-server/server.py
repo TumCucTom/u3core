@@ -3,6 +3,7 @@
 # pylint: disable=broad-except
 # pylint: disable=logging-fstring-interpolation
 # pylint: disable=c-extension-no-member
+import os
 import random
 import string
 import secrets
@@ -19,39 +20,39 @@ import requests
 from fire_detection_script import process_rtsp_stream_with_url
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from dotenv import load_dotenv
+
+# Load environment variables from ../../../.env
+dotenv_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../.env"))
+load_dotenv(dotenv_path)
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,  # Set log level (INFO, DEBUG, ERROR, etc.)
+    level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s",
-    handlers=[
-        logging.StreamHandler(sys.stdout)  # Log to Docker console (stdout)
-    ]
+    handlers=[logging.StreamHandler(sys.stdout)]
 )
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 
-# Load configuration from config.json
-def load_db_config(filename="db-config.json"):
-    """Load db information from config.json"""
-    with open(filename, "r", encoding="utf8") as db_config_file:
-        db_config_fi = json.load(db_config_file)
-    return db_config_fi
-
-# Retrieve the database configuration
-db_config = load_db_config()
-
+# Database Configuration
+db_config = {
+    "host": os.getenv("DB_HOST"),
+    "user": os.getenv("DB_USER"),
+    "password": os.getenv("DB_PASSWORD"),
+    "database": os.getenv("DB_NAME"),
+    "port": int(os.getenv("DB_PORT"))
+}
 
 MAX_RETRIES = 10
 for attempt in range(MAX_RETRIES):
     try:
         connection = pymysql.connect(**db_config)
-        print("Database connection successful!")
+        logging.info("Database connection successful!")
         break
     except pymysql.err.OperationalError as e:
-        print(f"Attempt {attempt + 1}/{MAX_RETRIES}: "
-              f"Unable to connect to the database. Retrying...")
+        logging.warning(f"Attempt {attempt + 1}/{MAX_RETRIES}: Unable to connect to the database. Retrying...")
         time.sleep(5)
 else:
     logging.critical("Max retries exceeded. Could not connect to the database.")
