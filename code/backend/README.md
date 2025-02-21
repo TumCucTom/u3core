@@ -1,3 +1,7 @@
+## Deployment
+
+We use the [backend deployment script](../../.github/workflows/deploy-backend.yml) to deploy the backend server to AWS. It also runs the docker container upon deployment.
+
 ## How to run
 
 ### Run everything for testing
