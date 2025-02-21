@@ -4,6 +4,7 @@
 # pylint: disable=broad-except
 # pylint: disable=logging-fstring-interpolation
 # pylint: disable=c-extension-no-member
+# pylint: disable=too-many-locals
 import os
 import random
 import string
@@ -14,9 +15,6 @@ import json
 import time
 import logging
 import sys
-import cv2
-from twilio.rest import Client
-import multiprocessing
 import datetime
 import bcrypt
 import pymysql
@@ -294,7 +292,8 @@ def add_hazard():
     except Exception as e:
         print(f"Error adding log: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
-      
+
+
 @app.route('/api/emails', methods=['GET'])
 def get_emails():
     """

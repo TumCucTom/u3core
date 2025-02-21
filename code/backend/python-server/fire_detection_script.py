@@ -9,12 +9,11 @@ and Roboflow credentials, as well as recipient contact details.
 """
 import os
 import time
+import datetime
 import cv2
 import boto3
 from twilio.rest import Client
 import requests
-import json
-import datetime
 from dotenv import load_dotenv
 
 # Load environment variables from ../../../.env
@@ -50,7 +49,7 @@ ALERT_MESSAGE = "Abnormal detected"
 
 def send_hazard_log(rtsp_url, hazard):
     """
-    Sends a POST request to the /api/add-hazard endpoint with the given camera RTSP URL and hazard type.
+    Sends a POST request to the /api/add-hazard endpoint
     """
     url = "http://127.0.0.1:3000/api/add-hazard"
 
@@ -65,7 +64,7 @@ def send_hazard_log(rtsp_url, hazard):
     }
 
     try:
-        response = requests.post(url, json=payload)
+        response = requests.post(url, json=payload, timeout="15")
         return response.json()
     except requests.exceptions.RequestException as e:
         print(f"Error sending request: {e}")
@@ -73,6 +72,7 @@ def send_hazard_log(rtsp_url, hazard):
 
 # Send SMS via AWS SNS
 def send_sms_via_sns(phone_number, message):
+    """send message via SMS"""
     sns_client = boto3.client(
         "sns",
         region_name=AWS_REGION,
@@ -150,19 +150,3 @@ def process_rtsp_stream_with_url(rtsp_url):
 
     cap.release()
     cv2.destroyAllWindows()
-
-
-# Send SMS via AWS SNS
-def send_sms_via_sns(phone_number, message):
-    """Send SMS via AWS SNS."""
-    sns_client = boto3.client(
-        "sns",
-        region_name=AWS_REGION,
-        aws_access_key_id=AWS_ACCESS_KEY,
-        aws_secret_access_key=AWS_SECRET_KEY
-    )
-    response = sns_client.publish(
-        PhoneNumber=phone_number,
-        Message=message
-    )
-    print(f"SMS sent! Message ID: {response['MessageId']}")
