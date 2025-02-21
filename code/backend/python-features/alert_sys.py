@@ -1,46 +1,51 @@
-"""use roboflow model to send alerts"""
+"""Alert users when a user when a hazard is detected"""
 import time
+import os
 import cv2
 import boto3
 from twilio.rest import Client
 import requests
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # AWS SNS set up
-AWS_REGION = "aws_region"
-AWS_ACESS_KEY = "aws_access_key"
-AWS_SECRET_KEY = "aws_secret_key"
+AWS_REGION = os.getenv("AWS_REGION")
+AWS_ACCESS_KEY = os.getenv("AWS_ACCESS_KEY")
+AWS_SECRET_KEY = os.getenv("AWS_SECRET_KEY")
 
 # Twilio set up
-T_ACCOUNT_SID = "twilio_account_sid"
-T_AUTH_TOKEN = "twilio_auth_token"
-TWILO_NUMBER = "twilio_whatsapp_number"
+T_ACCOUNT_SID = os.getenv("T_ACCOUNT_SID")
+T_AUTH_TOKEN = os.getenv("T_AUTH_TOKEN")
+TWILO_NUMBER = os.getenv("TWILO_NUMBER")
 
 # Recipient set up
-REC_NUMBER = "number"
-REC_WHATSAPP_NUMBER = "whatsapp:number"
-
+REC_NUMBER = os.getenv("REC_NUMBER")
+REC_WHATSAPP_NUMBER = os.getenv("REC_WHATSAPP_NUMBER")
 
 # Roboflow set up
-R_API_KEY ="FRUmKXAzM8M7TupHxPph"
-R_MODEL_URL = "https://app.roboflow.com/tumcuc/people-in-a-room-counter-2/3"
+R_API_KEY = os.getenv("R_API_KEY")
+R_MODEL_URL = os.getenv("R_MODEL_URL")
+R_CONFIDENCE = float(os.getenv("R_CONFIDENCE"))  # Default to 0.5 if not set
 R_PARAMS = {
     "api_key": R_API_KEY,
-    "confidence": 0.5
+    "confidence": R_CONFIDENCE
 }
 
-# RTSP streaming URL
-# rtsp_url = "rtsp://your_rtsp_stream_url"
+# RTSP Streaming URL (if needed)
+# RTSP_URL = os.getenv("RTSP_URL")
 
 # Alert message
-ALERT_MESSAGE = "Abnormal detected"
+ALERT_MESSAGE = os.getenv("ALERT_MESSAGE", "Abnormal detected")
 
-# send message through Aws sns(must be implemented)
+# Send message through AWS SNS
 def send_sms_via_sns(phone_number, message):
     """Send SMS via AWS SNS."""
     sns_client = boto3.client(
         "sns",
         region_name=AWS_REGION,
-        aws_access_key_id=AWS_ACESS_KEY,
+        aws_access_key_id=AWS_ACCESS_KEY,
         aws_secret_access_key=AWS_SECRET_KEY
     )
     response = sns_client.publish(
@@ -60,7 +65,6 @@ def send_whatsapp_via_twilio(to_number, message):
     )
     print(f"WhatsApp message sent! Message SID: {message.sid}")
 
-
 # Detect fire by using Roboflow
 def detect_fire_with_roboflow(frame):
     """Detect fire using Roboflow API."""
@@ -79,9 +83,7 @@ def detect_fire_with_roboflow(frame):
             return True
     return False
 
-
-
-# Temporarily using webcam instead of RTSP
+# Process webcam stream
 def process_webcam_stream():
     """Process webcam stream for fire detection."""
     cap = cv2.VideoCapture(0)  # Use 0 for the default webcam
@@ -116,42 +118,3 @@ def process_webcam_stream():
 
 if __name__ == "__main__":
     process_webcam_stream()
-
-
-# Get Streaming from RTSP
-# def process_rtsp_stream():
-#     """Process RTSP stream for fire detection."""
-#     cap = cv2.VideoCapture(rtsp_url)
-#     if not cap.isOpened():
-#         print("Error: Unable to open RTSP stream.")
-#         return
-
-#     # last_alert_time = 0  # To prevent frequent alerts
-#     # alert_interval = 30  # Send alerts every 30 seconds if fire persists
-
-#     while True:
-#         ret, frame = cap.read()
-#         if not ret:
-#             print("Error: Unable to read frame from RTSP stream.")
-#             break
-
-#         # Use Roboflow to detect fire
-#         fire_detected = detect_fire_with_roboflow(frame)
-
-#         if fire_detected:
-#             # current_time = time.time()
-#             # if current_time - last_alert_time > alert_interval:
-#                 print("Fire detected! Sending alerts...")
-#                 send_sms_via_sns(recipient_phone_number, alert_message)
-#                 send_whatsapp_via_twilio(recipient_whatsapp_number, alert_message)
-#                 # last_alert_time = current_time
-
-#         cv2.imshow("RTSP Stream", frame)
-#         if cv2.waitKey(1) & 0xFF == ord('q'):
-#             break
-
-#     cap.release()
-#     cv2.destroyAllWindows()
-
-# if __name__ == "__main__":
-#     process_rtsp_stream()

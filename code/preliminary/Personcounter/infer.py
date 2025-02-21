@@ -4,9 +4,13 @@ import base64
 import cv2
 import numpy as np
 import requests
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 #for the NN we trained on the dataset that can be found under /dataset
-ROBOFLOW_API_KEY = "FRUmKXAzM8M7TupHxPph"
+ROBOFLOW_API_KEY = os.getenv('API')
 ROBOFLOW_MODEL = "people-in-a-room-counter-2"
 ROBOFLOW_SIZE = 416
 
