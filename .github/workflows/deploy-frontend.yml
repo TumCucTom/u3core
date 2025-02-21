@@ -4,15 +4,12 @@ on:
     branches:
       - dev
       - bug-fix-cd
-  pull_request:
-    branches:
-      - dev
+      - deploy-to-domain
 
 permissions:
   contents: write
 jobs:
   build-and-deploy:
-    concurrency: ci-${{ github.ref }} # Recommended if you intend to make multiple deployments in quick succession.
     runs-on: ubuntu-latest
     steps:
       - name: Checkout 🛎️
@@ -29,3 +26,21 @@ jobs:
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           folder: code/frontend/web-app/dist/spa # The folder the action should deploy.
+
+  domain-deploy:
+    runs-on: ubuntu-latest
+    needs: build-and-deploy
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          ref: gh-pages
+
+      - name: Deploy via FTP
+        uses: SamKirkland/FTP-Deploy-Action@4.3.0
+        with:
+          server: ftp.u3core.com
+          username: ai@u3core.com
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./
+          server-dir: ./
