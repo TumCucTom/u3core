@@ -26,39 +26,20 @@ jobs:
 
     - name: Deploy to AWS
       run: |
-        ssh -tt ${{ secrets.AWS_USER }}@${{ secrets.AWS_HOST }} << 'EOF'
+        ssh ${{ secrets.AWS_USER }}@${{ secrets.AWS_HOST }} << 'EOF'
           set -e  # Exit on any error
+          sudo yum update && sudo yum install -y git  # Ensure git is installed
           
-          # Install Docker
-          sudo yum update -y
-          sudo yum install -y docker
-          sudo systemctl enable docker
-          sudo systemctl start docker
-
-          # Add user to Docker group
-          sudo usermod -aG docker $USER
-          newgrp docker  # Apply changes immediately
-
-          # Install Docker Compose V2 manually
-          mkdir -p ~/.docker/cli-plugins
-          curl -SL https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64 -o ~/.docker/cli-plugins/docker-compose
-          chmod +x ~/.docker/cli-plugins/docker-compose
-
-          # Ensure GitHub's SSH key is trusted
-          mkdir -p ~/.ssh
-          ssh-keyscan -H github.com >> ~/.ssh/known_hosts
-
           # Navigate to home directory and remove any existing repo
           cd ~
           rm -r 2024-MLAIPredictionMicroservices
-  
-          # Clone the latest version over SSH
+
+          # Clone the latest version
           git clone git@github.com:spe-uob/2024-MLAIPredictionMicroservices.git
           cd 2024-MLAIPredictionMicroservices/code/backend
-  
+
           # Start the service using Docker Compose
           docker compose down
           docker compose pull
           docker compose up -d --build
         EOF
-
