@@ -9,7 +9,18 @@
         <!--  top level box -->
         <div class="row q-mb-lg">
           <q-card flat bordered class="col-12 col-md-4 q-pa-md">
-            <div class="text-caption text-grey-7">Total Sites</div>
+            <!-- add button in the title line-->
+            <div class="row justify-between items-center q-mb-sm">
+              <div class="text-caption text-grey-7">Total Sites</div>
+              <q-btn 
+                icon="settings" 
+                flat 
+                dense 
+                round 
+                class="q-ml-auto" 
+                @click="handleSettingsClick"
+              />
+            </div>
             <div class="row justify-between items-center">
               <div class="text-h5 text-bold">0</div>
               <q-icon name="trending_up" color="positive" />
@@ -91,6 +102,10 @@ export default {
     const name = ref('User'); // Use a ref for the name variable
 
     const route = useRoute();
+    const handleSettingsClick = () => {
+    console.log('Settings button clicked');
+    // add logic here for the button
+    };
 
     onMounted(() => {
       email.value = decodeURIComponent(route.query.email || '');
@@ -111,6 +126,7 @@ export default {
     });
 
     return {
+      handleSettingsClick,
       email,
       name,
     };
