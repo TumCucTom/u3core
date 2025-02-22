@@ -20,8 +20,20 @@ module.exports = configure(function (/* ctx */) {
     // app boot file (/src/boot)
     // --> boot files are part of "main.js"
     // https://v2.quasar.dev/quasar-cli-vite/boot-files
+    htmlVariables: {
+      title: 'ML/AI platform',
+      meta:{
+        description:'ML/AI based alert system help you monitor indoor condition and respond quickly',
+        keywords:'ML/AI, alert system'
+      },
+      links: [
+        {rel:'icon', href:'favion.ico', type:'image/x-icon'},
+        {rel:'icon', href:'icons/icon-32*32.png', type:'image/png', sizes:'32*32'},
+        //{rel:'apple-touch-icon',}
+      ]
+    },
+  
     boot: [
-
 
     ],
 
@@ -46,6 +58,7 @@ module.exports = configure(function (/* ctx */) {
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#build
     build: {
+      //publicPath: '/', //makesure static resource route is correct
       extendViteConf(viteConf) {
         viteConf.resolve.alias = {
           ...viteConf.resolve.alias,
