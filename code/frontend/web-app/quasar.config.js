@@ -28,7 +28,7 @@ module.exports = configure(function (/* ctx */) {
       },
       links: [
         {rel:'icon', href:'favion.ico', type:'image/x-icon'},
-        {rel:'icon', href:'icons/icon-32*32.png', type:'image/png', sizes:'32*32'},
+        {rel:'icon', href:'icons/u3logo_small.png', type:'image/png', sizes:'32*32'},
         //{rel:'apple-touch-icon',}
       ]
     },
