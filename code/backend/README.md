@@ -1,35 +1,47 @@
-## Process (so far)
-- RTSP server runs on amazon ec2 instance using [mediamtx](https://github.com/bluenviron/mediamtx/tree/main)
-  - It uses TCP
-  - Port forwarding rules must be adjusted on the ec2 instance
-- We write to the stream using OBS with computer webcam
-- A different machine can read from the stream using openCV
-  - The RTSP URL is taken as the camera input
-- The roboflow API is called with the current frame
-- It returns a JSON including any predictions
-- If a prediction is given, an alert is sent to a given number 
-  - This is on whatsapp via Twilio
+## Deployment
+
+We use the [backend deployment script](../../.github/workflows/deploy-backend.yml) to deploy the backend server to AWS. It also runs the docker container upon deployment.
+
+## How to run
+
+### Run everything for testing
+
+```
+brew install docker
+brew install docker-compose
+docker compose up --build
+```
+
+### Run python scripts individually
+```angular2html
+python3 -m venv env-name
+source env-name/bin/activate
+pip install - r requirements.txt
+python3 path/to/file/file.py
+```
+
+### Test an API endpoint
+```angular2html
+python3 -m venv env-name
+source env-name/bin/activate
+pip install - r requirements.txt
+python3 python-server/server.py
+```
+in a new terminal, to test, for example the api/add-camera endpoint
+```angular2html
+curl -X POST http://[address]:5000/api/add-camera \
+     -H "Content-Type: application/json" \
+     -d '{
+           "name": "Test Camera",
+           "rtsp_url": "tcp://192.168.1.100:554/live"
+         }'
+```
+where you replace [address] with either ```localhost``` or the AWS instance address ```16.171.224.57```
+
 
 ## Training Data
-Find infomation about training data in the [Training README](training/README.md)
+Find information about training data in the [Training README](training/README.md)
 
-## Image Preprocessing
+## Backend Process
+Find information about backend process in the [Process README](process/README.md)
 
-- OpenCV is used to get camera video stream from rtsp
-- OpenCV is used to preprocess the the frames
-
-## RTSP
-
-- We use [mediamtx](https://github.com/bluenviron/mediamtx/tree/main) to test rtsp streaming in conjunction with obs studio
-- You can see instructions on how to setup this process in [Dev Instructions](../../README.md#developer-instructions).
-- We can use our webcam in OBS studio and send the data to the rtsp server hosted locally by mediamtx
-- We can then take from this stream using openCV in python or output to a file using ffmpeg
-
-## Web Server
-- Handles SQL calls to the user database
-- Performs async encryption for passwords
-- You can run it in your terminal with:
-```
-cd code/backend/web-server
-npm run
-```
