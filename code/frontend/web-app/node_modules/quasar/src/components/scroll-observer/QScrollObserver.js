@@ -66,9 +66,7 @@ export default createComponent({
       if (
         (props.axis === 'vertical' && delta.top === 0)
         || (props.axis === 'horizontal' && delta.left === 0)
-      ) {
-        return
-      }
+      ) return
 
       const curDir = Math.abs(delta.top) >= Math.abs(delta.left)
         ? (delta.top < 0 ? 'up' : 'down')

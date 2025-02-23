@@ -421,9 +421,7 @@ export default createComponent({
     }
 
     function onPan (event) {
-      if (shouldAbortInteraction() === true) {
-        return
-      }
+      if (shouldAbortInteraction() === true) return
 
       if (event.isFirst === true) {
         draggingClockRect = getClockRect()
@@ -745,9 +743,11 @@ export default createComponent({
         return
       }
 
-      if (innerModel.value.hour === null || innerModel.value.minute === null || (props.withSeconds === true && innerModel.value.second === null)) {
-        return
-      }
+      if (
+        innerModel.value.hour === null
+        || innerModel.value.minute === null
+        || (props.withSeconds === true && innerModel.value.second === null)
+      ) return
 
       updateValue()
     }

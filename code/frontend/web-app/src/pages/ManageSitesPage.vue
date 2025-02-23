@@ -16,29 +16,21 @@
         <div class="col-12 col-md-3">
           <q-list bordered>
             <!-- dropdown for each site -->
-            <q-expansion-item label="Site 01" dense>
-              <q-item clickable v-ripple>
-                <q-item-section>CAM 01</q-item-section>
-              </q-item>
-              <q-item clickable v-ripple>
-                <q-item-section>CAM 02</q-item-section>
-              </q-item>
-              <q-item clickable v-ripple>
-                <q-item-section>CAM 03</q-item-section>
-              </q-item>
-              <q-item clickable v-ripple>
-                <q-item-section>CAM 04</q-item-section>
+            <q-expansion-item
+              v-for="site in sites"
+              :key="site.id"
+              :label="site.name"
+              dense
+            >
+              <q-item v-for="camera in site.cameras" :key="camera.id" clickable v-ripple>
+                <q-item-section>{{ camera.name }}</q-item-section>
               </q-item>
             </q-expansion-item>
-            <q-expansion-item label="Site 02" dense />
-            <q-expansion-item label="Site 03" dense />
-            <q-expansion-item label="Site 04" dense />
-            <q-expansion-item label="Site 05" dense />
-            <q-expansion-item label="Site 06" dense />
+
             <q-btn
               label="+ Add New Site"
               flat
-              class="full-width bg-dark text-white q-mt-md"
+              class="bg-dark text-white q-mt-md"
               @click="openAddSiteDialog"
             />
           </q-list>
@@ -51,11 +43,21 @@
               <q-btn label="Live View" color="amber" flat @click="startLiveStream"/>
             </div>
 
-            <!-- This will be the video element showing the live stream or fallback to default MP4 -->
             <div class="bg-grey-8 q-mt-md" style="height: 250px; position: relative;">
-              <video v-if="streaming" ref="videoPlayer" :src="videoSrc" controls autoplay loop style="width: 100%; height: 100%; object-fit: cover;"/>
-              <video v-else ref="videoPlayer" src="../../public/default_video.mp4" controls autoplay loop style="width: 100%; height: 100%; object-fit: cover;"/>
+              <img
+                v-if="streaming"
+                ref="imagePlayer"
+                style="width: 100%; height: 100%; object-fit: cover;"
+                :src="currentFrame"
+                alt="Live Stream"
+              />
+              <div
+                v-else
+                style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: black; color: white; font-size: 2rem;">
+                Loading stream...
+              </div>
             </div>
+
 
             <div class="row q-mt-md">
               <q-card flat bordered class="col-6 q-pa-md">
@@ -64,7 +66,7 @@
               </q-card>
               <q-card flat bordered class="col-6 q-pa-md">
                 <div class="text-caption text-grey-7">Longitude</div>
-                <div class="text-h5 text-bold">48.8584° N</div>
+                <div class="text-h5 text-bold">48.8584° E</div>
               </q-card>
             </div>
           </q-card>
@@ -143,6 +145,8 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   data() {
     return {
@@ -157,11 +161,67 @@ export default {
         name: '',
         RTSPURL: '',
       },
-      streaming: false, // To track if the video stream is active
-      videoSrc: '', // URL of the RTSP stream or MP4
+      streaming: false,
+      videoSrc: '', // RTSP URL
+      sites: [], // List of sites fetched from the server
+      socket: null, // WebSocket instance
+      currentFrame: '', // Current frame as blob URL
     };
   },
+  created() {
+    this.fetchSites();
+  },
   methods: {
+    async startLiveStream() {
+      // Set up WebSocket for live stream
+      if (this.socket) {
+        this.socket.close(); // Close any existing socket
+      }
+
+      this.socket = new WebSocket('ws://localhost:8080'); // Adjust to your WebSocket server
+      this.socket.binaryType = 'blob'; // Handle binary data
+
+      this.socket.onopen = () => {
+        console.log('WebSocket connection established');
+        this.streaming = true;
+
+        // Send RTSP URL to the WebSocket server
+        if (this.videoSrc) {
+          this.socket.send(this.videoSrc);
+          console.log('RTSP URL sent to WebSocket server:', this.videoSrc);
+        }
+      };
+
+      this.socket.onmessage = (event) => {
+        console.log('Received video frame from WebSocket server:', event.data);
+        // Handle received video frames
+        const blob = event.data;
+        const newBlobUrl = URL.createObjectURL(blob);
+
+        // Clean up old frame memory
+        if (this.currentFrame) {
+          URL.revokeObjectURL(this.currentFrame);
+        }
+
+        // Set the new frame
+        this.currentFrame = newBlobUrl;
+      };
+
+      this.socket.onerror = (error) => {
+        console.error('WebSocket error:', error);
+      };
+
+      this.socket.onclose = () => {
+        console.log('WebSocket connection closed');
+        this.streaming = false;
+
+        // Clean up current frame memory
+        if (this.currentFrame) {
+          URL.revokeObjectURL(this.currentFrame);
+          this.currentFrame = '';
+        }
+      };
+    },
     openAddSiteDialog() {
       this.addSiteDialog = true;
     },
@@ -175,19 +235,44 @@ export default {
     },
     closeAddRTSP() {
       this.addRTSP = false;
-      this.resetForm();
     },
-    saveNewRTSP() {
-      console.log('New Camera Details:', this.newCamera);
-      this.closeAddRTSP();
+    async saveNewRTSP() {
+      try {
+        const response = await axios.post('http://16.171.224.57:3002/api/add-camera', {
+          name: this.newCamera.name,
+          rtsp_url: this.newCamera.RTSPURL,
+        });
+        console.log('Server Response:', response.data);
+        this.closeAddRTSP();
 
-      // Set video source to the RTSP URL entered in the form
-      this.videoSrc = this.newCamera.RTSPURL;
-      this.startLiveStream();
+        // Update video source and start live streaming
+        this.videoSrc = this.newCamera.RTSPURL;
+        console.log('Video Source:', this.videoSrc)
+        await this.startLiveStream();
+      } catch (error) {
+        console.error('Error saving new RTSP:', error);
+      }
     },
-    saveNewSite() {
-      console.log('New Site Details:', this.newSite);
-      this.closeAddSiteDialog();
+    async saveNewSite() {
+      try {
+        const response = await axios.post('http://16.171.224.57:3002/add-site', {
+          name: this.newSite.name,
+          latitude: this.newSite.latitude,
+          longitude: this.newSite.longitude,
+        });
+        console.log('Server Response:', response.data);
+        this.closeAddSiteDialog();
+      } catch (error) {
+        console.error('Error saving new site:', error);
+      }
+    },
+    async fetchSites() {
+      try {
+        const response = await axios.get('http://16.171.224.57:3002/sites');
+        this.sites = response.data.sites;
+      } catch (error) {
+        console.error('Error fetching sites:', error);
+      }
     },
     resetForm() {
       this.newSite = {
@@ -195,12 +280,12 @@ export default {
         latitude: '',
         longitude: '',
       };
+      this.newCamera = {
+        name: '',
+        RTSPURL: '',
+      };
     },
-    startLiveStream() {
-      this.streaming = true;
-      // Here, the video source is already set to the RTSP URL, so you can skip further modification
-    }
-  },
+  }
 };
 </script>
 
@@ -222,7 +307,7 @@ export default {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 2rem;  /* Make the text large */
+  font-size: 2rem; /* Make the text large */
   color: white;
 }
 </style>

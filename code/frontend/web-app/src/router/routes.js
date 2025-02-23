@@ -1,5 +1,4 @@
 import Home from "src/pages/LoginPage.vue";
-import HomeLayout from "layouts/HomeLayout.vue";
 import otp from "src/pages/otPage.vue";
 import DashboardPage from "src/pages/DashboardPage.vue";
 import ManageSitesPage from "src/pages/ManageSitesPage.vue";
@@ -7,6 +6,10 @@ import ManageModelsPage from "src/pages/ManageModelsPage.vue";
 import ActionSettingsPage from "src/pages/ActionSettingsPage.vue";
 import Verified from "src/pages/VerifiedPassword.vue";
 //import { meta } from "eslint-plugin-vue";
+import AlertsPage from "src/pages/AlertsPage.vue"
+import TrainingPage from "src/pages/TrainingPage.vue"
+import CloudSettingsPage from "src/pages/CloudSettings.vue"
+import SettingsPage from "src/pages/SettingsPage.vue"
 
 const routes = [
   //start off at the login page as the default route
@@ -23,10 +26,9 @@ const routes = [
         component: otp,
         meta: {title:"OTP Authentication"}
       },
-      { path: "verified-email", 
-        component: Verified,
-        meta: {title:"Email verification"}
-      }, // Action Settings page
+      // Action Settings page
+      {path: "otp", component: otp},
+      { path: "verified-email", component: Verified, meta: { title: 'U3 Core' }, }, // Action Settings page
     ],
   },
 
@@ -51,6 +53,22 @@ const routes = [
         component: ActionSettingsPage,
         meta: {title:"ActionSettings"}
       }, // Action Settings page
+      { path : "alerts-page", 
+        component: AlertsPage,
+        meta: {title:'AlertsPage'},
+      },// Alerts page
+      { path : "training-page", 
+        component :TrainingPage,
+        meta: {title:'TrainingPage'},
+      },
+      { path : "cloud-settings", 
+        component :CloudSettingsPage,
+        meta: {title:'Cloud-settings'},
+      },
+      { path : "settings", 
+        component:SettingsPage,
+        meta: {title:'settings'},
+      },
     ],
   },
 

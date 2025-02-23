@@ -1,115 +1,215 @@
-from flask import Flask, request, jsonify
-from flask_cors import CORS
-import bcrypt
+"""Backend python server for api endpoints and fire detection"""
+# pylint: disable=line-too-long
+# pylint: disable=broad-except
+# pylint: disable=logging-fstring-interpolation
+# pylint: disable=c-extension-no-member
+import os
 import random
 import string
 import secrets
+from io import BytesIO
+import multiprocessing
+import json
 import time
-import pymysql
 import logging
+import sys
+import bcrypt
+import pymysql
 import pycurl
 import requests
-from io import BytesIO
-import json
+from fire_detection_script import process_rtsp_stream_with_url
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+from dotenv import load_dotenv
+
+# Load environment variables from ../../../.env
+dotenv_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../.env"))
+load_dotenv(dotenv_path)
 
 # Configure logging
-logging.basicConfig(level=logging.DEBUG,
-                    format='%(asctime)s - %(levelname)s - %(message)s',
-                    handlers=[
-                        logging.StreamHandler(),  # Console output
-                        logging.FileHandler('/app/logs/myapp.log')  # Log to a file
-                    ])
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    handlers=[logging.StreamHandler(sys.stdout)]
+)
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 
+# Database Configuration
 db_config = {
-    "host": "db",
-    "user": "general-user",
-    "password": "MLAI2024",
-    "database": "MLAIDB",
-    "port": 3306
+    "host": os.getenv("DB_HOST"),
+    "user": os.getenv("DB_USER"),
+    "password": os.getenv("DB_PASSWORD"),
+    "database": os.getenv("DB_NAME"),
+    "port": int(os.getenv("DB_PORT"))
 }
 
-max_retries = 10
-for attempt in range(max_retries):
+MAX_RETRIES = 10
+for attempt in range(MAX_RETRIES):
     try:
         connection = pymysql.connect(**db_config)
-        print("Database connection successful!")
+        logging.info("Database connection successful!")
         break
     except pymysql.err.OperationalError as e:
-        print(f"Attempt {attempt + 1}/{max_retries}: Unable to connect to the database. Retrying...")
+        logging.warning(f"Attempt {attempt + 1}/{MAX_RETRIES}: Unable to connect to the database. Retrying...")
         time.sleep(5)
 else:
-    raise Exception("Max retries exceeded. Could not connect to the database.")
+    logging.critical("Max retries exceeded. Could not connect to the database.")
 
-@app.route('/api/test', methods=['GET'])
-def test_server():
-    return jsonify({"message": "Server is running!", "status": "success"}), 200
 
-@app.route('/api/testAddEntry', methods=['POST'])
-def test_add_entry():
-    test_data = request.json.get('testData', 'Default Test Data')
+# Auto fire detection startup
+
+# Dictionary to track running fire detection processes
+fire_detection_processes = {}
+
+def run_fire_detection(rtsp_url):
+    """Run the fire detection script for a given RTSP URL."""
+    logging.info("Running fire detection on {rtsp_url}")
+    process_rtsp_stream_with_url(rtsp_url)
+
+def start_fire_detection_for_all_cameras():
+    """
+    Fetch all cameras from the database and start fire detection concurrently.
+    Ensures each RTSP stream is monitored independently.
+    """
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT rtsp_url FROM Cameras")
+            cameras = cursor.fetchall()
+
+        for (rtsp_url,) in cameras:
+            if rtsp_url not in fire_detection_processes:  # Avoid duplicate processes
+                process = multiprocessing.Process(target=run_fire_detection, args=(rtsp_url,))
+                process.start()
+                fire_detection_processes[rtsp_url] = process
+                logging.info(f"Started fire detection for: {rtsp_url}")
+
+        logging.info("Started fire detection for all cameras")
+    except Exception as e:
+        print(f"Error starting fire detection processes: {e}")
+
+# API endpoints
+
+@app.route('/api/add-camera', methods=['POST'])
+def add_camera():
+    """
+    Adds a new RTSP camera to the database and starts fire detection for it.
+    Converts tcp:// to rtsp:// if necessary and updates existing records.
+    """
+    data = request.json
+    name = data.get('name')
+    rtsp_url = data.get('rtsp_url')
+
+    if not all([name, rtsp_url]):
+        return jsonify({"error": "Name and RTSP URL are required"}), 400
+
+    # Convert tcp:// to rtsp://
+    if rtsp_url.startswith("tcp://"):
+        rtsp_url = "rtsp://" + rtsp_url[6:]
 
     try:
         with connection.cursor() as cursor:
-            # Create the TestTable if it doesn't exist
+            # Create the Cameras table if it doesn't exist
             create_table_query = """
-            CREATE TABLE IF NOT EXISTS TestTable (
+            CREATE TABLE IF NOT EXISTS Cameras (
                 id INT AUTO_INCREMENT PRIMARY KEY,
-                testData VARCHAR(255)
+                name VARCHAR(255),
+                rtsp_url TEXT
             );
             """
             cursor.execute(create_table_query)
 
-            # Insert the test data
-            cursor.execute("INSERT INTO TestTable (testData) VALUES (%s)", (test_data,))
+            # Update any existing entries that start with tcp://
+            update_query = """
+            UPDATE Cameras
+            SET rtsp_url = CONCAT('rtsp://', SUBSTRING(rtsp_url, 7))
+            WHERE rtsp_url LIKE 'tcp://%';
+            """
+            cursor.execute(update_query)
 
+            # Insert the new camera data
+            cursor.execute(
+                "INSERT INTO Cameras (name, rtsp_url) VALUES (%s, %s)",
+                (name, rtsp_url)
+            )
         connection.commit()
-        return jsonify({"message": "Test entry added successfully!"})
+
+        # Start fire detection for the new camera
+        if rtsp_url not in fire_detection_processes:
+            process = multiprocessing.Process(target=run_fire_detection, args=(rtsp_url,))
+            process.start()
+            fire_detection_processes[rtsp_url] = process
+            print(f"Started fire detection for new camera: {rtsp_url}")
+        return jsonify(
+            {"message": "Camera added, TCP URLs updated, and fire detection started!"}), 201
+
     except Exception as e:
-        print(f"Error adding test entry: {e}")
+        print(f"Error adding camera: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
 
 
-@app.route('/api/dbinfo', methods=['GET'])
-def get_db_info():
+@app.route('/api/add-site', methods=['POST'])
+def add_site():
+    """
+    Adds a new site with name, latitude, and longitude to the database.
+    """
+    data = request.json
+    name = data.get('name')
+    latitude = data.get('latitude')
+    longitude = data.get('longitude')
+
+    if not all([name, latitude, longitude]):
+        return jsonify({"error": "Name, latitude, and longitude are required"}), 400
+
     try:
         with connection.cursor() as cursor:
-            # Fetch all table names
-            cursor.execute("SHOW TABLES")
-            tables = cursor.fetchall()
+            # Create the Sites table if it doesn't exist
+            create_table_query = """
+            CREATE TABLE IF NOT EXISTS Sites (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                name VARCHAR(255),
+                latitude VARCHAR(50),
+                longitude VARCHAR(50)
+            );
+            """
+            cursor.execute(create_table_query)
 
-            db_info = {}
-
-            for (table_name,) in tables:
-                # Fetch column details for each table
-                cursor.execute(f"DESCRIBE {table_name}")
-                columns = cursor.fetchall()
-                column_info = [
-                    {
-                        "Field": col[0],
-                        "Type": col[1],
-                        "Null": col[2],
-                        "Key": col[3],
-                        "Default": col[4],
-                        "Extra": col[5]
-                    } for col in columns
-                ]
-
-                # Fetch all rows for each table
-                cursor.execute(f"SELECT * FROM {table_name}")
-                rows = cursor.fetchall()
-
-                db_info[table_name] = {
-                    "columns": column_info,
-                    "entries": rows
-                }
-
-        return jsonify(db_info)
-
+            # Insert the site data
+            cursor.execute(
+                "INSERT INTO Sites (name, latitude, longitude) VALUES (%s, %s, %s)",
+                (name, latitude, longitude)
+            )
+        connection.commit()
+        return jsonify({"message": "Site added successfully!"}), 201
     except Exception as e:
-        print(f"Error fetching database info: {e}")
+        print(f"Error adding site: {e}")
+        return jsonify({"error": "Internal Server Error"}), 500
+
+
+@app.route('/api/sites', methods=['GET'])
+def fetch_sites():
+    """
+    Fetches all sites and their associated cameras.
+    """
+    try:
+        with connection.cursor() as cursor:
+            # Fetch all sites
+            cursor.execute("SELECT id, name FROM Sites")
+            sites = cursor.fetchall()
+
+            # Fetch cameras for each site
+            result = []
+            for site in sites:
+                site_id, name = site
+                cursor.execute(
+                    "SELECT id, name FROM Cameras WHERE site_id = %s", (site_id,))
+                cameras = [{"id": cam_id, "name": cam_name} for cam_id, cam_name in cursor.fetchall()]
+                result.append({"id": site_id, "name": name, "cameras": cameras})
+
+        return jsonify({"sites": result}), 200
+    except Exception as e:
+        print(f"Error fetching sites: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
 
 
@@ -182,8 +282,10 @@ def login():
         print(f"Error during login: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
 
+
 @app.route('/api/addToCustomer', methods=['POST'])
 def add_to_customer():
+    """Add a customer to DB"""
     data = request.json.get('items', [])
     if len(data) < 4:
         return jsonify({"error": "Invalid input"}), 400
@@ -216,7 +318,8 @@ def add_to_customer():
             cursor.execute(create_custlogin_table)
 
             # Insert into Customer table
-            cursor.execute("INSERT INTO Customer (firstname, lastname) VALUES (%s, %s)", (first_name, last_name))
+            cursor.execute("INSERT INTO Customer (firstname, lastname) VALUES (%s, %s)",
+                           (first_name, last_name))
             customer_id = cursor.lastrowid
 
             # Insert into CustLogin table
@@ -235,6 +338,7 @@ def add_to_customer():
 
 @app.route('/api/sendResetEmail', methods=['POST'])
 def send_reset_email():
+    """Send a reset password email"""
     email = request.json.get('email')
     if not email:
         return jsonify({"error": "Email is required"}), 400
@@ -245,8 +349,8 @@ def send_reset_email():
             if not cursor.fetchone():
                 return jsonify({"message": "Email not found"}), 404
 
-        token = secrets.token_hex(20)
-        verification_link = f"http://localhost:9000/#/ResetPassword?token={token}&email={email}"
+        # token = secrets.token_hex(20)
+        # verification_link = f"http://localhost:9000/#/ResetPassword?token={token}&email={email}"
         return jsonify({"message": "Email sent successfully"})
     except Exception as e:
         print(f"Error sending reset email: {e}")
@@ -255,6 +359,7 @@ def send_reset_email():
 
 @app.route('/api/sendVerifyEmail', methods=['POST'])
 def send_verify_email():
+    """Send a verify email"""
     email = request.json.get('email')
     if not email:
         return jsonify({"error": "Email is required"}), 400
@@ -268,7 +373,7 @@ def send_verify_email():
         token = secrets.token_hex(20)
         verification_link = f"http://localhost:9000/#/verified-email?token={token}&email={email}"
         otp_code = ''.join(random.choices(string.digits, k=6))
-        #return jsonify({"error": send_email(email, "Password Reset Request", verification_link)}), 500
+        #return jsonify({"error": send_email(email, "Password Reset Request", verification_link)}), 500 # pylint: disable=<C0301>
         send_email(email, "Email Verification", verification_link, otp_code)
         return jsonify({"message": "Verification email sent successfully"})
     except Exception as e:
@@ -277,8 +382,9 @@ def send_verify_email():
 
 
 def send_email(to_email, subject, link, code=None):
-    postmark_token = "d4763cf8-6f26-46e0-8442-9c3274e51a5b"  # Replace with your Postmark server token
-    sender_email = "info@shopveloworks.com"  # Replace with your verified sender email
+    """Sends an email"""
+    postmark_token = "d4763cf8-6f26-46e0-8442-9c3274e51a5b"
+    sender_email = "info@shopveloworks.com"
 
     html_content = f"""
     <div>
@@ -336,5 +442,5 @@ def send_email(to_email, subject, link, code=None):
 
 
 if __name__ == '__main__':
+    start_fire_detection_for_all_cameras()  # Start fire detection for all cameras on launch
     app.run(host='0.0.0.0', port=3000, debug=True)
-

@@ -979,15 +979,11 @@ export function formatDate (val, mask, dateLocale, __forcedYear, __forcedTimezon
     (val !== 0 && !val)
     || val === Infinity
     || val === -Infinity
-  ) {
-    return
-  }
+  ) return
 
   const date = new Date(val)
 
-  if (isNaN(date)) {
-    return
-  }
+  if (isNaN(date)) return
 
   if (mask === void 0) {
     mask = defaultMask

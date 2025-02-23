@@ -1,0 +1,30 @@
+# Use the Python base image
+FROM python:3.9-slim-bullseye
+
+# Set the working directory
+WORKDIR /usr/src/app
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    apt-transport-https \
+    ca-certificates \
+    gnupg \
+    gcc \
+    libmariadb-dev \
+    libmariadb-dev-compat \
+    mariadb-client \
+    libgl1-mesa-glx \
+    libglib2.0-0 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements.txt and install Python dependencies
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the Python backend code
+COPY python-server .
+
+# Expose the backend port
+EXPOSE 3000
+
+# Run the Python backend server
+CMD ["python", "server.py"]
