@@ -1,4 +1,3 @@
-
 """Backend python server for api endpoints and fire detection"""
 # pylint: disable=line-too-long
 # pylint: disable=broad-except
@@ -80,14 +79,12 @@ def start_fire_detection_for_all_cameras():
         with connection.cursor() as cursor:
             cursor.execute("SELECT rtsp_url FROM Cameras")
             cameras = cursor.fetchall()
-
         for (rtsp_url,) in cameras:
             if rtsp_url not in fire_detection_processes:  # Avoid duplicate processes
                 process = multiprocessing.Process(target=run_fire_detection, args=(rtsp_url,))
                 process.start()
                 fire_detection_processes[rtsp_url] = process
                 logging.info(f"Started fire detection for: {rtsp_url}")
-
         logging.info("Started fire detection for all cameras")
     except Exception as e:
         print(f"Error starting fire detection processes: {e}")
@@ -214,7 +211,6 @@ def fetch_sites():
     except Exception as e:
         print(f"Error fetching sites: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
-
 
 
 @app.route('/api/add-hazard', methods=['POST'])
@@ -416,7 +412,6 @@ def add_to_customer():
         return jsonify({"error": "Internal Server Error"}), 500
 
 
-
 @app.route('/api/sendResetEmail', methods=['POST'])
 def send_reset_email():
     """Send a reset password email"""
@@ -430,8 +425,6 @@ def send_reset_email():
             if not cursor.fetchone():
                 return jsonify({"message": "Email not found"}), 404
 
-        # token = secrets.token_hex(20)
-        # verification_link = f"http://localhost:9000/#/ResetPassword?token={token}&email={email}"
         return jsonify({"message": "Email sent successfully"})
     except Exception as e:
         print(f"Error sending reset email: {e}")
@@ -454,7 +447,6 @@ def send_verify_email():
         token = secrets.token_hex(20)
         verification_link = f"http://localhost:9000/#/verified-email?token={token}&email={email}"
         otp_code = ''.join(random.choices(string.digits, k=6))
-        #return jsonify({"error": send_email(email, "Password Reset Request", verification_link)}), 500 # pylint: disable=<C0301>
         send_email(email, "Email Verification", verification_link, otp_code)
         return jsonify({"message": "Verification email sent successfully"})
     except Exception as e:
@@ -475,7 +467,6 @@ def send_email(to_email, subject, link, code=None):
         html_content += f"<p>Your OTP is: <strong>{code}</strong></p>"
     html_content += "</div>"
 
-    # Prepare the payload for the Postmark API
     payload = {
         "From": sender_email,
         "To": to_email,
@@ -484,7 +475,6 @@ def send_email(to_email, subject, link, code=None):
         "MessageStream": "verify"
     }
 
-    # Send the email using the Postmark API
     try:
         url = "https://api.postmarkapp.com/email"
         headers = [
@@ -492,31 +482,18 @@ def send_email(to_email, subject, link, code=None):
             "Content-Type: application/json",
             f"X-Postmark-Server-Token: {postmark_token}"
         ]
-
-        # Prepare the data
         data = json.dumps(payload)
-
-        # Use BytesIO to capture the response body
         response_buffer = BytesIO()
-
-        # Set up the pycurl request
         c = pycurl.Curl()
         c.setopt(c.URL, url)
         c.setopt(c.POST, 1)
         c.setopt(c.POSTFIELDS, data)
         c.setopt(c.HTTPHEADER, headers)
         c.setopt(c.WRITEDATA, response_buffer)
-        c.setopt(c.TIMEOUT, 30)  # 30 seconds timeout
-
-        # Execute the request
+        c.setopt(c.TIMEOUT, 30)
         c.perform()
-
-        # Get the response data
         response_body = response_buffer.getvalue().decode('utf-8')
-
-        # Close the connection
         c.close()
-
         print(f"Email sent successfully to {to_email}. With {response_body}")
     except requests.exceptions.RequestException as e:
         print(f"Error sending email: {e}")
