@@ -57,13 +57,13 @@ for attempt in range(MAX_RETRIES):
         # Just open and close once to verify we can connect
         connection = pymysql.connect(**db_config)
         connection.close()
-        print("Database connection test successful!")
+        logging.info("Database connection test successful!")
         break
     except pymysql.err.OperationalError as e:
-        print(f"Attempt {attempt + 1}/{MAX_RETRIES}: Unable to connect to the database. Retrying...")
+        logging.warning(f"Attempt {attempt + 1}/{MAX_RETRIES}: Unable to connect to the database. Retrying...")
         time.sleep(5)
 else:
-    raise Exception("Max retries exceeded. Could not connect to the database.")
+     logging.critical("Max retries exceeded. Could not connect to the database.")
 
 def get_db_connection():
     """
@@ -89,25 +89,25 @@ def start_fire_detection_for_all_cameras():
     Ensures each RTSP stream is monitored independently.
     """
     global fire_detection_processes
-    connection = get_db_connection()
-    try:
-        with connection.cursor() as cursor:
-            cursor.execute("SELECT rtsp_url FROM Cameras")
-            cameras = cursor.fetchall()
+    with get_db_connection() as connection:
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT rtsp_url FROM Cameras")
+                cameras = cursor.fetchall()
 
-        for (rtsp_url,) in cameras:
-            if rtsp_url not in fire_detection_processes:  # Avoid duplicate processes
-                process = multiprocessing.Process(target=run_fire_detection, args=(rtsp_url,))
-                process.start()
-                fire_detection_processes[rtsp_url] = process
-                logging.info(f"Started fire detection for: {rtsp_url}")
+            for (rtsp_url,) in cameras:
+                if rtsp_url not in fire_detection_processes:  # Avoid duplicate processes
+                    process = multiprocessing.Process(target=run_fire_detection, args=(rtsp_url,))
+                    process.start()
+                    fire_detection_processes[rtsp_url] = process
+                    logging.info(f"Started fire detection for: {rtsp_url}")
 
-        logging.info("Started fire detection for all cameras")
-    except Exception as e:
-        print(f"Error starting fire detection processes: {e}")
-        traceback.print_exc()
-    finally:
-        connection.close()
+            logging.info("Started fire detection for all cameras")
+        except Exception as e:
+            print(f"Error starting fire detection processes: {e}")
+            traceback.print_exc()
+        finally:
+            connection.close()
 
 @app.route('/api/add-camera', methods=['POST'])
 def add_camera():
@@ -126,49 +126,49 @@ def add_camera():
     if rtsp_url.startswith("tcp://"):
         rtsp_url = "rtsp://" + rtsp_url[6:]
 
-    connection = get_db_connection()
-    try:
-        with connection.cursor() as cursor:
-            # Create the Cameras table if it doesn't exist
-            create_table_query = """
-            CREATE TABLE IF NOT EXISTS Cameras (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                name VARCHAR(255),
-                rtsp_url TEXT,
-                site_id INT NULL
-            );
-            """
-            cursor.execute(create_table_query)
+    with get_db_connection() as connection:
+        try:
+            with connection.cursor() as cursor:
+                # Create the Cameras table if it doesn't exist
+                create_table_query = """
+                CREATE TABLE IF NOT EXISTS Cameras (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    name VARCHAR(255),
+                    rtsp_url TEXT,
+                    site_id INT NULL
+                );
+                """
+                cursor.execute(create_table_query)
 
-            # Update any existing entries that start with tcp://
-            update_query = """
-            UPDATE Cameras
-            SET rtsp_url = CONCAT('rtsp://', SUBSTRING(rtsp_url, 7))
-            WHERE rtsp_url LIKE 'tcp://%';
-            """
-            cursor.execute(update_query)
+                # Update any existing entries that start with tcp://
+                update_query = """
+                UPDATE Cameras
+                SET rtsp_url = CONCAT('rtsp://', SUBSTRING(rtsp_url, 7))
+                WHERE rtsp_url LIKE 'tcp://%';
+                """
+                cursor.execute(update_query)
 
-            # Insert the new camera data
-            cursor.execute(
-                "INSERT INTO Cameras (name, rtsp_url) VALUES (%s, %s)",
-                (name, rtsp_url)
-            )
-        connection.commit()
+                # Insert the new camera data
+                cursor.execute(
+                    "INSERT INTO Cameras (name, rtsp_url) VALUES (%s, %s)",
+                    (name, rtsp_url)
+                )
+            connection.commit()
 
-        global fire_detection_processes
-        if rtsp_url not in fire_detection_processes:
-            process = multiprocessing.Process(target=run_fire_detection, args=(rtsp_url,))
-            process.start()
-            fire_detection_processes[rtsp_url] = process
-            print(f"Started fire detection for new camera: {rtsp_url}")
+            global fire_detection_processes
+            if rtsp_url not in fire_detection_processes:
+                process = multiprocessing.Process(target=run_fire_detection, args=(rtsp_url,))
+                process.start()
+                fire_detection_processes[rtsp_url] = process
+                print(f"Started fire detection for new camera: {rtsp_url}")
 
-        return jsonify({"message": "Camera added, TCP URLs updated, and fire detection started!"}), 201
-    except Exception as e:
-        print(f"Error adding camera: {e}")
-        traceback.print_exc()
-        return jsonify({"error": "Internal Server Error"}), 500
-    finally:
-        connection.close()
+            return jsonify({"message": "Camera added, TCP URLs updated, and fire detection started!"}), 201
+        except Exception as e:
+            print(f"Error adding camera: {e}")
+            traceback.print_exc()
+            return jsonify({"error": "Internal Server Error"}), 500
+        finally:
+            connection.close()
 
 @app.route('/api/add-site', methods=['POST'])
 def add_site():
@@ -216,25 +216,25 @@ def fetch_sites():
     """
     Fetches all sites and their associated cameras.
     """
-    connection = get_db_connection()
-    try:
-        with connection.cursor() as cursor:
-            cursor.execute("SELECT id, name FROM Sites")
-            sites = cursor.fetchall()
+    with get_db_connection() as connection:
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT id, name FROM Sites")
+                sites = cursor.fetchall()
 
-            result = []
-            for site_id, name in sites:
-                cursor.execute("SELECT id, name FROM Cameras WHERE site_id = %s", (site_id,))
-                cameras = [{"id": cam_id, "name": cam_name} for cam_id, cam_name in cursor.fetchall()]
-                result.append({"id": site_id, "name": name, "cameras": cameras})
+                result = []
+                for site_id, name in sites:
+                    cursor.execute("SELECT id, name FROM Cameras WHERE site_id = %s", (site_id,))
+                    cameras = [{"id": cam_id, "name": cam_name} for cam_id, cam_name in cursor.fetchall()]
+                    result.append({"id": site_id, "name": name, "cameras": cameras})
 
-        return jsonify({"sites": result}), 200
-    except Exception as e:
-        print(f"Error fetching sites: {e}")
-        traceback.print_exc()
-        return jsonify({"error": "Internal Server Error"}), 500
-    finally:
-        connection.close()
+            return jsonify({"sites": result}), 200
+        except Exception as e:
+            print(f"Error fetching sites: {e}")
+            traceback.print_exc()
+            return jsonify({"error": "Internal Server Error"}), 500
+        finally:
+            connection.close()
 
 @app.route('/api/add-hazard', methods=['POST'])
 def add_hazard():
@@ -254,62 +254,62 @@ def add_hazard():
     except ValueError:
         return jsonify({"error": "Invalid timestamp format. Use YYYY-MM-DD HH:MM:SS"}), 400
 
-    connection = get_db_connection()
-    try:
-        with connection.cursor() as cursor:
-            cursor.execute("SELECT name FROM Cameras WHERE rtsp_url = %s", (rtsp_url,))
-            camera_result = cursor.fetchone()
-            if not camera_result:
-                return jsonify({"error": "Camera not found"}), 404
+    with get_db_connection() as connection:
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT name FROM Cameras WHERE rtsp_url = %s", (rtsp_url,))
+                camera_result = cursor.fetchone()
+                if not camera_result:
+                    return jsonify({"error": "Camera not found"}), 404
 
-            camera_name = camera_result[0]
-            hour_time = timestamp_obj.strftime("%Y-%m-%d %H")
+                camera_name = camera_result[0]
+                hour_time = timestamp_obj.strftime("%Y-%m-%d %H")
 
-            # Create the Logs table if it doesn't exist
-            create_table_query = """
-            CREATE TABLE IF NOT EXISTS Logs (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                cameraIP VARCHAR(255),
-                cameraName VARCHAR(255),
-                hourTime VARCHAR(50),
-                hazardType VARCHAR(50),
-                number INT DEFAULT 1,
-                falsePositive BOOLEAN DEFAULT FALSE
-            );
-            """
-            cursor.execute(create_table_query)
+                # Create the Logs table if it doesn't exist
+                create_table_query = """
+                CREATE TABLE IF NOT EXISTS Logs (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    cameraIP VARCHAR(255),
+                    cameraName VARCHAR(255),
+                    hourTime VARCHAR(50),
+                    hazardType VARCHAR(50),
+                    number INT DEFAULT 1,
+                    falsePositive BOOLEAN DEFAULT FALSE
+                );
+                """
+                cursor.execute(create_table_query)
 
-            # Check if an entry exists for the same cameraIP, hazardType, and hourTime
-            cursor.execute("""
-                SELECT id, number FROM Logs
-                WHERE cameraIP = %s AND hazardType = %s AND hourTime = %s
-            """, (rtsp_url, hazard_type, hour_time))
-
-            existing_entry = cursor.fetchone()
-            if existing_entry:
-                log_id, current_number = existing_entry
-                new_number = current_number + 1
-                false_positive = (1 <= new_number <= 9)
+                # Check if an entry exists for the same cameraIP, hazardType, and hourTime
                 cursor.execute("""
-                    UPDATE Logs
-                    SET number = %s, falsePositive = %s
-                    WHERE id = %s
-                """, (new_number, false_positive, log_id))
-            else:
-                cursor.execute("""
-                    INSERT INTO Logs (cameraIP, cameraName, hourTime, hazardType, number, falsePositive)
-                    VALUES (%s, %s, %s, %s, %s, %s)
-                """, (rtsp_url, camera_name, hour_time, hazard_type, 1, True))
+                    SELECT id, number FROM Logs
+                    WHERE cameraIP = %s AND hazardType = %s AND hourTime = %s
+                """, (rtsp_url, hazard_type, hour_time))
 
-        connection.commit()
-        return jsonify({"message": "Log added successfully!"}), 201
+                existing_entry = cursor.fetchone()
+                if existing_entry:
+                    log_id, current_number = existing_entry
+                    new_number = current_number + 1
+                    false_positive = 1 <= new_number <= 9
+                    cursor.execute("""
+                        UPDATE Logs
+                        SET number = %s, falsePositive = %s
+                        WHERE id = %s
+                    """, (new_number, false_positive, log_id))
+                else:
+                    cursor.execute("""
+                        INSERT INTO Logs (cameraIP, cameraName, hourTime, hazardType, number, falsePositive)
+                        VALUES (%s, %s, %s, %s, %s, %s)
+                    """, (rtsp_url, camera_name, hour_time, hazard_type, 1, True))
 
-    except Exception as e:
-        print(f"Error adding log: {e}")
-        traceback.print_exc()
-        return jsonify({"error": "Internal Server Error"}), 500
-    finally:
-        connection.close()
+            connection.commit()
+            return jsonify({"message": "Log added successfully!"}), 201
+
+        except Exception as e:
+            print(f"Error adding log: {e}")
+            traceback.print_exc()
+            return jsonify({"error": "Internal Server Error"}), 500
+        finally:
+            connection.close()
 
 @app.route('/api/get-logs', methods=['GET'])
 def get_logs():
