@@ -4,13 +4,6 @@
       <h1 class="text-h4">Alerts</h1>
       <p class="text-subtitle2 q-mb-md">Track and manage your alerts</p>
 
-      <!-- Button to Add a Test Log -->
-      <q-btn
-        label="Add Test Log"
-        color="primary"
-        class="q-mb-md"
-        @click="addTestLog"
-      />
 
       <!-- Table to Display Alerts -->
       <q-table
@@ -98,54 +91,7 @@ export default {
       }
     },
 
-    // Add a test log with random hazard type and current timestamp
-    async addTestLog() {
-      try {
-        const now = new Date();
-        const year = now.getFullYear();
-        const month = String(now.getMonth() + 1).padStart(2, '0');
-        const day = String(now.getDate()).padStart(2, '0');
-        const hours = String(now.getHours()).padStart(2, '0');
-        const minutes = String(now.getMinutes()).padStart(2, '0');
-        const seconds = String(now.getSeconds()).padStart(2, '0');
-
-        // Format: "YYYY-MM-DD HH:MM:SS"
-        const timestamp = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-
-        // Choose a random hazard type
-        const hazardTypes = ["fire", "smoke", "intruder"];
-        const randomHazard = hazardTypes[Math.floor(Math.random() * hazardTypes.length)];
-
-        // Build the JSON payload
-        const payload = {
-          timestamp: timestamp,
-          type: randomHazard,
-          cameraAddress: "rtsp://dummy.camera/stream_test"
-        };
-
-        // POST to your server
-        const response = await fetch("http://127.0.0.1:3002/api/add-hazard", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(payload)
-        });
-
-        if (!response.ok) {
-          console.error("Failed to add test log");
-          return;
-        }
-
-        const result = await response.json();
-        console.log("Test log added:", result);
-
-        // Refresh the table to see the new log
-        this.fetchAlerts();
-      } catch (error) {
-        console.error("Error adding test log:", error);
-      }
-    }
+  
   }
 };
 </script>
