@@ -82,7 +82,7 @@ export default {
       this.fetchAlerts();
     }, 5000);
   },
-  beforeDestroy() {
+  beforeUnmount() {
     // Clear the interval to prevent memory leaks
     clearInterval(this.pollInterval);
   },
