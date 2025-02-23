@@ -5,12 +5,13 @@
         v-model="leftDrawerOpen"
         side="left"
         width="260"
-        class="bg-dark text-white"
+        class="bg-dark text-white column"
       >
-        <div class="q-pa-md q-mb-md" style="height: 60px;">
-          <!-- space to put logo later -->
-        </div>
-
+        <div class="col q-pt-md">
+           <div class="q-pa-md q-mb-md" style="height: 60px;">
+           <!-- space to put logo later -->
+           </div>
+       
         <!-- sidebar -->
         <q-list dense>
           <q-item
@@ -116,20 +117,23 @@
           </q-item-section>
           <q-item-section>Settings</q-item-section>
         </q-item>
+      </div>
 
         <!-- footer -->
-        <div class="q-pa-md q-mt-auto">
-          <q-item clickable v-ripple @click ="handleLogout">
+        <div class="q-pa-md border-top">
+          <q-item clickable v-ripple @click ="handleLogout" class="q-pa-sm">
             <q-item-section avatar>
-              <q-avatar>
+              <q-avatar color="primary" text-color="white">
                 <!-- placeholder for user avatar -->
                 <q-icon name="person" />
               </q-avatar>
             </q-item-section>
+
             <q-item-section>
               <div>user name</div>
               <div class="text-caption text-grey">username@email.com</div>
             </q-item-section>
+            
             <q-item-section side>
               <q-icon name="exit_to_app" />
             </q-item-section>
