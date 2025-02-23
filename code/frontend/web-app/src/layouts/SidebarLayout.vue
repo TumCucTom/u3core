@@ -30,6 +30,45 @@
             clickable
             v-ripple
             tag="router-link"
+            to="/pages/ErrorNotFound.vue"
+            class="q-mb-sm"
+          >
+            <q-item-section avatar>
+              <q-icon name="upload" />
+            </q-item-section>
+            <q-item-section>Upload Trainning Data</q-item-section>
+          </q-item>
+
+          <q-item
+            clickable
+            v-ripple
+            tag="router-link"
+            to="/pages/ErrorNotFound.vue"
+            class="q-mb-sm"
+          >
+            <q-item-section avatar>
+              <q-icon name="menu_open" />
+            </q-item-section>
+            <q-item-section>Configuration</q-item-section>
+          </q-item>
+
+          <q-item
+            clickable
+            v-ripple
+            tag="router-link"
+            to="/pages/ErrorNotFound.vue"
+            class="q-mb-sm"
+          >
+            <q-item-section avatar>
+              <q-icon name="filter_drama" />
+            </q-item-section>
+            <q-item-section>Cloud Settings</q-item-section>
+          </q-item>
+
+          <q-item
+            clickable
+            v-ripple
+            tag="router-link"
             to="/app/manage-sites"
             class="q-mb-sm"
           >
@@ -64,6 +103,19 @@
             <q-item-section>Action Settings</q-item-section>
           </q-item>
         </q-list>
+
+        <q-item
+          clickable
+          v-ripple
+          tag="router-link"
+          to="/pages/ErrorNotFound.vue"
+          class="q-mb-sm"
+        >
+          <q-item-section avatar>
+            <q-icon name="settings" />
+          </q-item-section>
+          <q-item-section>Settings</q-item-section>
+        </q-item>
 
         <!-- footer -->
         <div class="q-pa-md q-mt-auto">
