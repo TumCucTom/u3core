@@ -329,7 +329,6 @@ def get_logs():
                     "timestamp": hour_time,                
                     "faultType": hazard_type,
                     "numberOfHazards": number,
-                    
                     "falsePositives": "Yes" if false_positive else "No"
                 })
 
