@@ -3,6 +3,7 @@
 # pylint: disable=broad-except
 # pylint: disable=logging-fstring-interpolation
 # pylint: disable=c-extension-no-member
+
 import os
 import random
 import string
@@ -13,14 +14,25 @@ import json
 import time
 import logging
 import sys
-import bcrypt
 import pymysql
 import pycurl
 import requests
 from fire_detection_script import process_rtsp_stream_with_url
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+import bcrypt
 from dotenv import load_dotenv
+
+
+load_dotenv()
+POSTMARK_API = os.getenv("POSTMARK_API")
+
+# Load configuration from JSON
+with open("config.json", "r", encoding="utf-8") as config_file:
+    config = json.load(config_file)
+
+# Alert message
+ALERT_MESSAGE = "Abnormal detected"
 
 # Load environment variables from ../../../.env
 dotenv_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../.env"))
@@ -382,9 +394,9 @@ def send_verify_email():
 
 
 def send_email(to_email, subject, link, code=None):
-    """Sends an email"""
-    postmark_token = "d4763cf8-6f26-46e0-8442-9c3274e51a5b"
-    sender_email = "info@shopveloworks.com"
+    """Send an email using the Postmark API"""
+    postmark_token = POSTMARK_API  # Client's Postmark server API token
+    sender_email = "info@digitalU3.com"  # Client's Sender email
 
     html_content = f"""
     <div>
