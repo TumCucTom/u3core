@@ -7,11 +7,13 @@
         width="260"
         class="bg-dark text-white column"
       >
-        <div class="col q-pt-md">
-           <div class="q-pa-md q-mb-md" style="height: 60px;">
-           <!-- space to put logo later -->
-            <q-img src="../assets/u3logo1.png" alt="Digital U3" style="width: 60px;" />
-           </div>
+      <div class="col q-pt-md">
+        <div class="q-pa-md q-mb-md" style="height: 60px; display: flex; align-items: center; gap: 17px;">
+        <!-- Logo  -->
+          <q-img src="../assets/u3logo2.png" alt="Digital U3" style="width: 40px;" />
+        <!-- title -->
+        <div class="text-caption text-white" style="font-size: 20px;">Digital U3</div>
+      </div>
        
         <!-- sidebar -->
         <q-list dense>
