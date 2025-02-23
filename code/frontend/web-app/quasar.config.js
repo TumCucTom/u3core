@@ -21,7 +21,7 @@ module.exports = configure(function (/* ctx */) {
     // --> boot files are part of "main.js"
     // https://v2.quasar.dev/quasar-cli-vite/boot-files
     htmlVariables: {
-      title: 'ML/AI platform',
+      title: 'U3 Core',
       meta:{
         description:'ML/AI based alert system help you monitor indoor condition and respond quickly',
         keywords:'ML/AI, alert system'
