@@ -8,7 +8,6 @@ import os
 import random
 import string
 import secrets
-from io import BytesIO
 import multiprocessing
 import json
 import time
@@ -18,13 +17,12 @@ import bcrypt
 import pymysql
 import pycurl
 import requests
-import cv2
+import datetime
+import traceback  # to print full error traces in docker
+from io import BytesIO
 from fire_detection_script import process_rtsp_stream_with_url
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from twilio.rest import Client
-import datetime
-import traceback  # to print full error traces in docker
 from dotenv import load_dotenv
 
 # Load environment variables from ../../../.env
@@ -55,15 +53,15 @@ MAX_RETRIES = 10
 for attempt in range(MAX_RETRIES):
     try:
         # Just open and close once to verify we can connect
-        connection = pymysql.connect(**db_config)
-        connection.close()
+        test_connection = pymysql.connect(**db_config)
+        test_connection.close()
         logging.info("Database connection test successful!")
         break
     except pymysql.err.OperationalError as e:
         logging.warning(f"Attempt {attempt + 1}/{MAX_RETRIES}: Unable to connect to the database. Retrying...")
         time.sleep(5)
 else:
-     logging.critical("Max retries exceeded. Could not connect to the database.")
+    logging.critical("Max retries exceeded. Could not connect to the database.")
 
 def get_db_connection():
     """
@@ -88,7 +86,6 @@ def start_fire_detection_for_all_cameras():
     Fetch all cameras from the database and start fire detection concurrently.
     Ensures each RTSP stream is monitored independently.
     """
-    global fire_detection_processes
     with get_db_connection() as connection:
         try:
             with connection.cursor() as cursor:
@@ -106,8 +103,6 @@ def start_fire_detection_for_all_cameras():
         except Exception as e:
             print(f"Error starting fire detection processes: {e}")
             traceback.print_exc()
-        finally:
-            connection.close()
 
 @app.route('/api/add-camera', methods=['POST'])
 def add_camera():
@@ -167,8 +162,6 @@ def add_camera():
             print(f"Error adding camera: {e}")
             traceback.print_exc()
             return jsonify({"error": "Internal Server Error"}), 500
-        finally:
-            connection.close()
 
 @app.route('/api/add-site', methods=['POST'])
 def add_site():
@@ -183,33 +176,31 @@ def add_site():
     if not all([name, latitude, longitude]):
         return jsonify({"error": "Name, latitude, and longitude are required"}), 400
 
-    connection = get_db_connection()
-    try:
-        with connection.cursor() as cursor:
-            # Create the Sites table if it doesn't exist
-            create_table_query = """
-            CREATE TABLE IF NOT EXISTS Sites (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                name VARCHAR(255),
-                latitude VARCHAR(50),
-                longitude VARCHAR(50)
-            );
-            """
-            cursor.execute(create_table_query)
+    with get_db_connection() as connection:
+        try:
+            with connection.cursor() as cursor:
+                # Create the Sites table if it doesn't exist
+                create_table_query = """
+                CREATE TABLE IF NOT EXISTS Sites (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    name VARCHAR(255),
+                    latitude VARCHAR(50),
+                    longitude VARCHAR(50)
+                );
+                """
+                cursor.execute(create_table_query)
 
-            # Insert the site data
-            cursor.execute(
-                "INSERT INTO Sites (name, latitude, longitude) VALUES (%s, %s, %s)",
-                (name, latitude, longitude)
-            )
-        connection.commit()
-        return jsonify({"message": "Site added successfully!"}), 201
-    except Exception as e:
-        print(f"Error adding site: {e}")
-        traceback.print_exc()
-        return jsonify({"error": "Internal Server Error"}), 500
-    finally:
-        connection.close()
+                # Insert the site data
+                cursor.execute(
+                    "INSERT INTO Sites (name, latitude, longitude) VALUES (%s, %s, %s)",
+                    (name, latitude, longitude)
+                )
+            connection.commit()
+            return jsonify({"message": "Site added successfully!"}), 201
+        except Exception as e:
+            print(f"Error adding site: {e}")
+            traceback.print_exc()
+            return jsonify({"error": "Internal Server Error"}), 500
 
 @app.route('/api/sites', methods=['GET'])
 def fetch_sites():
@@ -233,8 +224,6 @@ def fetch_sites():
             print(f"Error fetching sites: {e}")
             traceback.print_exc()
             return jsonify({"error": "Internal Server Error"}), 500
-        finally:
-            connection.close()
 
 @app.route('/api/add-hazard', methods=['POST'])
 def add_hazard():
@@ -308,8 +297,6 @@ def add_hazard():
             print(f"Error adding log: {e}")
             traceback.print_exc()
             return jsonify({"error": "Internal Server Error"}), 500
-        finally:
-            connection.close()
 
 @app.route('/api/get-logs', methods=['GET'])
 def get_logs():
@@ -317,97 +304,91 @@ def get_logs():
     Fetch all hazard log entries from the logs table and return them in a format
     compatible with the front end.
     """
-    connection = get_db_connection()
-    try:
-        with connection.cursor() as cursor:
-            cursor.execute("""
-                SELECT id, cameraIP, cameraName, hourTime, hazardType, number, falsePositive
-                FROM Logs
-                ORDER BY id DESC
-            """)
-            rows = cursor.fetchall()
+    with get_db_connection() as connection:
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                    SELECT id, cameraIP, cameraName, hourTime, hazardType, number, falsePositive
+                    FROM Logs
+                    ORDER BY id DESC
+                """)
+                rows = cursor.fetchall()
 
-            data = []
-            for row in rows:
-                log_id, camera_ip, camera_name, hour_time, hazard_type, number, false_positive = row
-                data.append({
-                    "id": log_id,
-                    "cameraName": camera_name,
-                    "cameraAddress": camera_ip,
-                    "timestamp": hour_time,
-                    "faultType": hazard_type,
-                    "numberOfHazards": number,
-                    "falsePositives": "Yes" if false_positive else "No"
-                })
+                data = []
+                for row in rows:
+                    log_id, camera_ip, camera_name, hour_time, hazard_type, number, false_positive = row
+                    data.append({
+                        "id": log_id,
+                        "cameraName": camera_name,
+                        "cameraAddress": camera_ip,
+                        "timestamp": hour_time,
+                        "faultType": hazard_type,
+                        "numberOfHazards": number,
+                        "falsePositives": "Yes" if false_positive else "No"
+                    })
 
-        return jsonify(data), 200
-    except Exception as e:
-        print("Error retrieving logs:", e)
-        traceback.print_exc()
-        return jsonify({"error": "Internal Server Error"}), 500
-    finally:
-        connection.close()
+            return jsonify(data), 200
+        except Exception as e:
+            print("Error retrieving logs:", e)
+            traceback.print_exc()
+            return jsonify({"error": "Internal Server Error"}), 500
 
 @app.route('/api/dbinfo', methods=['GET'])
 def get_db_info():
     """
     Returns table schemas and all rows for debugging purposes.
     """
-    connection = get_db_connection()
-    try:
-        with connection.cursor() as cursor:
-            cursor.execute("SHOW TABLES")
-            tables = cursor.fetchall()
+    with get_db_connection() as connection:
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute("SHOW TABLES")
+                tables = cursor.fetchall()
 
-            db_info = {}
-            for (table_name,) in tables:
-                cursor.execute(f"DESCRIBE {table_name}")
-                columns = cursor.fetchall()
-                column_info = [
-                    {
-                        "Field": col[0],
-                        "Type": col[1],
-                        "Null": col[2],
-                        "Key": col[3],
-                        "Default": col[4],
-                        "Extra": col[5]
+                db_info = {}
+                for (table_name,) in tables:
+                    cursor.execute(f"DESCRIBE {table_name}")
+                    columns = cursor.fetchall()
+                    column_info = [
+                        {
+                            "Field": col[0],
+                            "Type": col[1],
+                            "Null": col[2],
+                            "Key": col[3],
+                            "Default": col[4],
+                            "Extra": col[5]
+                        }
+                        for col in columns
+                    ]
+
+                    cursor.execute(f"SELECT * FROM {table_name}")
+                    rows = cursor.fetchall()
+
+                    db_info[table_name] = {
+                        "columns": column_info,
+                        "entries": rows
                     }
-                    for col in columns
-                ]
 
-                cursor.execute(f"SELECT * FROM {table_name}")
-                rows = cursor.fetchall()
-
-                db_info[table_name] = {
-                    "columns": column_info,
-                    "entries": rows
-                }
-
-        return jsonify(db_info)
-    except Exception as e:
-        print(f"Error fetching database info: {e}")
-        traceback.print_exc()
-        return jsonify({"error": "Internal Server Error"}), 500
-    finally:
-        connection.close()
+            return jsonify(db_info)
+        except Exception as e:
+            print(f"Error fetching database info: {e}")
+            traceback.print_exc()
+            return jsonify({"error": "Internal Server Error"}), 500
 
 @app.route('/api/emails', methods=['GET'])
 def get_emails():
     """
     Fetches all emails from the CustLogin table.
     """
-    connection = get_db_connection()
-    try:
-        with connection.cursor() as cursor:
-            cursor.execute("SELECT email FROM CustLogin")
-            emails = [row[0] for row in cursor.fetchall()]
-        return jsonify(emails)
-    except Exception as e:
-        print(f"Error fetching emails: {e}")
-        traceback.print_exc()
-        return jsonify({"error": "Internal Server Error"}), 500
-    finally:
-        connection.close()
+    with get_db_connection() as connection:
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT email FROM CustLogin")
+                emails = [row[0] for row in cursor.fetchall()]
+            return jsonify(emails)
+        except Exception as e:
+            print(f"Error fetching emails: {e}")
+            traceback.print_exc()
+            return jsonify({"error": "Internal Server Error"}), 500
 
 @app.route('/api/getName', methods=['GET'])
 def get_name():
@@ -418,25 +399,23 @@ def get_name():
     if not email:
         return jsonify({"error": "Email required"}), 400
 
-    connection = get_db_connection()
-    try:
-        with connection.cursor() as cursor:
-            cursor.execute("""
-                SELECT Customer.firstname
-                FROM Customer
-                JOIN CustLogin ON Customer.id = CustLogin.id
-                WHERE CustLogin.email = %s;
-            """, (email,))
-            result = cursor.fetchone()
-            if result:
-                return result[0]
-            return jsonify({"error": "User not found"}), 404
-    except Exception as e:
-        print(f"Error during getName: {e}")
-        traceback.print_exc()
-        return jsonify({"error": "Internal Server Error"}), 500
-    finally:
-        connection.close()
+    with get_db_connection() as connection:
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                    SELECT Customer.firstname
+                    FROM Customer
+                    JOIN CustLogin ON Customer.id = CustLogin.id
+                    WHERE CustLogin.email = %s;
+                """, (email,))
+                result = cursor.fetchone()
+                if result:
+                    return result[0]
+                return jsonify({"error": "User not found"}), 404
+        except Exception as e:
+            print(f"Error during getName: {e}")
+            traceback.print_exc()
+            return jsonify({"error": "Internal Server Error"}), 500
 
 @app.route('/api/login', methods=['GET'])
 def login():
@@ -447,20 +426,18 @@ def login():
     if not email:
         return jsonify({"error": "Email required"}), 400
 
-    connection = get_db_connection()
-    try:
-        with connection.cursor() as cursor:
-            cursor.execute("SELECT hashPWord FROM CustLogin WHERE email = %s", (email,))
-            result = cursor.fetchone()
-            if result:
-                return result[0]
-            return jsonify({"error": "User not found"}), 404
-    except Exception as e:
-        print(f"Error during login: {e}")
-        traceback.print_exc()
-        return jsonify({"error": "Internal Server Error"}), 500
-    finally:
-        connection.close()
+    with get_db_connection() as connection:
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT hashPWord FROM CustLogin WHERE email = %s", (email,))
+                result = cursor.fetchone()
+                if result:
+                    return result[0]
+                return jsonify({"error": "User not found"}), 404
+        except Exception as e:
+            print(f"Error during login: {e}")
+            traceback.print_exc()
+            return jsonify({"error": "Internal Server Error"}), 500
 
 @app.route('/api/addToCustomer', methods=['POST'])
 def add_to_customer():
@@ -471,44 +448,42 @@ def add_to_customer():
     first_name, last_name, email, password = data
     hashed_password = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
 
-    connection = get_db_connection()
-    try:
-        with connection.cursor() as cursor:
-            create_customer_table = """
-            CREATE TABLE IF NOT EXISTS Customer (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                firstname VARCHAR(255),
-                lastname VARCHAR(255)
-            );
-            """
-            cursor.execute(create_customer_table)
+    with get_db_connection() as connection:
+        try:
+            with connection.cursor() as cursor:
+                create_customer_table = """
+                CREATE TABLE IF NOT EXISTS Customer (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    firstname VARCHAR(255),
+                    lastname VARCHAR(255)
+                );
+                """
+                cursor.execute(create_customer_table)
 
-            create_custlogin_table = """
-            CREATE TABLE IF NOT EXISTS CustLogin (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                email VARCHAR(255) UNIQUE,
-                hashPWord VARCHAR(255),
-                customerID INT,
-                FOREIGN KEY (customerID) REFERENCES Customer(id)
-            );
-            """
-            cursor.execute(create_custlogin_table)
+                create_custlogin_table = """
+                CREATE TABLE IF NOT EXISTS CustLogin (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    email VARCHAR(255) UNIQUE,
+                    hashPWord VARCHAR(255),
+                    customerID INT,
+                    FOREIGN KEY (customerID) REFERENCES Customer(id)
+                );
+                """
+                cursor.execute(create_custlogin_table)
 
-            cursor.execute("INSERT INTO Customer (firstname, lastname) VALUES (%s, %s)", (first_name, last_name))
-            customer_id = cursor.lastrowid
+                cursor.execute("INSERT INTO Customer (firstname, lastname) VALUES (%s, %s)", (first_name, last_name))
+                customer_id = cursor.lastrowid
 
-            cursor.execute(
-                "INSERT INTO CustLogin (email, hashPWord, customerID) VALUES (%s, %s, %s)",
-                (email, hashed_password, customer_id)
-            )
-        connection.commit()
-        return jsonify({"message": "Customer added successfully"})
-    except Exception as e:
-        print(f"Error adding customer: {e}")
-        traceback.print_exc()
-        return jsonify({"error": "Internal Server Error"}), 500
-    finally:
-        connection.close()
+                cursor.execute(
+                    "INSERT INTO CustLogin (email, hashPWord, customerID) VALUES (%s, %s, %s)",
+                    (email, hashed_password, customer_id)
+                )
+            connection.commit()
+            return jsonify({"message": "Customer added successfully"})
+        except Exception as e:
+            print(f"Error adding customer: {e}")
+            traceback.print_exc()
+            return jsonify({"error": "Internal Server Error"}), 500
 
 @app.route('/api/sendResetEmail', methods=['POST'])
 def send_reset_email():
@@ -516,23 +491,21 @@ def send_reset_email():
     if not email:
         return jsonify({"error": "Email is required"}), 400
 
-    connection = get_db_connection()
-    try:
-        with connection.cursor() as cursor:
-            cursor.execute("SELECT email FROM CustLogin WHERE email = %s", (email,))
-            if not cursor.fetchone():
-                return jsonify({"message": "Email not found"}), 404
+    with get_db_connection() as connection:
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT email FROM CustLogin WHERE email = %s", (email,))
+                if not cursor.fetchone():
+                    return jsonify({"message": "Email not found"}), 404
 
-        token = secrets.token_hex(20)
-        verification_link = f"http://localhost:9000/#/ResetPassword?token={token}&email={email}"
-        # Actual sending logic omitted for brevity
-        return jsonify({"message": "Email sent successfully"})
-    except Exception as e:
-        print(f"Error sending reset email: {e}")
-        traceback.print_exc()
-        return jsonify({"error": "Internal Server Error"}), 500
-    finally:
-        connection.close()
+            token = secrets.token_hex(20)
+            verification_link = f"http://localhost:9000/#/ResetPassword?token={token}&email={email}"
+            # Actual sending logic omitted for brevity
+            return jsonify({"message": "Email sent successfully"})
+        except Exception as e:
+            print(f"Error sending reset email: {e}")
+            traceback.print_exc()
+            return jsonify({"error": "Internal Server Error"}), 500
 
 @app.route('/api/sendVerifyEmail', methods=['POST'])
 def send_verify_email():
@@ -540,25 +513,23 @@ def send_verify_email():
     if not email:
         return jsonify({"error": "Email is required"}), 400
 
-    connection = get_db_connection()
-    try:
-        with connection.cursor() as cursor:
-            cursor.execute("SELECT email FROM CustLogin WHERE email = %s", (email,))
-            if not cursor.fetchone():
-                return jsonify({"message": "Email not found"}), 404
+    with get_db_connection() as connection:
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT email FROM CustLogin WHERE email = %s", (email,))
+                if not cursor.fetchone():
+                    return jsonify({"message": "Email not found"}), 404
 
-        token = secrets.token_hex(20)
-        verification_link = f"http://localhost:9000/#/verified-email?token={token}&email={email}"
-        otp_code = ''.join(random.choices(string.digits, k=6))
+            token = secrets.token_hex(20)
+            verification_link = f"http://localhost:9000/#/verified-email?token={token}&email={email}"
+            otp_code = ''.join(random.choices(string.digits, k=6))
 
-        send_email(email, "Email Verification", verification_link, otp_code)
-        return jsonify({"message": "Verification email sent successfully"})
-    except Exception as e:
-        print(f"Error sending verification email: {e}")
-        traceback.print_exc()
-        return jsonify({"error": "Internal Server Error"}), 500
-    finally:
-        connection.close()
+            send_email(email, "Email Verification", verification_link, otp_code)
+            return jsonify({"message": "Verification email sent successfully"})
+        except Exception as e:
+            print(f"Error sending verification email: {e}")
+            traceback.print_exc()
+            return jsonify({"error": "Internal Server Error"}), 500
 
 def send_email(to_email, subject, link, code=None):
     postmark_token = "d4763cf8-6f26-46e0-8442-9c3274e51a5b"  # Replace with your Postmark server token
