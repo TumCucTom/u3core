@@ -1,9 +1,15 @@
 """Count the number of people in a room"""
 from roboflow import Roboflow
 import cv2
+import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 ROBOFLOW_SIZE = 416
-rf = Roboflow(api_key="FRUmKXAzM8M7TupHxPph")
+API_KEY = os.getenv('API')
+rf = Roboflow(api_key=API_KEY)
 project = rf.workspace().project("person-counter-6kxom")
 model = project.version(2).model
 

@@ -1,113 +1,66 @@
-from flask import Flask, request, jsonify
-from flask_cors import CORS
-import bcrypt
+"""Backend python server for api endpoints and fire detection"""
+# pylint: disable=line-too-long
+# pylint: disable=broad-except
+# pylint: disable=logging-fstring-interpolation
+# pylint: disable=c-extension-no-member
+# pylint: disable=too-many-locals
+import os
 import random
 import string
 import secrets
-import pymysql
-import pycurl
-import requests
 from io import BytesIO
+import multiprocessing
 import json
 import time
 import logging
 import sys
-import cv2
-from twilio.rest import Client
-import multiprocessing
-from fire_detection_script import process_rtsp_stream_with_url
 import datetime
+import bcrypt
+import pymysql
+import pycurl
+import requests
+from fire_detection_script import process_rtsp_stream_with_url
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+from dotenv import load_dotenv
 
-# Load configuration from JSON
-with open("config.json", "r") as config_file:
-    config = json.load(config_file)
-
-# AWS SNS setup
-AWS_REGION = config["aws"]["region"]
-AWS_ACCESS_KEY = config["aws"]["access_key"]
-AWS_SECRET_KEY = config["aws"]["secret_key"]
-
-# Twilio setup
-T_ACCOUNT_SID = config["twilio"]["account_sid"]
-T_AUTH_TOKEN = config["twilio"]["auth_token"]
-TWILO_NUMBER = config["twilio"]["number"]
-
-# Recipient setup
-REC_NUMBER = config["recipient"]["phone_number"]
-REC_WHATSAPP_NUMBER = config["recipient"]["whatsapp_number"]
-
-# Roboflow setup
-R_API_KEY = config["roboflow"]["api_key"]
-R_MODEL_URL = config["roboflow"]["model_url"]
-R_PARAMS = {
-    "api_key": R_API_KEY,
-    "confidence": config["roboflow"]["confidence"]
-}
-
-# Alert message
-ALERT_MESSAGE = "Abnormal detected"
-
+# Load environment variables from ../../../.env
+dotenv_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../.env"))
+load_dotenv(dotenv_path)
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,  # Set log level (INFO, DEBUG, ERROR, etc.)
+    level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s",
-    handlers=[
-        logging.StreamHandler(sys.stdout)  # Log to Docker console (stdout)
-    ]
+    handlers=[logging.StreamHandler(sys.stdout)]
 )
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 
+# Database Configuration
 db_config = {
-    "host": "db",
-    "user": "general-user",
-    "password": "MLAI2024",
-    "database": "MLAIDB",
-    "port": 3306
+    "host": os.getenv("DB_HOST"),
+    "user": os.getenv("DB_USER"),
+    "password": os.getenv("DB_PASSWORD"),
+    "database": os.getenv("DB_NAME"),
+    "port": int(os.getenv("DB_PORT"))
 }
 
-max_retries = 10
-for attempt in range(max_retries):
+MAX_RETRIES = 10
+for attempt in range(MAX_RETRIES):
     try:
         connection = pymysql.connect(**db_config)
-        print("Database connection successful!")
+        logging.info("Database connection successful!")
         break
     except pymysql.err.OperationalError as e:
-        print(f"Attempt {attempt + 1}/{max_retries}: Unable to connect to the database. Retrying...")
+        logging.warning(f"Attempt {attempt + 1}/{MAX_RETRIES}: Unable to connect to the database. Retrying...")
         time.sleep(5)
 else:
-    raise Exception("Max retries exceeded. Could not connect to the database.")
-    
-# detecting fire with roboflow
-def detect_fire_with_roboflow(frame):
-    """Detect fire using Roboflow API."""
-    _, img_encoded = cv2.imencode(".jpg", frame)
-    response = requests.post(
-        R_MODEL_URL,
-        params=R_PARAMS,
-        files={"file": img_encoded.tobytes()},
-        timeout=5.0
-    )
-    response_data = response.json()
-    predictions = response_data.get("predictions", [])
+    logging.critical("Max retries exceeded. Could not connect to the database.")
 
-    for prediction in predictions:
-        if prediction["class"] == "fire" and prediction["confidence"] >= R_PARAMS["confidence"]:
-            return True
-    return False
 
-# Sending message via whatsapp
-def send_whatsapp_via_twilio(to_number, message):
-    """Send WhatsApp message via Twilio."""
-    client = Client(T_ACCOUNT_SID, T_AUTH_TOKEN)
-    message = client.messages.create(
-        from_=TWILO_NUMBER,
-        body=message,
-        to=to_number
-    )
-    print(f"WhatsApp message sent! Message SID: {message.sid}")
+# Auto fire detection startup
 
 # Dictionary to track running fire detection processes
 fire_detection_processes = {}
@@ -122,22 +75,21 @@ def start_fire_detection_for_all_cameras():
     Fetch all cameras from the database and start fire detection concurrently.
     Ensures each RTSP stream is monitored independently.
     """
-    global fire_detection_processes
     try:
         with connection.cursor() as cursor:
             cursor.execute("SELECT rtsp_url FROM Cameras")
             cameras = cursor.fetchall()
-
         for (rtsp_url,) in cameras:
             if rtsp_url not in fire_detection_processes:  # Avoid duplicate processes
                 process = multiprocessing.Process(target=run_fire_detection, args=(rtsp_url,))
                 process.start()
                 fire_detection_processes[rtsp_url] = process
                 logging.info(f"Started fire detection for: {rtsp_url}")
-
         logging.info("Started fire detection for all cameras")
     except Exception as e:
         print(f"Error starting fire detection processes: {e}")
+
+# API endpoints
 
 @app.route('/api/add-camera', methods=['POST'])
 def add_camera():
@@ -189,8 +141,9 @@ def add_camera():
             process.start()
             fire_detection_processes[rtsp_url] = process
             print(f"Started fire detection for new camera: {rtsp_url}")
+        return jsonify(
+            {"message": "Camera added, TCP URLs updated, and fire detection started!"}), 201
 
-        return jsonify({"message": "Camera added, TCP URLs updated, and fire detection started!"}), 201
     except Exception as e:
         print(f"Error adding camera: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
@@ -249,7 +202,8 @@ def fetch_sites():
             result = []
             for site in sites:
                 site_id, name = site
-                cursor.execute("SELECT id, name FROM Cameras WHERE site_id = %s", (site_id,))
+                cursor.execute(
+                    "SELECT id, name FROM Cameras WHERE site_id = %s", (site_id,))
                 cameras = [{"id": cam_id, "name": cam_name} for cam_id, cam_name in cursor.fetchall()]
                 result.append({"id": site_id, "name": name, "cameras": cameras})
 
@@ -257,73 +211,6 @@ def fetch_sites():
     except Exception as e:
         print(f"Error fetching sites: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
-
-
-@app.route('/api/test', methods=['GET'])
-def test_server():
-    return jsonify({"message": "Server is running!", "status": "success"}), 200
-
-@app.route('/api/testAddEntry', methods=['POST'])
-def test_add_entry():
-    test_data = request.json.get('testData', 'Default Test Data')
-
-    try:
-        with connection.cursor() as cursor:
-            # Create the TestTable if it doesn't exist
-            create_table_query = """
-            CREATE TABLE IF NOT EXISTS TestTable (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                testData VARCHAR(255)
-            );
-            """
-            cursor.execute(create_table_query)
-
-            # Insert the test data
-            cursor.execute("INSERT INTO TestTable (testData) VALUES (%s)", (test_data,))
-
-        connection.commit()
-        return jsonify({"message": "Test entry added successfully!"})
-    except Exception as e:
-        print(f"Error adding test entry: {e}")
-        return jsonify({"error": "Internal Server Error"}), 500
-    
-@app.route('/api/stream',methods = ['POST'])
-def stream():
-    data = request.json
-    name = data.get('name')
-    rtsp_url = data.get('rtsp_url')
-
-    if not all([name, rtsp_url]):
-        return jsonify({"error": "Name and RTSP URL are required"}), 400
-
-    # Convert tcp:// to rtsp://
-    if rtsp_url.startswith("tcp://"):
-        rtsp_url = "rtsp://" + rtsp_url[6:]
-
-    video = cv2.VideoCapture(rtsp_url)
-    if not video.isOpened:
-        print("Error : Camera is not opened")
-    
-    last_alert = 0
-    alert_interval = 30
-
-    while True:
-        ret,frame = video.read()
-        if not ret:
-            break
-        fire_detected = detect_fire_with_roboflow(frame)
-        if fire_detected:
-            current_time = time.time()
-            if current_time - last_alert > alert_interval:
-                print("Sending message")
-                send_whatsapp_via_twilio(REC_WHATSAPP_NUMBER,ALERT_MESSAGE)
-                last_alert = current_time
-
-        cv2.imshow("webcam stream",frame)
-        if cv2.waitKey(1) & 0xff == ord('q'):
-            break
-    video.release()
-    cv2.destroyAllWindows()
 
 
 @app.route('/api/add-hazard', methods=['POST'])
@@ -443,47 +330,6 @@ def get_logs():
 
 
 
-@app.route('/api/dbinfo', methods=['GET'])
-def get_db_info():
-    try:
-        with connection.cursor() as cursor:
-            # Fetch all table names
-            cursor.execute("SHOW TABLES")
-            tables = cursor.fetchall()
-
-            db_info = {}
-
-            for (table_name,) in tables:
-                # Fetch column details for each table
-                cursor.execute(f"DESCRIBE {table_name}")
-                columns = cursor.fetchall()
-                column_info = [
-                    {
-                        "Field": col[0],
-                        "Type": col[1],
-                        "Null": col[2],
-                        "Key": col[3],
-                        "Default": col[4],
-                        "Extra": col[5]
-                    } for col in columns
-                ]
-
-                # Fetch all rows for each table
-                cursor.execute(f"SELECT * FROM {table_name}")
-                rows = cursor.fetchall()
-
-                db_info[table_name] = {
-                    "columns": column_info,
-                    "entries": rows
-                }
-
-        return jsonify(db_info)
-
-    except Exception as e:
-        print(f"Error fetching database info: {e}")
-        return jsonify({"error": "Internal Server Error"}), 500
-
-
 @app.route('/api/emails', methods=['GET'])
 def get_emails():
     """
@@ -556,6 +402,7 @@ def login():
 
 @app.route('/api/addToCustomer', methods=['POST'])
 def add_to_customer():
+    """Add a customer to DB"""
     data = request.json.get('items', [])
     if len(data) < 4:
         return jsonify({"error": "Invalid input"}), 400
@@ -588,7 +435,8 @@ def add_to_customer():
             cursor.execute(create_custlogin_table)
 
             # Insert into Customer table
-            cursor.execute("INSERT INTO Customer (firstname, lastname) VALUES (%s, %s)", (first_name, last_name))
+            cursor.execute("INSERT INTO Customer (firstname, lastname) VALUES (%s, %s)",
+                           (first_name, last_name))
             customer_id = cursor.lastrowid
 
             # Insert into CustLogin table
@@ -604,9 +452,9 @@ def add_to_customer():
         return jsonify({"error": "Internal Server Error"}), 500
 
 
-
 @app.route('/api/sendResetEmail', methods=['POST'])
 def send_reset_email():
+    """Send a reset password email"""
     email = request.json.get('email')
     if not email:
         return jsonify({"error": "Email is required"}), 400
@@ -617,8 +465,6 @@ def send_reset_email():
             if not cursor.fetchone():
                 return jsonify({"message": "Email not found"}), 404
 
-        token = secrets.token_hex(20)
-        verification_link = f"http://localhost:9000/#/ResetPassword?token={token}&email={email}"
         return jsonify({"message": "Email sent successfully"})
     except Exception as e:
         print(f"Error sending reset email: {e}")
@@ -627,6 +473,7 @@ def send_reset_email():
 
 @app.route('/api/sendVerifyEmail', methods=['POST'])
 def send_verify_email():
+    """Send a verify email"""
     email = request.json.get('email')
     if not email:
         return jsonify({"error": "Email is required"}), 400
@@ -640,7 +487,6 @@ def send_verify_email():
         token = secrets.token_hex(20)
         verification_link = f"http://localhost:9000/#/verified-email?token={token}&email={email}"
         otp_code = ''.join(random.choices(string.digits, k=6))
-        #return jsonify({"error": send_email(email, "Password Reset Request", verification_link)}), 500
         send_email(email, "Email Verification", verification_link, otp_code)
         return jsonify({"message": "Verification email sent successfully"})
     except Exception as e:
@@ -649,8 +495,9 @@ def send_verify_email():
 
 
 def send_email(to_email, subject, link, code=None):
-    postmark_token = "d4763cf8-6f26-46e0-8442-9c3274e51a5b"  # Replace with your Postmark server token
-    sender_email = "info@shopveloworks.com"  # Replace with your verified sender email
+    """Sends an email"""
+    postmark_token = "d4763cf8-6f26-46e0-8442-9c3274e51a5b"
+    sender_email = "info@shopveloworks.com"
 
     html_content = f"""
     <div>
@@ -660,7 +507,6 @@ def send_email(to_email, subject, link, code=None):
         html_content += f"<p>Your OTP is: <strong>{code}</strong></p>"
     html_content += "</div>"
 
-    # Prepare the payload for the Postmark API
     payload = {
         "From": sender_email,
         "To": to_email,
@@ -669,7 +515,6 @@ def send_email(to_email, subject, link, code=None):
         "MessageStream": "verify"
     }
 
-    # Send the email using the Postmark API
     try:
         url = "https://api.postmarkapp.com/email"
         headers = [
@@ -677,31 +522,18 @@ def send_email(to_email, subject, link, code=None):
             "Content-Type: application/json",
             f"X-Postmark-Server-Token: {postmark_token}"
         ]
-
-        # Prepare the data
         data = json.dumps(payload)
-
-        # Use BytesIO to capture the response body
         response_buffer = BytesIO()
-
-        # Set up the pycurl request
         c = pycurl.Curl()
         c.setopt(c.URL, url)
         c.setopt(c.POST, 1)
         c.setopt(c.POSTFIELDS, data)
         c.setopt(c.HTTPHEADER, headers)
         c.setopt(c.WRITEDATA, response_buffer)
-        c.setopt(c.TIMEOUT, 30)  # 30 seconds timeout
-
-        # Execute the request
+        c.setopt(c.TIMEOUT, 30)
         c.perform()
-
-        # Get the response data
         response_body = response_buffer.getvalue().decode('utf-8')
-
-        # Close the connection
         c.close()
-
         print(f"Email sent successfully to {to_email}. With {response_body}")
     except requests.exceptions.RequestException as e:
         print(f"Error sending email: {e}")
