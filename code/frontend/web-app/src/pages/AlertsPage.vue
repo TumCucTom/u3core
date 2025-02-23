@@ -21,35 +21,35 @@
         selection="multiple"
       >
         <!-- cameraName -->
-        <template v-slot:body-cell-cameraName="{ _row }">
-          <q-td>{{ _row.cameraName }}</q-td>
+        <template v-slot:body-cell-cameraName="{ row }">
+          <q-td>{{ row.cameraName }}</q-td>
         </template>
 
         <!-- cameraAddress -->
-        <template v-slot:body-cell-cameraAddress="{ _row }">
-          <q-td>{{ _row.cameraAddress }}</q-td>
+        <template v-slot:body-cell-cameraAddress="{ row }">
+          <q-td>{{ row.cameraAddress }}</q-td>
         </template>
 
         <!-- timestamp -->
-        <template v-slot:body-cell-timestamp="{ _row }">
-          <q-td>{{ _row.timestamp }}</q-td>
+        <template v-slot:body-cell-timestamp="{ row }">
+          <q-td>{{ row.timestamp }}</q-td>
         </template>
 
         <!-- faultType -->
-        <template v-slot:body-cell-faultType="{ _row }">
+        <template v-slot:body-cell-faultType="{ row }">
           <q-td>
-            <q-chip :label="_row.faultType" color="primary" text-color="white" />
+            <q-chip :label="row.faultType" color="primary" text-color="white" />
           </q-td>
         </template>
 
         <!-- numberOfHazards -->
-        <template v-slot:body-cell-numberOfHazards="{ _row }">
-          <q-td>{{ _row.numberOfHazards }}</q-td>
+        <template v-slot:body-cell-numberOfHazards="{ row }">
+          <q-td>{{ row.numberOfHazards }}</q-td>
         </template>
 
         <!-- falsePositives -->
-        <template v-slot:body-cell-falsePositives="{ _row }">
-          <q-td>{{ _row.falsePositives }}</q-td>
+        <template v-slot:body-cell-falsePositives="{ row }">
+          <q-td>{{ row.falsePositives }}</q-td>
         </template>
       </q-table>
     </div>
@@ -62,8 +62,8 @@ export default {
   data() {
     return {
       columns: [
-        { name: 'cameraName', label: 'Site Name', field: 'cameraName', sortable: true },
-        { name: 'cameraAddress', label: 'Site Location', field: 'cameraAddress', sortable: true },
+        { name: 'cameraName', label: 'Camera Name', field: 'cameraName', sortable: true },
+        { name: 'cameraAddress', label: 'Camera Address', field: 'cameraAddress', sortable: true },
         { name: 'timestamp', label: 'Timestamp', field: 'timestamp', sortable: true },
         { name: 'faultType', label: 'Fault Type', field: 'faultType', sortable: true },
         { name: 'numberOfHazards', label: 'Hazard count', field: 'numberOfHazards' },
