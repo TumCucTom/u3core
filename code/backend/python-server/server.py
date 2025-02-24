@@ -55,12 +55,14 @@ db_config = {
     "port": int(os.getenv("DB_PORT"))
 }
 
+HEALTHY = False
 MAX_RETRIES = 10
 for attempt in range(MAX_RETRIES):
     logging.info(f"Attempting to access database with credentials {db_config}")
     try:
         connection = pymysql.connect(**db_config)
         logging.info("Database connection successful!")
+        HEALTHY = True
         break
     except pymysql.err.OperationalError as e:
         logging.warning(f"Attempt {attempt + 1}/{MAX_RETRIES}: Unable to connect to the database. Retrying...")
@@ -68,7 +70,7 @@ for attempt in range(MAX_RETRIES):
 else:
     logging.critical("Max retries exceeded. Could not connect to the database.")
 
-
+logging.info(f"Status: {HEALTHY}")
 # Auto fire detection startup
 
 # Dictionary to track running fire detection processes
@@ -99,6 +101,14 @@ def start_fire_detection_for_all_cameras():
         print(f"Error starting fire detection processes: {e}")
 
 # API endpoints
+
+@app.route('/health', methods=['GET'])
+def health_check():
+    if HEALTHY:
+        return jsonify(status="healthy"), 200  # Status 200 means OK
+    else:
+        return jsonify({"error": "Internal Server Error"}), 500
+
 
 @app.route('/api/add-camera', methods=['POST'])
 def add_camera():
