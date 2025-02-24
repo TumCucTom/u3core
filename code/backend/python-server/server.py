@@ -57,6 +57,7 @@ db_config = {
 
 MAX_RETRIES = 10
 for attempt in range(MAX_RETRIES):
+    logging.info(f"Attempting to access database with credentials {db_config}")
     try:
         connection = pymysql.connect(**db_config)
         logging.info("Database connection successful!")
