@@ -107,7 +107,7 @@ def health_check():
     if HEALTHY:
         return jsonify(status="healthy"), 200  # Status 200 means OK
     else:
-        return jsonify({"error": "Internal Server Error"}), 500
+        return jsonify({"error": "Internal Server Error"}), 501
 
 
 @app.route('/api/add-camera', methods=['POST'])
