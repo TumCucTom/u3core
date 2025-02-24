@@ -29,10 +29,6 @@ from dotenv import load_dotenv
 load_dotenv()
 POSTMARK_API = os.getenv("POSTMARK_API")
 
-# Load configuration from JSON
-with open("config.json", "r", encoding="utf-8") as config_file:
-    config = json.load(config_file)
-
 # Alert message
 ALERT_MESSAGE = "Abnormal detected"
 
