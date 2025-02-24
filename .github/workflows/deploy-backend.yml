@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - dev
-      - cd-backend
+      - bug-deploy-aws
   workflow_dispatch:
 
 jobs:
@@ -32,10 +32,10 @@ jobs:
           
           # Navigate to home directory and remove any existing repo
           cd ~
-          rm -r 2024-MLAIPredictionMicroservices
+          rm -rf 2024-MLAIPredictionMicroservices
 
           # Clone the latest version
-          git clone git@github.com:spe-uob/2024-MLAIPredictionMicroservices.git
+          git clone -b bug-deploy-aws git@github.com:spe-uob/2024-MLAIPredictionMicroservices.git
           cd 2024-MLAIPredictionMicroservices/code/backend
 
           # Start the service using Docker Compose
