@@ -41,3 +41,5 @@ jobs:
           # Start the service using Docker Compose
           docker compose down
           docker compose --env-file ../../../.env up -d --build
+      
+          curl -f http://127.0.0.1:3000/health
