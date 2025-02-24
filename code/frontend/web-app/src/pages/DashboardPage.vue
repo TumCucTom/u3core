@@ -9,21 +9,76 @@
         <!--  top level box -->
         <div class="row q-mb-lg">
           <q-card flat bordered class="col-12 col-md-4 q-pa-md">
-            <div class="text-caption text-grey-7">Total Sites</div>
+            <!-- add button in the title line-->
+            <div class="row justify-between items-center q-mb-sm">
+              <div class="text-caption text-grey-7">Total Sites</div>
+              <q-btn 
+            
+                flat 
+                dense 
+                round 
+                class="q-ml-auto" 
+                size="sm"
+                @click="handleSettingsClick"
+
+                >
+                <q-icon
+                  name = "img:src/assets/infobutton.png"
+                  size = "25px"
+                  color = "grey-7"
+                />
+              </q-btn>
+            </div>
             <div class="row justify-between items-center">
               <div class="text-h5 text-bold">0</div>
               <q-icon name="trending_up" color="positive" />
             </div>
           </q-card>
+
           <q-card flat bordered class="col-12 col-md-4 q-pa-md">
-            <div class="text-caption text-grey-7">Cameras</div>
+            <div class="row justify-between items-center q-mb-sm">
+              <div class="text-caption text-grey-7">Cameras</div>
+              <q-btn 
+            
+                flat 
+                dense 
+                round 
+                class="q-ml-auto" 
+                size="sm"
+                @click="handleSettingsClick"
+
+                >
+                <q-icon
+                  name = "img:src/assets/infobutton.png"
+                  size = "25px"
+                  color = "grey-7"
+                />
+              </q-btn>
+            </div>
             <div class="row justify-between items-center">
               <div class="text-h5 text-bold">0</div>
-              <q-icon name="trending_up" color="positive" />
-            </div>
+              <q-icon name="trending_up" color="positive" /></div>
           </q-card>
           <q-card flat bordered class="col-12 col-md-4 q-pa-md">
-            <div class="text-caption text-grey-7">Alerts</div>
+            <div class="row justify-between items-center q-mb-sm">
+              <div class="text-caption text-grey-7">Alerts</div>
+              <q-btn 
+            
+                flat 
+                dense 
+                round 
+                class="q-ml-auto" 
+                size="sm"
+                @click="handleSettingsClick"
+
+                >
+                <q-icon
+                  name = "img:src/assets/infobutton.png"
+                  size = "25px"
+                  color = "grey-7"
+                />
+              </q-btn>
+            </div>
             <div class="row justify-between items-center">
               <div class="text-h5 text-bold">0</div>
               <q-icon name="trending_up" color="positive" />
@@ -37,18 +92,48 @@
           <div class="col-12 col-md-8">
             <!-- number of anomalies -->
             <q-card flat bordered class="q-pa-md q-mb-md">
-              <div class="row justify-between items-center">
-                <div class="text-h6">Number of Anomalies Detected</div>
-                <q-icon name="more_vert" />
+              <div class="row justify-between items-center q-mb-sm">
+              <div class="text-h6">Number of Anomalies Detected</div>
+              <q-btn 
+            
+                flat 
+                dense 
+                round 
+                class="q-ml-auto" 
+                size="sm"
+                @click="handleSettingsClick"
+
+                >
+                <q-icon
+                  name = "img:src/assets/infobutton.png"
+                  size = "25px"
+                  color = "grey-7"
+                />
+              </q-btn>
               </div>
               <div class="text-grey-7 text-center q-mt-lg">No data available</div>
             </q-card>
 
             <!-- type of anomalies detected -->
             <q-card flat bordered class="q-pa-md">
-              <div class="row justify-between items-center">
-                <div class="text-h6">Type of Anomalies Detected</div>
-                <q-icon name="more_vert" />
+              <div class="row justify-between items-center q-mb-sm">
+              <div class="text-h6">Type of Anomalies Detected</div>
+              <q-btn 
+            
+                flat 
+                dense 
+                round 
+                class="q-ml-auto" 
+                size="sm"
+                @click="handleSettingsClick"
+
+                >
+                <q-icon
+                  name = "img:src/assets/infobutton.png"
+                  size = "25px"
+                  color = "grey-7"
+                />
+              </q-btn>
               </div>
               <div class="text-grey-7 text-center q-mt-lg">No data available</div>
             </q-card>
@@ -58,9 +143,24 @@
           <div class="col-12 col-md-4">
             <!-- incidence severity overview -->
             <q-card flat bordered class="q-pa-md">
-              <div class="row justify-between items-center">
-                <div class="text-h6">Incidence Severity Overview</div>
-                <q-icon name="more_vert" />
+              <div class="row justify-between items-center q-mb-sm">
+              <div class="text-h6">Incidence Severity Overview</div>
+              <q-btn 
+            
+                flat 
+                dense 
+                round 
+                class="q-ml-auto" 
+                size="sm"
+                @click="handleSettingsClick"
+
+                >
+                <q-icon
+                  name = "img:src/assets/infobutton.png"
+                  size = "25px"
+                  color = "grey-7"
+                />
+              </q-btn>
               </div>
               <div class="text-grey-7 text-center q-mt-lg">No data available</div>
             </q-card>
@@ -69,9 +169,24 @@
 
         <!-- heatmap  -->
         <q-card flat bordered class="q-pa-md">
-          <div class="row justify-between items-center">
-            <div class="text-h6">Anomaly Heat-map - Location-Based Anomaly Occurrence</div>
-            <q-icon name="more_vert" />
+            <div class="row justify-between items-center q-mb-sm">
+              <div class="text-h6">Anomaly Heat-map - Location-Based Anomaly Occurrence</div>
+              <q-btn 
+            
+                flat 
+                dense 
+                round 
+                class="q-ml-auto" 
+                size="sm"
+                @click="handleSettingsClick"
+
+                >
+                <q-icon
+                  name = "img:src/assets/infobutton.png"
+                  size = "25px"
+                  color = "grey-7"
+                />
+              </q-btn>
           </div>
           <div class="text-grey-7 text-center q-mt-lg">No data available</div>
         </q-card>
@@ -91,6 +206,10 @@ export default {
     const name = ref('User'); // Use a ref for the name variable
 
     const route = useRoute();
+    const handleSettingsClick = () => {
+    console.log('Settings button clicked');
+    // add logic here for the button
+    };
 
     onMounted(() => {
       email.value = decodeURIComponent(route.query.email || '');
@@ -111,6 +230,7 @@ export default {
     });
 
     return {
+      handleSettingsClick,
       email,
       name,
     };

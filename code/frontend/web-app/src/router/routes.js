@@ -5,6 +5,7 @@ import ManageSitesPage from "src/pages/ManageSitesPage.vue";
 import ManageModelsPage from "src/pages/ManageModelsPage.vue";
 import ActionSettingsPage from "src/pages/ActionSettingsPage.vue";
 import Verified from "src/pages/VerifiedPassword.vue";
+//import { meta } from "eslint-plugin-vue";
 import AlertsPage from "src/pages/AlertsPage.vue"
 import TrainingPage from "src/pages/TrainingPage.vue"
 import CloudSettingsPage from "src/pages/CloudSettings.vue"
@@ -19,8 +20,13 @@ const routes = [
       {
         path: "",
         component: Home,
-        meta: { title: 'U3 Core' },
+        meta: {title:"UserLogin"}
       },
+      { path: "otp", 
+        component: otp,
+        meta: {title:"OTP Authentication"}
+      },
+      // Action Settings page
       {path: "otp", component: otp},
       { path: "verified-email", component: Verified, meta: { title: 'U3 Core' }, }, // Action Settings page
     ],
@@ -31,14 +37,38 @@ const routes = [
     path: "/app",
     component: () => import("layouts/SidebarLayout.vue"),
     children: [
-      { path: "dashboard", component: DashboardPage,meta: { title: 'U3 Core' }, }, // Dashboard page
-      { path: "manage-sites", component: ManageSitesPage,meta: { title: 'U3 Core' }, }, // Manage Sites page
-      { path: "manage-models", component: ManageModelsPage,meta: { title: 'U3 Core' }, }, // Manage Models page
-      { path: "action-settings", component: ActionSettingsPage,meta: { title: 'U3 Core' }, }, // Action Settings page
-      {path : "alerts-page", component: AlertsPage,meta: { title: 'U3 Core' },} ,// Alerts page
-      {path : "training-page", component :TrainingPage,meta: { title: 'U3 Core' },},
-      {path : "cloud-settings", component :CloudSettingsPage,meta: { title: 'U3 Core' },},
-      {path : "settings", component:SettingsPage,meta: { title: 'U3 Core' },},
+      { path: "dashboard", 
+        component: DashboardPage,
+        meta: {title:"Dashboard"}
+      }, // Dashboard page
+      { path: "manage-sites", 
+        component: ManageSitesPage,
+        meta: {title:"ManageSites"}
+      }, // Manage Sites page
+      { path: "manage-models", 
+        component: ManageModelsPage,
+        meta: {title:"ManageModels"}
+      }, // Manage Models page
+      { path: "action-settings", 
+        component: ActionSettingsPage,
+        meta: {title:"ActionSettings"}
+      }, // Action Settings page
+      { path : "alerts-page", 
+        component: AlertsPage,
+        meta: {title:'AlertsPage'},
+      },// Alerts page
+      { path : "training-page", 
+        component :TrainingPage,
+        meta: {title:'TrainingPage'},
+      },
+      { path : "cloud-settings", 
+        component :CloudSettingsPage,
+        meta: {title:'Cloud-settings'},
+      },
+      { path : "settings", 
+        component:SettingsPage,
+        meta: {title:'settings'},
+      },
     ],
   },
 
@@ -46,7 +76,7 @@ const routes = [
   {
     path: "/:catchAll(.*)*",
     component: () => import("pages/ErrorNotFound.vue"),
-    meta: { title: 'U3 Core' },
+    meta: { title:"ErrorNotFound"}
   },
 ];
 

@@ -10,7 +10,7 @@
             <p class="q-my-md text-h5">
               {{ isLogin
                 ? "We've been using Untitled to kick start every new project and can't imagine working without it."
-                : "Untitled has saved us thousands of hours of work. We’re able to spin up projects and features much faster."
+                : "U3Core's safety compliance features helped us monitor workplace conditions more efficiently. We've not only reduced risks but also met the regulatory requirements with ease.'"
               }}
             </p>
             <q-avatar size="80px">
@@ -135,11 +135,16 @@
   import { useRouter } from 'vue-router';
   import bcrypt from 'bcryptjs';
   import {colors} from 'quasar';
-
+  import obamaImage from '@/assets/obama.jpg';
+  import anotherUserImage from '@/assets/Lori.png';
+  
+  
   export default {
     data() {
       return {
         isLogin: false, // sees if page is in login or register mode
+        obamaImage,
+        anotherUserImage,
       };
     },
     methods: {
@@ -276,6 +281,11 @@
 </script>
 
 <style scoped>
+
+.move-left {
+  position-try: relative;
+  left: -2000px;
+}
 
 .bg-light {
   background-color: #f9fafb;

@@ -26,5 +26,14 @@ export default route(function (/* { store, ssrContext } */) {
     history: createHistory(process.env.VUE_ROUTER_BASE)
   })
 
+  //add a router for setting the web title
+  Router.beforeEach((to, _from, next) => {
+    const defaultTitle = 'ML/AI platform'
+    const pageTitle = to.meta.title || defaultTitle
+    document.title = pageTitle
+
+    next()
+  })
+
   return Router
 })
