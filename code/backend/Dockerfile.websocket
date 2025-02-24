@@ -16,6 +16,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY websocket-server .
 
 # Install Node.js dependencies
+RUN rm -rf /usr/src/app/node_modules
 RUN npm install
 
 # Expose the WebSocket server port
