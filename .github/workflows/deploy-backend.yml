@@ -23,7 +23,6 @@ jobs:
         ssh-keyscan -H github.com >> ~/.ssh/known_hosts
         ssh-keyscan -H ${{ secrets.AWS_HOST }} >> ~/.ssh/known_hosts
 
-
     - name: Deploy to AWS
       run: |
         ssh ${{ secrets.AWS_USER }}@${{ secrets.AWS_HOST }} << 'EOF'
@@ -41,5 +40,10 @@ jobs:
           # Start the service using Docker Compose
           docker compose down
           docker compose --env-file ../../../.env up -d --build
-      
-          curl -f http://127.0.0.1:3000/health
+        EOF
+
+    - name: Wait for service to start
+      run: sleep 10  # Give some time for the service to be up
+
+    - name: Test deployment
+      run: curl -f http://16.171.224.57:3000/health
