@@ -11,7 +11,7 @@ services:
     ports:
       - "3002:3000"
     env_file:
-      - ~/.env
+      - /home/ec2-user/.env
     environment:
       DB_HOST: ${DB_HOST}
       DB_USER: ${DB_USER}
@@ -38,7 +38,7 @@ services:
     ports:
       - "3307:3306"
     env_file:
-      - ~/.env
+      - /home/ec2-user/.env
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
