@@ -39,11 +39,12 @@ jobs:
 
           # Start the service using Docker Compose
           docker compose down
+          docker compose pull
           docker compose --env-file ../../../.env up -d --build
         EOF
 
     - name: Wait for service to start
-      run: sleep 10  # Give some time for the service to be up
+      run: sleep 30  # Give some time for the service to be up
 
     - name: Test deployment
       run: curl -f http://16.171.224.57:3000/health
