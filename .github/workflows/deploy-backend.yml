@@ -42,4 +42,16 @@ jobs:
           docker compose down
           docker compose pull
           docker compose up -d --build
-        EOF
+    - name: Wait for container to be ready
+      run: |
+          timeout=60
+          while [ $timeout -gt 0 ]; do
+            if docker logs backend-backend-1 2>&1 | grep -q "Database connection successful!"; then
+              echo "Container is ready!"
+              exit 0
+            fi
+            sleep 2
+            timeout=$((timeout-2))
+          done
+          echo "Timeout waiting for container readiness."
+          exit 1
