@@ -41,7 +41,7 @@ jobs:
           # Start the service using Docker Compose
           docker compose down
           docker compose pull
-          docker compose up -d --build
+          docker compose --env-file ../../../.env up -d --build
     - name: Wait for container to be ready
       run: |
           timeout=60
