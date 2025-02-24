@@ -9,7 +9,7 @@ services:
       - ./logs:/app/logs  # Mount the host machine's ./logs directory to the container
       - ./initdb:/initdb  # This mounts ./host-initdb on the host to /initdb in the container
     ports:
-      - "3002:3000"
+      - "3000:3000"
     env_file:
       - ../../../.env
     environment:
@@ -36,7 +36,7 @@ services:
       dockerfile: Dockerfile
     container_name: mysql_container
     ports:
-      - "3307:3306"
+      - "3306:3306"
     env_file:
       - ../../../.env
     environment:
