@@ -341,7 +341,7 @@ def get_logs():
 @app.route('/api/get-hazard-count', methods=['GET'])
 def get_hazard_count():
     """
-    Fetch hazard count to display on dashboard.
+    Fetch hazard count to display on dashboard. Returns a number.
     """
     try:
         with connection.cursor() as cursor:
@@ -353,7 +353,28 @@ def get_hazard_count():
 
     except Exception as e:
         print("Error retrieving alert count:", e)
-        return jsonify({"error": "Internal Server Error regarding alerts"}), 500
+        return jsonify({"error": "Internal Server Error regarding alert count"}), 500
+    
+@app.route('/api/get-site-count', methods=['GET'])
+def get_hazard_count():
+    """
+    Fetch total sites count to display on dashboard. Returns a number.
+    """
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT COUNT(*) FROM Sites;
+            """)
+            row_count = cursor.fetchone()[0] 
+        return jsonify(row_count), 200
+
+    except Exception as e:
+        print("Error retrieving site count:", e)
+        return jsonify({"error": "Internal Server Error regarding site count"}), 500
+
+
+
+    
 
 
 
