@@ -30,7 +30,7 @@
               </q-btn>
             </div>
             <div class="row justify-between items-center">
-              <div class="text-h5 text-bold">0</div>
+              <div class="text-h5 text-bold">{{siteCount}}</div>
               <q-icon name="trending_up" color="positive" />
             </div>
           </q-card>
@@ -56,7 +56,7 @@
               </q-btn>
             </div>
             <div class="row justify-between items-center">
-              <div class="text-h5 text-bold">0</div>
+              <div class="text-h5 text-bold">{{cameraCount}}</div>
               <q-icon name="trending_up" color="positive" /></div>
           </q-card>
           <q-card flat bordered class="col-12 col-md-4 q-pa-md">
@@ -80,7 +80,7 @@
               </q-btn>
             </div>
             <div class="row justify-between items-center">
-              <div class="text-h5 text-bold">0</div>
+              <div class="text-h5 text-bold">{{ alertCount }}</div>
               <q-icon name="trending_up" color="positive" />
             </div>
           </q-card>
@@ -204,6 +204,10 @@ export default {
   setup() {
     const email = ref('');
     const name = ref('User'); // Use a ref for the name variable
+    const siteCount = ref(0);
+    const cameraCount = ref(0);
+    const alertCount = ref(0);
+
 
     const route = useRoute();
     const handleSettingsClick = () => {
@@ -211,6 +215,22 @@ export default {
     // add logic here for the button
     };
 
+    const fetchCounts = async () => {
+      try {
+        const [sitesResult, camerasResult, alertsResult] = await Promise.all([
+          axios.get("http://127.0.0.1:3002/api/get-site-count"),
+          axios.get("http://127.0.0.1:3002/api/get-camera-count"),
+          axios.get("http://127.0.0.1:3002/api/get-hazard-count")
+        ]);
+
+        siteCount.value = sitesRes.data;
+        cameraCount.value = camerasRes.data;
+        alertCount.value = alertsRes.data;
+    }
+    catch (error) {
+        console.error("Error fetching dashboard counts:", error);
+      }
+    };
     onMounted(() => {
       email.value = decodeURIComponent(route.query.email || '');
       if (email.value) {
@@ -227,12 +247,17 @@ export default {
       } else {
         console.error('No email found in the URL');
       }
+
+      fetchCounts(); 
     });
 
     return {
       handleSettingsClick,
       email,
       name,
+      siteCount,
+      cameraCount,
+      alertCount,
     };
   },
 };
