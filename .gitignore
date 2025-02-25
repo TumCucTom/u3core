@@ -8,3 +8,5 @@ code/backend/logs/myapp.log
 tree.txt
 myenv/
 mainEnv
+code/frontend/node_modules/
+/code/frontend/web-app/node_modules

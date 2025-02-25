@@ -338,6 +338,23 @@ def get_logs():
         print("Error retrieving logs:", e)
         return jsonify({"error": "Internal Server Error"}), 500
 
+@app.route('/api/get-hazard-count', methods=['GET'])
+def get_hazard_count():
+    """
+    Fetch hazard count to display on dashboard.
+    """
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT COUNT(*) FROM Logs where falsePositive = 0;
+            """)
+            row_count = cursor.fetchone()[0] 
+        return jsonify(row_count), 200
+
+    except Exception as e:
+        print("Error retrieving alert count:", e)
+        return jsonify({"error": "Internal Server Error regarding alerts"}), 500
+
 
 
 
