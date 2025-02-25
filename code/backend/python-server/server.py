@@ -356,7 +356,7 @@ def get_hazard_count():
         return jsonify({"error": "Internal Server Error regarding alert count"}), 500
     
 @app.route('/api/get-site-count', methods=['GET'])
-def get_hazard_count():
+def get_site_count():
     """
     Fetch total sites count to display on dashboard. Returns a number.
     """
@@ -372,11 +372,22 @@ def get_hazard_count():
         print("Error retrieving site count:", e)
         return jsonify({"error": "Internal Server Error regarding site count"}), 500
 
+@app.route('/api/get-camera-count', methods=['GET'])
+def get_camera_count():
+    """
+    Fetch camerea count to display on dashboard.
+    """
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT COUNT(*) FROM Cameras;
+            """)
+            row_count = cursor.fetchone()[0] 
+        return jsonify(row_count), 200
 
-
-    
-
-
+    except Exception as e:
+        print("Error retrieving camera count:", e)
+        return jsonify({"error": "Internal Server Error regarding camera count"}), 500
 
 
 @app.route('/api/emails', methods=['GET'])
