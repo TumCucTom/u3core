@@ -44,8 +44,8 @@
       </div>
 
       <!-- footer -->
-      <div class="q-pa-md border-top">
-        <q-item clickable v-ripple @click="handleLogout" class="q-pa-sm">
+      <div class="q-pa-md border-top-white">
+        <q-item clickable v-ripple class="q-pa-sm">
           <q-item-section avatar>
             <q-avatar color="primary" text-color="white">
               <q-icon name="person" />
@@ -56,10 +56,13 @@
             <div>user name</div>
             <div class="text-caption text-grey">username@email.com</div>
           </q-item-section>
+        </q-item>
 
+        <q-item clickable v-ripple @click="handleLogout" class="q-pa-sm">
           <q-item-section side>
             <q-icon name="exit_to_app" />
           </q-item-section>
+          <q-item-section>Logout</q-item-section>
         </q-item>
       </div>
     </q-drawer>
@@ -116,5 +119,8 @@ export default {
 .search-input .q-field__control {
   background-color: white;
   color: black;
+}
+.border-top-white {
+  border-top: 1px solid white;
 }
 </style>
