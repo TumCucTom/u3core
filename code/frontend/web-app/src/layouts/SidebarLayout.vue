@@ -17,7 +17,7 @@
 
         <!-- 搜索栏 -->
         <div class="q-pa-md">
-          <q-input v-model="searchQuery" placeholder="搜索..." outlined dense />
+          <q-input v-model="searchQuery" placeholder="搜索..." outlined dense class="search-input" />
         </div>
 
         <!-- sidebar -->
@@ -132,5 +132,9 @@ export default {
 }
 .text-grey {
   color: #a0a0b0;
+}
+.search-input .q-field__control {
+  background-color: white;
+  color: black;
 }
 </style>
