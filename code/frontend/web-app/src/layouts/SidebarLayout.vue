@@ -10,14 +10,18 @@
       <div class="col q-pt-md">
         <div class="q-pa-md q-mb-md" style="height: 60px; display: flex; align-items: center; gap: 17px;">
           <!-- Logo  -->
-          <q-img src="../assets/u3logo2.png" alt="Digital U3" style="width: 40px;" />
+          <q-img src="../assets/u3logo2.png" alt="U3 Core" style="width: 40px;" />
           <!-- title -->
-          <div class="text-caption text-white" style="font-size: 20px;">Digital U3</div>
+          <div class="text-caption text-white" style="font-size: 20px;">U3Core</div>
         </div>
 
-        <!-- 搜索栏 -->
+        <!-- Search bar -->
         <div class="q-pa-md">
-          <q-input v-model="searchQuery" placeholder="搜索..." outlined dense class="search-input" />
+          <q-input v-model="searchQuery" placeholder="Search..." outlined dense class="search-input">
+            <template v-slot:prepend>
+             <q-icon name="search"></q-icon>
+            </template>
+           </q-input>
         </div>
 
         <!-- sidebar -->
