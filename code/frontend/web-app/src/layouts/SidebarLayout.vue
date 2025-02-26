@@ -22,60 +22,19 @@
 
         <!-- sidebar -->
         <q-list dense>
-          <q-item clickable v-ripple tag="router-link" to="/app/dashboard" class="q-mb-sm">
+          <q-item
+            v-for="item in filteredItems"
+            :key="item.label"
+            clickable
+            v-ripple
+            tag="router-link"
+            :to="item.route"
+            class="q-mb-sm"
+          >
             <q-item-section avatar>
-              <q-icon name="dashboard" />
+              <q-icon :name="item.icon" />
             </q-item-section>
-            <q-item-section>Dashboard</q-item-section>
-          </q-item>
-
-          <q-item clickable v-ripple tag="router-link" to="/pages/ErrorNotFound.vue" class="q-mb-sm">
-            <q-item-section avatar>
-              <q-icon name="upload" />
-            </q-item-section>
-            <q-item-section>Upload Training Data</q-item-section>
-          </q-item>
-
-          <q-item clickable v-ripple tag="router-link" to="/pages/ErrorNotFound.vue" class="q-mb-sm">
-            <q-item-section avatar>
-              <q-icon name="menu_open" />
-            </q-item-section>
-            <q-item-section>Configuration</q-item-section>
-          </q-item>
-
-          <q-item clickable v-ripple tag="router-link" to="/pages/ErrorNotFound.vue" class="q-mb-sm">
-            <q-item-section avatar>
-              <q-icon name="filter_drama" />
-            </q-item-section>
-            <q-item-section>Cloud Settings</q-item-section>
-          </q-item>
-
-          <q-item clickable v-ripple tag="router-link" to="/app/manage-sites" class="q-mb-sm">
-            <q-item-section avatar>
-              <q-icon name="place" />
-            </q-item-section>
-            <q-item-section>Manage Sites</q-item-section>
-          </q-item>
-
-          <q-item clickable v-ripple tag="router-link" to="/app/alerts-console" class="q-mb-sm">
-            <q-item-section avatar>
-              <q-icon name="notifications" />
-            </q-item-section>
-            <q-item-section>Alerts Console</q-item-section>
-          </q-item>
-
-          <q-item clickable v-ripple tag="router-link" to="/app/action-settings" class="q-mb-sm">
-            <q-item-section avatar>
-              <q-icon name="layers" />
-            </q-item-section>
-            <q-item-section>Action Settings</q-item-section>
-          </q-item>
-
-          <q-item clickable v-ripple tag="router-link" to="/pages/ErrorNotFound.vue" class="q-mb-sm">
-            <q-item-section avatar>
-              <q-icon name="settings" />
-            </q-item-section>
-            <q-item-section>Settings</q-item-section>
+            <q-item-section>{{ item.label }}</q-item-section>
           </q-item>
         </q-list>
       </div>
@@ -113,7 +72,24 @@ export default {
     return {
       leftDrawerOpen: true, // drawer (sidebar) is open by default
       searchQuery: '',
+      menuItems: [
+        { label: 'Dashboard', icon: 'dashboard', route: '/app/dashboard' },
+        { label: 'Upload Training Data', icon: 'upload', route: '/pages/ErrorNotFound.vue' },
+        { label: 'Configuration', icon: 'menu_open', route: '/pages/ErrorNotFound.vue' },
+        { label: 'Cloud Settings', icon: 'filter_drama', route: '/pages/ErrorNotFound.vue' },
+        { label: 'Manage Sites', icon: 'place', route: '/app/manage-sites' },
+        { label: 'Alerts Console', icon: 'notifications', route: '/app/alerts-console' },
+        { label: 'Action Settings', icon: 'layers', route: '/app/action-settings' },
+        { label: 'Settings', icon: 'settings', route: '/pages/ErrorNotFound.vue' },
+      ],
     };
+  },
+  computed: {
+    filteredItems() {
+      return this.menuItems.filter((item) =>
+        item.label.toLowerCase().includes(this.searchQuery.toLowerCase())
+      );
+    },
   },
   methods: {
     handleLogout() {
