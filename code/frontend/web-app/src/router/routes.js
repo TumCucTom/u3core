@@ -26,9 +26,10 @@ const routes = [
         component: otp,
         meta: {title:"OTP Authentication"}
       },
-      // Action Settings page
-      {path: "otp", component: otp},
-      { path: "verified-email", component: Verified, meta: { title: 'U3 Core' }, }, // Action Settings page
+      { path: "verified-email", 
+        component: Verified, 
+        meta: {title: 'Email verification' }
+      }, // Action Settings page
     ],
   },
 
