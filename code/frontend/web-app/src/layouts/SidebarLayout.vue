@@ -16,7 +16,7 @@
         </div>
 
         <!-- Search bar -->
-        <div class="q-pa-md">
+        <div class="q-pa-md" style="max-width: 100%;">
           <q-input v-model="searchQuery" placeholder="Search..." outlined dense class="search-input">
             <template v-slot:prepend>
              <q-icon name="search"></q-icon>
@@ -43,9 +43,9 @@
         </q-list>
       </div>
 
-      <!-- footer -->
-      <div class="q-pa-md border-top-white">
-        <q-item clickable v-ripple class="q-pa-sm">
+    <!-- footer -->
+    <div class="q-pa-md border-top-white" style="display: flex; align-items: center;">
+        <q-item clickable v-ripple class="q-pa-sm" style="flex: 1;">
           <q-item-section avatar>
             <q-avatar color="primary" text-color="white">
               <q-icon name="person" />
@@ -58,12 +58,7 @@
           </q-item-section>
         </q-item>
 
-        <q-item clickable v-ripple @click="handleLogout" class="q-pa-sm">
-          <q-item-section side>
-            <q-icon name="exit_to_app" />
-          </q-item-section>
-          <q-item-section>Logout</q-item-section>
-        </q-item>
+        <q-btn flat dense icon="exit_to_app" @click="handleLogout" />
       </div>
     </q-drawer>
 
