@@ -204,9 +204,9 @@ export default {
   setup() {
     const email = ref('');
     const name = ref('User'); // Use a ref for the name variable
-    const siteCount = ref(0);
-    const cameraCount = ref(0);
-    const alertCount = ref(0);
+    const siteCount = ref(100);
+    const cameraCount = ref(100);
+    const alertCount = ref(100);
 
 
     const route = useRoute();
@@ -217,19 +217,16 @@ export default {
 
     const fetchCounts = async () => {
       try {
-        const [sitesResult, camerasResult, alertsResult] = await Promise.all([
-          axios.get("http://127.0.0.1:3002/api/get-site-count"),
+        const [camerasResult, alertsResult] = await Promise.all([
+          
           axios.get("http://127.0.0.1:3002/api/get-camera-count"),
           axios.get("http://127.0.0.1:3002/api/get-hazard-count")
         ]);
-
-        siteCount.value = sitesRes.data;
-        cameraCount.value = camerasRes.data;
-        alertCount.value = alertsRes.data;
-    }
-    catch (error) {
-        console.error("Error fetching dashboard counts:", error);
-      }
+      cameraCount.value = camerasResult.data || 0;
+      alertCount.value = alertsResult.data || 0;
+  } catch (error) {
+    console.error("Error fetching dashboard counts:", error.response?.data || error.message);
+  }
     };
     onMounted(() => {
       email.value = decodeURIComponent(route.query.email || '');
