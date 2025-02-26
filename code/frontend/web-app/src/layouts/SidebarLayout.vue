@@ -58,13 +58,31 @@
           </q-item-section>
         </q-item>
 
-        <q-btn flat dense icon="exit_to_app" @click="handleLogout" />
+        <q-btn flat dense icon="exit_to_app" @click="showLogoutDialog = true" />
       </div>
     </q-drawer>
 
     <q-page-container>
       <router-view />
     </q-page-container>
+
+    <!-- Logout Confirmation Dialog -->
+    <q-dialog v-model="showLogoutDialog">
+      <q-card>
+        <q-card-section>
+          <div class="text-h6">confirm Logout</div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          Are you sure you want logout？
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn flat label="cancel" color="primary" v-close-popup />
+          <q-btn flat label="confirm" color="negative" @click="confirmLogout" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-layout>
 </template>
 
@@ -74,6 +92,7 @@ export default {
     return {
       leftDrawerOpen: true, // drawer (sidebar) is open by default
       searchQuery: '',
+      showLogoutDialog: false, //make sure it wont appear at anytime
       menuItems: [
         { label: 'Dashboard', icon: 'dashboard', route: '/app/dashboard' },
         { label: 'Upload Training Data', icon: 'upload', route: '/pages/ErrorNotFound.vue' },
@@ -94,8 +113,9 @@ export default {
     },
   },
   methods: {
-    handleLogout() {
-      console.log('Logging out...');
+    confirmLogout() {
+      this.showLogoutDialog = false;
+      this.$router.push('/'); // skip to login page
     },
   },
 };
