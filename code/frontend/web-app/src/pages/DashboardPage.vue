@@ -217,11 +217,12 @@ export default {
 
     const fetchCounts = async () => {
       try {
-        const [camerasResult, alertsResult] = await Promise.all([
-          
+        const [sitesResult, camerasResult, alertsResult] = await Promise.all([
+          axios.get("http://127.0.0.1:3002/api/get-site-count"),
           axios.get("http://127.0.0.1:3002/api/get-camera-count"),
           axios.get("http://127.0.0.1:3002/api/get-hazard-count")
         ]);
+      siteCount.value = sitesResult.data || 0;
       cameraCount.value = camerasResult.data || 0;
       alertCount.value = alertsResult.data || 0;
   } catch (error) {
