@@ -48,6 +48,7 @@ services:
       - db_data:/var/lib/mysql
       - ./initdb:/docker-entrypoint-initdb.d
       - ./initdb:/initdb  # This mounts ./host-initdb on the host to /initdb in the container
+    entrypoint: ["/bin/sh", "-c", "mysql -u root -p$MYSQL_ROOT_PASSWORD MLAIDB < /docker-entrypoint-initdb.d/dump.sql && docker-entrypoint.sh mysqld"]
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 15s
