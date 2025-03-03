@@ -109,6 +109,10 @@
             <div style="height: 300px">
               <canvas ref="anomaliesChart"></canvas>
             </div>
+            <div v-if="isLoadingAnomaliesData" class="text-center q-mt-md">
+              <q-spinner color="primary" size="3em" />
+              <div class="q-mt-sm">Loading anomaly data...</div>
+            </div>
           </q-card>
 
           <!-- type of anomalies detected -->
@@ -133,6 +137,10 @@
             <!-- Chart.js canvas for Type of Anomalies -->
             <div style="height: 300px">
               <canvas ref="typesChart"></canvas>
+            </div>
+            <div v-if="isLoadingTypesData" class="text-center q-mt-md">
+              <q-spinner color="primary" size="3em" />
+              <div class="q-mt-sm">Loading anomaly types data...</div>
             </div>
           </q-card>
         </div>
@@ -199,9 +207,13 @@ export default {
   setup () {
     const email = ref('')
     const name = ref('User')
-    const siteCount = ref(100)
-    const cameraCount = ref(100)
-    const alertCount = ref(100)
+    const siteCount = ref(0)
+    const cameraCount = ref(0)
+    const alertCount = ref(0)
+    
+    // Loading states
+    const isLoadingAnomaliesData = ref(true)
+    const isLoadingTypesData = ref(true)
     
     // Chart references
     const anomaliesChart = ref(null)
@@ -211,6 +223,11 @@ export default {
     let anomaliesChartInstance = null
     let typesChartInstance = null
 
+    // Data for charts
+    const monthlyAnomaliesData = ref([])
+    const anomalyTypes = ref([])
+    const anomalyCounts = ref([])
+
     const route = useRoute()
     
     const handleSettingsClick = () => {
@@ -218,12 +235,15 @@ export default {
       // add logic here for the button
     }
 
+    // API base URL
+    const apiBaseUrl = 'http://127.0.0.1:3002'
+
     const fetchCounts = async () => {
       try {
         const [sitesResult, camerasResult, alertsResult] = await Promise.all([
-          axios.get('http://127.0.0.1:3002/api/get-site-count'),
-          axios.get('http://127.0.0.1:3002/api/get-camera-count'),
-          axios.get('http://127.0.0.1:3002/api/get-hazard-count')
+          axios.get(`${apiBaseUrl}/api/get-site-count`),
+          axios.get(`${apiBaseUrl}/api/get-camera-count`),
+          axios.get(`${apiBaseUrl}/api/get-hazard-count`)
         ])
         siteCount.value = sitesResult.data || 0
         cameraCount.value = camerasResult.data || 0
@@ -231,17 +251,45 @@ export default {
       } catch (error) {
         console.error('Error fetching dashboard counts:', error.response?.data || error.message)
         // Set default values in case of error
-        siteCount.value = 100
-        cameraCount.value = 100
-        alertCount.value = 100
+        siteCount.value = 0
+        cameraCount.value = 0
+        alertCount.value = 0
       }
     }
 
-    const initCharts = () => {
-      // Initialize Anomalies Per Month Chart
+    const fetchAnomalyData = async () => {
+      isLoadingAnomaliesData.value = true
+      try {
+        const response = await axios.get(`${apiBaseUrl}/api/anomalies-by-month`)
+        monthlyAnomaliesData.value = response.data
+        updateAnomaliesChart()
+      } catch (error) {
+        console.error('Error fetching anomalies by month:', error.response?.data || error.message)
+      } finally {
+        isLoadingAnomaliesData.value = false
+      }
+    }
+
+    const fetchAnomalyTypes = async () => {
+      isLoadingTypesData.value = true
+      try {
+        const response = await axios.get(`${apiBaseUrl}/api/anomalies-by-type`)
+        anomalyTypes.value = response.data.types
+        anomalyCounts.value = response.data.counts
+        updateTypesChart()
+      } catch (error) {
+        console.error('Error fetching anomaly types:', error.response?.data || error.message)
+      } finally {
+        isLoadingTypesData.value = false
+      }
+    }
+
+    const updateAnomaliesChart = () => {
+      if (anomaliesChartInstance) {
+        anomaliesChartInstance.destroy()
+      }
+
       if (anomaliesChart.value) {
-        const monthlyData = [700, 950, 480, 780, 480, 880, 720, 780, 720, 830, 950, 650];
-        
         anomaliesChartInstance = new Chart(anomaliesChart.value, {
           type: 'bar',
           data: {
@@ -249,7 +297,7 @@ export default {
             datasets: [{
               label: 'Count of anomalies',
               backgroundColor: '#f4a261',
-              data: monthlyData
+              data: monthlyAnomaliesData.value
             }]
           },
           options: {
@@ -257,7 +305,7 @@ export default {
             maintainAspectRatio: false,
             plugins: {
               legend: {
-                display: false // Hide legend since it's obvious what the data represents
+                display: false
               }
             },
             scales: {
@@ -266,8 +314,7 @@ export default {
                 title: {
                   display: true,
                   text: 'Count of anomalies'
-                },
-                max: 1000
+                }
               },
               x: {
                 title: {
@@ -279,19 +326,22 @@ export default {
           }
         })
       }
+    }
 
-      // Initialize Anomaly Types Chart
+    const updateTypesChart = () => {
+      if (typesChartInstance) {
+        typesChartInstance.destroy()
+      }
+
       if (typesChart.value) {
-        const typesData = [750, 950, 800, 520, 750, 800];
-        
         typesChartInstance = new Chart(typesChart.value, {
           type: 'bar',
           data: {
-            labels: ['Fire', 'Smoke', 'Unauthorized Access', 'Equipment Failure', 'Overheating', 'Gas Leaks'],
+            labels: anomalyTypes.value,
             datasets: [{
               label: 'Number of occurrences',
               backgroundColor: '#2a9d8f',
-              data: typesData
+              data: anomalyCounts.value
             }]
           },
           options: {
@@ -299,7 +349,7 @@ export default {
             maintainAspectRatio: false,
             plugins: {
               legend: {
-                display: false // Hide legend since it's obvious what the data represents
+                display: false
               }
             },
             scales: {
@@ -308,8 +358,7 @@ export default {
                 title: {
                   display: true,
                   text: 'Number of occurrences'
-                },
-                max: 1000
+                }
               },
               x: {
                 title: {
@@ -323,29 +372,28 @@ export default {
       }
     }
 
-    onMounted(() => {
-      email.value = decodeURIComponent(route.query.email || '')
+    const fetchUserName = async () => {
       if (email.value) {
-        axios
-          .get(`http://16.171.224.57:3002/api/getName`, {
-            params: { email: email.value } // Pass the email as a query parameter
+        try {
+          const response = await axios.get(`${apiBaseUrl}/api/getName`, {
+            params: { email: email.value }
           })
-          .then(response => {
-            name.value = String(response.data) // Update the name with the backend response
-          })
-          .catch(error => {
-            console.error('Error fetching name:', error)
-          })
+          name.value = String(response.data)
+        } catch (error) {
+          console.error('Error fetching name:', error)
+        }
       } else {
         console.error('No email found in the URL')
       }
+    }
 
-      fetchCounts()
+    onMounted(() => {
+      email.value = decodeURIComponent(route.query.email || '')
       
-      // Initialize charts after the DOM has rendered
-      setTimeout(() => {
-        initCharts()
-      }, 100)
+      fetchUserName()
+      fetchCounts()
+      fetchAnomalyData()
+      fetchAnomalyTypes()
     })
 
     return {
@@ -356,7 +404,9 @@ export default {
       cameraCount,
       alertCount,
       anomaliesChart,
-      typesChart
+      typesChart,
+      isLoadingAnomaliesData,
+      isLoadingTypesData
     }
   }
 }
