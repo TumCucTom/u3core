@@ -365,7 +365,7 @@ def get_count_from_table(table_name, condition=None, condition_values=None):
                 WHERE table_schema = DATABASE() 
                 AND table_name = %s;
             """, (table_name,))
-            table_exists = cursor.fetchone()['COUNT(*)'] > 0
+            table_exists = cursor.fetchone()[0] > 0
 
             if not table_exists:
                 print(f"Table '{table_name}' does not exist. Returning 0.")
@@ -377,7 +377,7 @@ def get_count_from_table(table_name, condition=None, condition_values=None):
                 query += f" WHERE {condition}"
 
             cursor.execute(query, condition_values or ())
-            row_count = cursor.fetchone()['count']
+            row_count = cursor.fetchone()[0]
         
         conn.commit()
         return jsonify(row_count), 200
