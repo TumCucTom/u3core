@@ -88,7 +88,7 @@ def start_fire_detection_for_all_cameras():
     """
     Fetch all cameras from the database and start fire detection concurrently.
     Ensures each RTSP stream is monitored independently.
-    """ 
+    """
     try:
         with connection.cursor() as cursor:
             cursor.execute("SELECT rtsp_url FROM Cameras")
@@ -117,7 +117,7 @@ def add_camera():
 
     if not all([name, rtsp_url]):
         return jsonify({"error": "Name and RTSP URL are required"}), 400
-   
+
     # Convert tcp:// to rtsp://
     if rtsp_url.startswith("tcp://"):
         rtsp_url = "rtsp://" + rtsp_url[6:]
@@ -134,7 +134,7 @@ def add_camera():
             );
             """
             cursor.execute(create_table_query)
-            
+
             # Update any existing entries that start with tcp://
             update_query = """
             UPDATE Cameras
@@ -142,7 +142,7 @@ def add_camera():
             WHERE rtsp_url LIKE 'tcp://%';
             """
             cursor.execute(update_query)
-    
+
             # Insert the new camera data
             cursor.execute(
                 "INSERT INTO Cameras (name, rtsp_url) VALUES (%s, %s)",
@@ -259,7 +259,7 @@ def add_hazard():
             camera_name = camera_result[0]
 
             # Extract date and hour from timestamp
-            timestamp_obj = datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S") 
+            timestamp_obj = datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
             hour_time = timestamp_obj.strftime("%Y-%m-%d %H")  # Date and hour only
 
             # Create the Logs table if it doesn't exist
@@ -361,8 +361,8 @@ def get_count_from_table(table_name, condition=None, condition_values=None):
             # Check if table exists
             cursor.execute("""
                 SELECT COUNT(*)
-                FROM information_schema.tables 
-                WHERE table_schema = DATABASE() 
+                FROM information_schema.tables
+                WHERE table_schema = DATABASE()
                 AND table_name = %s;
             """, (table_name,))
             table_exists = cursor.fetchone()[0] > 0
@@ -378,7 +378,7 @@ def get_count_from_table(table_name, condition=None, condition_values=None):
 
             cursor.execute(query, condition_values or ())
             row_count = cursor.fetchone()[0]
-        
+
         conn.commit()
         return jsonify(row_count), 200
 
@@ -393,17 +393,26 @@ def get_count_from_table(table_name, condition=None, condition_values=None):
 # Endpoint for site count (No extra condition)
 @app.route('/api/get-site-count', methods=['GET'])
 def get_site_count():
+    """
+    Get the count of sites from the Sites table.
+    """
     return get_count_from_table('Sites')
 
 #Endpoint for camera count (No extra condition)
 @app.route('/api/get-camera-count', methods=['GET'])
 def get_camera_count():
+    """
+    Get the count of cameras from the Cameras table.
+    """
     return get_count_from_table('Cameras')
 
 #Endpoint for hazard count (Condition: `falsePositive = 0`)
 @app.route('/api/get-hazard-count', methods=['GET'])
 def get_hazard_count():
-    return get_count_from_table('Logs', "falsePositive = %s", (0,))  
+    """
+    Get the count of hazards from the Logs table where falsePositive = 0.
+    """
+    return get_count_from_table('Logs', "falsePositive = %s", (0,))
 
 
 @app.route('/api/anomalies-by-month', methods=['GET'])
@@ -418,8 +427,8 @@ def get_anomalies_by_month():
             # Extract year and month from hourTime and count anomalies
             #  hourTime format is "YYYY-MM-DD HH"
             cursor.execute("""
-                SELECT 
-                    SUBSTRING(hourTime, 6, 2) AS month, 
+                SELECT
+                    SUBSTRING(hourTime, 6, 2) AS month,
                     SUM(number) AS anomaly_count
                 FROM Logs
                 WHERE SUBSTRING(hourTime, 1, 4) = YEAR(CURDATE())
@@ -427,19 +436,19 @@ def get_anomalies_by_month():
                 ORDER BY month;
             """)
             results = cursor.fetchall()
-            
+
             # Create a dictionary with all months initialized to 0
             months = {f"{i:02d}": 0 for i in range(1, 13)}
-            
+
             # Update with actual data
             for month, count in results:
                 months[month] = count
-                
+
             # Convert to list maintaining month order
             monthly_data = [months[f"{i:02d}"] for i in range(1, 13)]
-            
+
         return jsonify(monthly_data), 200
-    
+
     except Exception as e:
         print(f"Error fetching anomalies by month: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
@@ -455,25 +464,25 @@ def get_anomalies_by_type():
         conn = get_db_connection()
         with conn.cursor() as cursor:
             cursor.execute("""
-                SELECT 
-                    hazardType, 
+                SELECT
+                    hazardType,
                     SUM(number) AS anomaly_count
                 FROM Logs
                 GROUP BY hazardType
                 ORDER BY hazardType;
             """)
             results = cursor.fetchall()
-            
+
             # Transform results into two lists: types and counts
             types = []
             counts = []
-            
+
             for hazard_type, count in results:
                 types.append(hazard_type)
                 counts.append(count)
-            
+
         return jsonify({"types": types, "counts": counts}), 200
-    
+
     except Exception as e:
         print(f"Error fetching anomalies by type: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
@@ -499,6 +508,9 @@ def get_emails():
 
 @app.route('/api/getName', methods=['GET'])
 def get_name():
+    """
+    Authenticates a user by their email and password.
+    """
     email = request.args.get('email')  # Fetch query parameter
 
     if not email:
@@ -528,6 +540,9 @@ def get_name():
 
 @app.route('/api/login', methods=['GET'])
 def login():
+    """
+    Authenticates a user by their email and password.
+    """
     email = request.args.get('emailVar') # Fetch query parameter
 
     if not email:
@@ -551,6 +566,7 @@ def login():
 
 @app.route('/api/addToCustomer', methods=['POST'])
 def add_to_customer():
+    """Add a customer to DB"""
     data = request.json.get('items', [])
     if len(data) < 4:
         return jsonify({"error": "Invalid input"}), 400
