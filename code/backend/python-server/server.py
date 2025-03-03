@@ -72,6 +72,7 @@ else:
     logging.critical("Max retries exceeded. Could not connect to the database.")
 
 def get_db_connection():
+    """Return a fresh connection to the database."""
     return pymysql.connect(**db_config)
 
 # Auto fire detection startup
