@@ -446,6 +446,39 @@ def get_anomalies_by_month():
     finally:
         conn.close()
 
+@app.route('/api/anomalies-by-type', methods=['GET'])
+def get_anomalies_by_type():
+    """
+    Fetches the count of anomalies grouped by type from the Logs table.
+    """
+    try:
+        conn = get_db_connection()
+        with conn.cursor() as cursor:
+            cursor.execute("""
+                SELECT 
+                    hazardType, 
+                    SUM(number) AS anomaly_count
+                FROM Logs
+                GROUP BY hazardType
+                ORDER BY hazardType;
+            """)
+            results = cursor.fetchall()
+            
+            # Transform results into two lists: types and counts
+            types = []
+            counts = []
+            
+            for hazard_type, count in results:
+                types.append(hazard_type)
+                counts.append(count)
+            
+        return jsonify({"types": types, "counts": counts}), 200
+    
+    except Exception as e:
+        print(f"Error fetching anomalies by type: {e}")
+        return jsonify({"error": "Internal Server Error"}), 500
+    finally:
+        conn.close()
 
 @app.route('/api/emails', methods=['GET'])
 def get_emails():
