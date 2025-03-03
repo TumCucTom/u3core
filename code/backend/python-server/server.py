@@ -405,6 +405,48 @@ def get_camera_count():
 def get_hazard_count():
     return get_count_from_table('Logs', "falsePositive = %s", (0,))  
 
+
+@app.route('/api/anomalies-by-month', methods=['GET'])
+def get_anomalies_by_month():
+    """
+    Fetches the count of anomalies by month from the Logs table.
+    Returns data for the current year's monthly anomaly counts.
+    """
+    try:
+        conn = get_db_connection()
+        with conn.cursor() as cursor:
+            # Extract year and month from hourTime and count anomalies
+            #  hourTime format is "YYYY-MM-DD HH"
+            cursor.execute("""
+                SELECT 
+                    SUBSTRING(hourTime, 6, 2) AS month, 
+                    SUM(number) AS anomaly_count
+                FROM Logs
+                WHERE SUBSTRING(hourTime, 1, 4) = YEAR(CURDATE())
+                GROUP BY SUBSTRING(hourTime, 6, 2)
+                ORDER BY month;
+            """)
+            results = cursor.fetchall()
+            
+            # Create a dictionary with all months initialized to 0
+            months = {f"{i:02d}": 0 for i in range(1, 13)}
+            
+            # Update with actual data
+            for month, count in results:
+                months[month] = count
+                
+            # Convert to list maintaining month order
+            monthly_data = [months[f"{i:02d}"] for i in range(1, 13)]
+            
+        return jsonify(monthly_data), 200
+    
+    except Exception as e:
+        print(f"Error fetching anomalies by month: {e}")
+        return jsonify({"error": "Internal Server Error"}), 500
+    finally:
+        conn.close()
+
+
 @app.route('/api/emails', methods=['GET'])
 def get_emails():
     """
