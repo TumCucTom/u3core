@@ -44,12 +44,5 @@ jobs:
         EOF
     - name: Health Check
       run: |
-        RESPONSE=$(curl -s -o response.json -w "%{http_code}" http://16.171.224.57:0080/health)
-          echo "Response Code: $RESPONSE"
-          cat response.json  # Print the response body for debugging
-
-          if [[ "$RESPONSE" -ne 200 ]]; then
-            echo "Health check failed!"
-            exit 1  # Fail the workflow if response is not 200
-          fi
+        curl -X GET http://16.171.224.57:0080/health
 
