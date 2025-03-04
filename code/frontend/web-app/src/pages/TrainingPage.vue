@@ -27,7 +27,7 @@
   
       <!-- Upload -->
       <div v-if="activeTab === 'uploadData'">
-        <!-- Drop area -->
+        <!-- Drop area -->        
         <div
           class="q-mt-lg flex flex-center q-pa-md"
           style="
@@ -50,7 +50,8 @@
           </div>
         </div>
   
-
+        <!--File input (hidden)-->
+        <input type="file" ref="fileInput" accept=".svg,.jpg,.jpeg,.png,.gif" @change="handleFileChange" style="display: none" />
   
         <!-- Start model training -->
         <div class="q-mt-lg row justify-end">
@@ -145,10 +146,11 @@
   // Popup form fields
   const modelVersion = ref('')
   const siteId = ref('')
-  
+  const fileInfo = ref('')
+
   // Demo logic
   function handleStartTraining() {
-
+    // Add your logic here for training
   }
   
   function submitModelTraining() {
@@ -156,6 +158,23 @@
     console.log('For site:', siteId.value)
     // api call here ?
     showModelDialog.value = false
+  }
+
+  function handleFileChange(event) {
+    const file = event.target.files[0]
+    if (file) {
+      const validTypes = ['image/svg+xml', 'image/jpeg', 'image/png', 'image/gif']
+      const fileType = file.type
+
+      if (validTypes.includes(fileType)) {
+        fileInfo.value = `File selected: ${file.name}`
+      } 
+      else {
+        fileInfo.value = 'Invalid file type. Please upload SVG, JPG, PNG, or GIF files.'
+        // Clear the file input
+        event.target.value = ''
+      }
+    }
   }
   </script>
   
