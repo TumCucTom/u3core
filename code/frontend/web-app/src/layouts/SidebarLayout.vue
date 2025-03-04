@@ -99,7 +99,7 @@ export default {
         { label: 'Configuration', icon: 'menu_open', route: '/pages/ErrorNotFound.vue' },
         { label: 'Cloud Settings', icon: 'filter_drama', route: '/app/cloud-settings' },
         { label: 'Manage Sites', icon: 'place', route: '/app/manage-sites' },
-        { label: 'Alerts Console', icon: 'notifications', route: '/app/alerts-console' },
+        { label: 'Alerts Console', icon: 'notifications', route: '/app/alerts-page' },
         { label: 'Action Settings', icon: 'layers', route: '/app/action-settings' },
         { label: 'Settings', icon: 'settings', route: '/app/settings' },
       ],
