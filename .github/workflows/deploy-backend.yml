@@ -42,3 +42,7 @@ jobs:
           docker compose pull
           docker compose --env-file ../../../.env up -d --build
         EOF
+    - name: Health Check
+      run: |
+        curl -X GET http://16.171.224.57:3000/health
+
