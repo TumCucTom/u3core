@@ -9,6 +9,7 @@ and Roboflow credentials, as well as recipient contact details.
 """
 import os
 import time
+import datetime
 import cv2
 import boto3
 from twilio.rest import Client
@@ -34,9 +35,9 @@ REC_NUMBER = os.getenv("RECIPIENT_PHONE_NUMBER")
 REC_WHATSAPP_NUMBER = os.getenv("RECIPIENT_WHATSAPP_NUMBER")
 
 # Roboflow setup
-R_API_KEY = os.getenv("ROBOFLOW_API_KEY")
-R_MODEL_URL = os.getenv("ROBOFLOW_MODEL_URL")
-R_CONFIDENCE = float(os.getenv("ROBOFLOW_CONFIDENCE"))
+R_API_KEY = os.getenv("R_API_KEY")
+R_MODEL_URL = os.getenv("R_MODEL_URL")
+R_CONFIDENCE = float(os.getenv("R_CONFIDENCE"))
 
 R_PARAMS = {
     "api_key": R_API_KEY,
@@ -44,7 +45,45 @@ R_PARAMS = {
 }
 
 # Alert message
-ALERT_MESSAGE = "Fire detected! Immediate action required."
+ALERT_MESSAGE = "Abnormal detected"
+
+def send_hazard_log(rtsp_url, hazard):
+    """
+    Sends a POST request to the /api/add-hazard endpoint
+    """
+    url = "http://127.0.0.1:3000/api/add-hazard"
+
+    # Generate current timestamp in "YYYY-MM-DD HH:MM:SS" format
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    # Prepare the request payload
+    payload = {
+        "timestamp": timestamp,
+        "type": hazard,
+        "cameraAddress": rtsp_url
+    }
+
+    try:
+        response = requests.post(url, json=payload, timeout="15")
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        print(f"Error sending request: {e}")
+        return {"error": "Failed to send request"}
+
+# Send SMS via AWS SNS
+def send_sms_via_sns(phone_number, message):
+    """send message via SMS"""
+    sns_client = boto3.client(
+        "sns",
+        region_name=AWS_REGION,
+        aws_access_key_id=AWS_ACCESS_KEY,
+        aws_secret_access_key=AWS_SECRET_KEY
+    )
+    response = sns_client.publish(
+        PhoneNumber=phone_number,
+        Message=message
+    )
+    print(f"SMS sent! Message ID: {response['MessageId']}")
 
 # Send WhatsApp message via Twilio
 def send_whatsapp_via_twilio(to_number, message):
@@ -72,8 +111,8 @@ def detect_fire_with_roboflow(frame):
 
     for prediction in predictions:
         if prediction["class"] == "fire" and prediction["confidence"] >= R_PARAMS["confidence"]:
-            return True
-    return False
+            return True , "fire"
+    return False, "none"
 
 # Process RTSP stream
 def process_rtsp_stream_with_url(rtsp_url):
@@ -92,7 +131,7 @@ def process_rtsp_stream_with_url(rtsp_url):
             print("Error: Unable to read frame from webcam.")
             break
 
-        fire_detected = detect_fire_with_roboflow(frame)
+        fire_detected, alert_type = detect_fire_with_roboflow(frame)
 
         if fire_detected:
             current_time = time.time()
@@ -100,6 +139,9 @@ def process_rtsp_stream_with_url(rtsp_url):
                 print("Fire detected! Sending alerts...")
                 send_sms_via_sns(REC_NUMBER, ALERT_MESSAGE)
                 send_whatsapp_via_twilio(REC_WHATSAPP_NUMBER, ALERT_MESSAGE)
+
+                send_hazard_log(rtsp_url,alert_type)
+
                 last_alert_time = current_time
 
         cv2.imshow("Webcam Stream", frame)
@@ -108,19 +150,3 @@ def process_rtsp_stream_with_url(rtsp_url):
 
     cap.release()
     cv2.destroyAllWindows()
-
-
-# Send SMS via AWS SNS
-def send_sms_via_sns(phone_number, message):
-    """Send SMS via AWS SNS."""
-    sns_client = boto3.client(
-        "sns",
-        region_name=AWS_REGION,
-        aws_access_key_id=AWS_ACCESS_KEY,
-        aws_secret_access_key=AWS_SECRET_KEY
-    )
-    response = sns_client.publish(
-        PhoneNumber=phone_number,
-        Message=message
-    )
-    print(f"SMS sent! Message ID: {response['MessageId']}")

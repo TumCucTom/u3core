@@ -3,6 +3,8 @@
 # pylint: disable=broad-except
 # pylint: disable=logging-fstring-interpolation
 # pylint: disable=c-extension-no-member
+# pylint: disable=too-many-locals
+
 import os
 import random
 import string
@@ -13,14 +15,26 @@ import json
 import time
 import logging
 import sys
-import bcrypt
+import datetime
 import pymysql
 import pycurl
 import requests
 from fire_detection_script import process_rtsp_stream_with_url
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+import bcrypt
 from dotenv import load_dotenv
+
+
+load_dotenv()
+POSTMARK_API = os.getenv("POSTMARK_API")
+
+# Load configuration from JSON
+with open("config.json", "r", encoding="utf-8") as config_file:
+    config = json.load(config_file)
+
+# Alert message
+ALERT_MESSAGE = "Abnormal detected"
 
 # Load environment variables from ../../../.env
 dotenv_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../.env"))
@@ -77,14 +91,12 @@ def start_fire_detection_for_all_cameras():
         with connection.cursor() as cursor:
             cursor.execute("SELECT rtsp_url FROM Cameras")
             cameras = cursor.fetchall()
-
         for (rtsp_url,) in cameras:
             if rtsp_url not in fire_detection_processes:  # Avoid duplicate processes
                 process = multiprocessing.Process(target=run_fire_detection, args=(rtsp_url,))
                 process.start()
                 fire_detection_processes[rtsp_url] = process
                 logging.info(f"Started fire detection for: {rtsp_url}")
-
         logging.info("Started fire detection for all cameras")
     except Exception as e:
         print(f"Error starting fire detection processes: {e}")
@@ -213,6 +225,122 @@ def fetch_sites():
         return jsonify({"error": "Internal Server Error"}), 500
 
 
+@app.route('/api/add-hazard', methods=['POST'])
+def add_hazard():
+    """
+    Adds a new hazard log, ensuring proper tracking based on time, camera, and hazard type.
+    """
+    data = request.json
+    timestamp = data.get('timestamp')
+    hazard_type = data.get('type')
+    rtsp_url = data.get('cameraAddress')  # Assuming cameraAddress holds rtsp_url
+
+    if not all([rtsp_url, timestamp, hazard_type]):
+        return jsonify({"error": "Camera address, time, and hazard type are required"}), 400
+
+    try:
+        with connection.cursor() as cursor:
+            # Fetch camera name from the Cameras table
+            cursor.execute("SELECT name FROM Cameras WHERE rtsp_url = %s", (rtsp_url,))
+            camera_result = cursor.fetchone()
+
+            if not camera_result:
+                return jsonify({"error": "Camera not found"}), 404
+
+            camera_name = camera_result[0]
+
+            # Extract date and hour from timestamp
+            timestamp_obj = datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
+            hour_time = timestamp_obj.strftime("%Y-%m-%d %H")  # Date and hour only
+
+            # Create the Logs table if it doesn't exist
+            create_table_query = """
+            CREATE TABLE IF NOT EXISTS Logs (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                cameraIP VARCHAR(255),
+                cameraName VARCHAR(255),
+                hourTime VARCHAR(50),
+                hazardType VARCHAR(50),
+                number INT DEFAULT 1,
+                falsePositive BOOLEAN DEFAULT FALSE
+            );
+            """
+            cursor.execute(create_table_query)
+
+            # Check if an entry exists for the same cameraIP, hazardType, and hourTime
+            cursor.execute("""
+                SELECT id, number FROM Logs
+                WHERE cameraIP = %s AND hazardType = %s AND hourTime = %s
+            """, (rtsp_url, hazard_type, hour_time))
+
+            existing_entry = cursor.fetchone()
+
+            if existing_entry:
+                log_id, current_number = existing_entry
+                new_number = current_number + 1
+                false_positive = 1 <= new_number <= 9
+
+                # Update the existing entry
+                cursor.execute("""
+                    UPDATE Logs
+                    SET number = %s, falsePositive = %s
+                    WHERE id = %s
+                """, (new_number, false_positive, log_id))
+
+            else:
+                # Insert a new log entry
+                cursor.execute("""
+                    INSERT INTO Logs (cameraIP, cameraName, hourTime, hazardType, number, falsePositive)
+                    VALUES (%s, %s, %s, %s, %s, %s)
+                """, (rtsp_url, camera_name, hour_time, hazard_type, 1, True))
+
+        connection.commit()
+        return jsonify({"message": "Log added successfully!"}), 201
+
+    except Exception as e:
+        print(f"Error adding log: {e}")
+        return jsonify({"error": "Internal Server Error"}), 500
+
+@app.route('/api/get-logs', methods=['GET'])
+def get_logs():
+    """
+    Fetch all hazard log entries from the logs table and return them in a format
+    compatible with the front end
+    """
+    try:
+        with connection.cursor() as cursor:
+            # Retrieve all log entries sorted by most recent first
+            cursor.execute("""
+                SELECT id, cameraIP, cameraName, hourTime, hazardType, number, falsePositive
+                FROM Logs
+                ORDER BY id DESC
+            """)
+            rows = cursor.fetchall()
+
+            # Transform rows into a list of dictionaries
+            data = []
+            for row in rows:
+                log_id, camera_ip, camera_name, hour_time, hazard_type, number, false_positive = row
+
+                data.append({
+                    "id": log_id,                          
+                    "cameraName": camera_name,
+                    "cameraAddress": camera_ip,
+                    "timestamp": hour_time,                
+                    "faultType": hazard_type,
+                    "numberOfHazards": number,
+                    "falsePositives": "Yes" if false_positive else "No"
+                })
+
+        return jsonify(data), 200
+
+    except Exception as e:
+        print("Error retrieving logs:", e)
+        return jsonify({"error": "Internal Server Error"}), 500
+
+
+
+
 @app.route('/api/emails', methods=['GET'])
 def get_emails():
     """
@@ -335,7 +463,6 @@ def add_to_customer():
         return jsonify({"error": "Internal Server Error"}), 500
 
 
-
 @app.route('/api/sendResetEmail', methods=['POST'])
 def send_reset_email():
     """Send a reset password email"""
@@ -349,8 +476,6 @@ def send_reset_email():
             if not cursor.fetchone():
                 return jsonify({"message": "Email not found"}), 404
 
-        # token = secrets.token_hex(20)
-        # verification_link = f"http://localhost:9000/#/ResetPassword?token={token}&email={email}"
         return jsonify({"message": "Email sent successfully"})
     except Exception as e:
         print(f"Error sending reset email: {e}")
@@ -373,7 +498,6 @@ def send_verify_email():
         token = secrets.token_hex(20)
         verification_link = f"http://localhost:9000/#/verified-email?token={token}&email={email}"
         otp_code = ''.join(random.choices(string.digits, k=6))
-        #return jsonify({"error": send_email(email, "Password Reset Request", verification_link)}), 500 # pylint: disable=<C0301>
         send_email(email, "Email Verification", verification_link, otp_code)
         return jsonify({"message": "Verification email sent successfully"})
     except Exception as e:
@@ -382,9 +506,9 @@ def send_verify_email():
 
 
 def send_email(to_email, subject, link, code=None):
-    """Sends an email"""
-    postmark_token = "d4763cf8-6f26-46e0-8442-9c3274e51a5b"
-    sender_email = "info@shopveloworks.com"
+    """Send an email using the Postmark API"""
+    postmark_token = POSTMARK_API  # Client's Postmark server API token
+    sender_email = "info@digitalU3.com"  # Client's Sender email
 
     html_content = f"""
     <div>
@@ -394,7 +518,6 @@ def send_email(to_email, subject, link, code=None):
         html_content += f"<p>Your OTP is: <strong>{code}</strong></p>"
     html_content += "</div>"
 
-    # Prepare the payload for the Postmark API
     payload = {
         "From": sender_email,
         "To": to_email,
@@ -403,7 +526,6 @@ def send_email(to_email, subject, link, code=None):
         "MessageStream": "verify"
     }
 
-    # Send the email using the Postmark API
     try:
         url = "https://api.postmarkapp.com/email"
         headers = [
@@ -411,31 +533,18 @@ def send_email(to_email, subject, link, code=None):
             "Content-Type: application/json",
             f"X-Postmark-Server-Token: {postmark_token}"
         ]
-
-        # Prepare the data
         data = json.dumps(payload)
-
-        # Use BytesIO to capture the response body
         response_buffer = BytesIO()
-
-        # Set up the pycurl request
         c = pycurl.Curl()
         c.setopt(c.URL, url)
         c.setopt(c.POST, 1)
         c.setopt(c.POSTFIELDS, data)
         c.setopt(c.HTTPHEADER, headers)
         c.setopt(c.WRITEDATA, response_buffer)
-        c.setopt(c.TIMEOUT, 30)  # 30 seconds timeout
-
-        # Execute the request
+        c.setopt(c.TIMEOUT, 30)
         c.perform()
-
-        # Get the response data
         response_body = response_buffer.getvalue().decode('utf-8')
-
-        # Close the connection
         c.close()
-
         print(f"Email sent successfully to {to_email}. With {response_body}")
     except requests.exceptions.RequestException as e:
         print(f"Error sending email: {e}")
