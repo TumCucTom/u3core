@@ -1,7 +1,5 @@
 <template>
     <q-page padding class="upload-page">
-  
-      
       <div class="text-h4">Upload Training Data</div>
       <div class="text-subtitle1 text-grey-7 q-mt-xs">
         Upload model data.
@@ -36,7 +34,7 @@
             height: 200px;
             cursor: pointer;
           "
-          @click="showModelDialog = true"
+          @click="handleUploadClick"
         >
           <div class="column items-center text-center">
             <q-icon name="cloud_upload" size="36px" color="primary" />
@@ -47,11 +45,20 @@
               or drag and drop<br />
               SVG, PNG, JPG or GIF (max. 800×400px)
             </div>
+            <div v-if="fileInfo" class ="text-caption text-green q-mt-sm">
+              {{ fileInfo }}
+            </div>
           </div>
         </div>
   
         <!--File input (hidden)-->
-        <input type="file" ref="fileInput" accept=".svg,.jpg,.jpeg,.png,.gif" @change="handleFileChange" style="display: none" />
+        <input 
+          type="file" 
+          ref="fileInput" 
+          accept=".svg,.jpg,.jpeg,.png,.gif"
+           @change="handleFileChange" 
+           style="display: none" 
+        />
   
         <!-- Start model training -->
         <div class="q-mt-lg row justify-end">
@@ -67,8 +74,6 @@
       <!-- Upload logs content when tabbed, -->
       <div v-else>
         <div class="q-mt-md">
-  
-  
           <!-- Empty table (no data) -->
           <q-table
             title="All Uploads"
@@ -78,7 +83,6 @@
             dense
             flat
           >
-
           </q-table>
         </div>
       </div>
@@ -117,19 +121,25 @@
           </q-card-actions>
         </q-card>
       </q-dialog>
-  
     </q-page>
   </template>
   
   <script setup>
-  import { ref } from 'vue'
+  import { ref } from 'vue'  
   
+  // Popup form fields
+  const modelVersion = ref('')
+  const siteId = ref('')
+  const fileInfo = ref('')
+  
+  // fileinput
+  const fileInput = ref(null)
+
   // Tabs
   const activeTab = ref('uploadData') // or 'uploadLogs'
   
   // Dialog control
   const showModelDialog = ref(false)
-  
   
   // Table columns (empty data)
   const columns = [
@@ -140,34 +150,32 @@
     { name: 'trainingStatus', label: 'Training Status', field: 'trainingStatus' },
     { name: 'action', label: '', field: 'action' }
   ]
-  
 
-  
-  // Popup form fields
-  const modelVersion = ref('')
-  const siteId = ref('')
-  const fileInfo = ref('')
-
-  // Demo logic
-  function handleStartTraining() {
-    // Add your logic here for training
+  const submitModelTraining = () => {
+  if (!modelVersion.value || !siteId.value) {
+    alert('please provide all information')
+    return
   }
-  
-  function submitModelTraining() {
-    console.log('Submitting model version:', modelVersion.value)
-    console.log('For site:', siteId.value)
-    // api call here ?
-    showModelDialog.value = false
+  console.log('start model trainning: ', {
+    modelVersion: modelVersion.value,
+    siteId: siteId.value,
+    file: fileInfo.value
+  })
+  showModelDialog.value = false
+}
+
+  const handleUploadClick = () => {
+    fileInput.value.click()
   }
 
-  function handleFileChange(event) {
+  const handleFileChange = (event) => {
     const file = event.target.files[0]
     if (file) {
       const validTypes = ['image/svg+xml', 'image/jpeg', 'image/png', 'image/gif']
-      const fileType = file.type
 
-      if (validTypes.includes(fileType)) {
-        fileInfo.value = `File selected: ${file.name}`
+      if (validTypes.includes(file.type)) {
+        fileInfo.value = `File selected: ${file.name} (${(file.size / 1024).toFixed(2)}KB)`
+        // add file preview logic here
       } 
       else {
         fileInfo.value = 'Invalid file type. Please upload SVG, JPG, PNG, or GIF files.'
@@ -175,6 +183,14 @@
         event.target.value = ''
       }
     }
+  }
+
+  const handleStartTraining = () => {
+    if (!fileInfo.value) {
+      alert('Please select the file you want to upload')
+      return
+    }
+    showModelDialog.value = true
   }
   </script>
   
