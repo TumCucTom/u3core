@@ -137,8 +137,8 @@
   import {colors} from 'quasar';
   import obamaImage from '@/assets/obama.jpg';
   import anotherUserImage from '@/assets/Lori.png';
-  
-  
+
+
   export default {
     data() {
       return {
@@ -152,6 +152,7 @@
         this.isLogin = !this.isLogin; // switches between login and register
       },
       proceedToOtp() {
+        sessionStorage.setItem("emailTransfer", this.email)
       this.$router.push("/otp");
     }
     },

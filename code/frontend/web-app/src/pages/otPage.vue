@@ -9,7 +9,7 @@
 
         <h2 class="text-bold text-center">Check your email</h2>
         <p class="text-subtitle1 text-center">
-          We sent a verification link to <span class="text-bold">olivia@untitledui.com</span>
+          We sent a verification link to <span class="text-bold" id="retrievedEmail"> </span>
         </p>
 
 
@@ -49,6 +49,25 @@
       };
     },
     name: "CodeVerification",
+
+    mounted() {
+      this.sendEmail();
+    },
+
+    methods: {
+      async sendEmail() {
+        try {
+          let retrievedEmail = sessionStorage.getItem("emailTransfer")
+          document.getElementById("retrievedEmail").innerHTML = retrievedEmail
+          const response = await axios.post('http://localhost:3002/api/sendVerifyEmail', { email: retrievedEmail });
+
+        }
+        catch (error) {
+        console.error("Error fetching alerts:", error);
+      }
+      }
+    },
+
     setup() {
       const router = useRouter();
       const $q = useQuasar();
@@ -86,7 +105,7 @@
 
       const resendEmail = async () => {
         try {
-          const response = await axios.post('http://localhost:3002/api/sendVerifyEmail', { email: 'info@shopveloworks.com' });
+          const response = await axios.post('http://localhost:3002/api/sendVerifyEmail', { email: retrievedEmail });
           $q.notify({
             color: 'green-4',
             textColor: 'white',
