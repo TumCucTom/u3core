@@ -1,4 +1,3 @@
-/*M!999999\- enable the sandbox mode */ 
 -- MariaDB dump 10.19-11.6.2-MariaDB, for osx10.19 (arm64)
 --
 -- Host: localhost    Database: MLAIDB
@@ -22,7 +21,17 @@
 
 CREATE DATABASE /*!32312 IF NOT EXISTS*/ `MLAIDB` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci */;
 
-USE `MLAIDB`;
+-- Switch to the target database
+USE MLAIDB;
+
+-- Create user and allow remote access from any host ('%')
+CREATE USER 'general-user'@'%' IDENTIFIED BY 'MLAI2024';
+
+-- Grant full access to `MLAIDB`
+GRANT ALL PRIVILEGES ON MLAIDB.* TO 'general-user'@'%' WITH GRANT OPTION;
+
+-- Ensure privileges take effect
+FLUSH PRIVILEGES;
 
 --
 -- Table structure for table `customerLogins`
