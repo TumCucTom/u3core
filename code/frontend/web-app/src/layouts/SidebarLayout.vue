@@ -34,7 +34,7 @@
             clickable
             v-ripple
             tag="router-link"
-            to="/pages/ErrorNotFound.vue"
+            to="/app/training-page"
             class="q-mb-sm"
           >
             <q-item-section avatar>
@@ -47,7 +47,7 @@
             clickable
             v-ripple
             tag="router-link"
-            to="/pages/ErrorNotFound.vue"
+            to="/app/action-settings"
             class="q-mb-sm"
           >
             <q-item-section avatar>
@@ -60,7 +60,7 @@
             clickable
             v-ripple
             tag="router-link"
-            to="/pages/ErrorNotFound.vue"
+            to="/app/cloud-settings"
             class="q-mb-sm"
           >
             <q-item-section avatar>
@@ -86,7 +86,7 @@
             clickable
             v-ripple
             tag="router-link"
-            to="/app/alerts-console"
+            to="/app/alerts-page"
             class="q-mb-sm"
           >
             <q-item-section avatar>
@@ -112,7 +112,7 @@
           clickable
           v-ripple
           tag="router-link"
-          to="/pages/ErrorNotFound.vue"
+          to="/app/settings"
           class="q-mb-sm"
         >
           <q-item-section avatar>
