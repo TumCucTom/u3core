@@ -122,11 +122,117 @@
         </q-card>
       </q-dialog>
     </q-page>
-  </template>
+
+  <!-- preview area -->
+  <div v-if="uploadedFiles.length > 0" class="q-mt-lg">
+    <div class="text-h6 q-mb-md">Uploaded Files</div>
+    <q-list bordered class="rounded-borders">
+      <q-item v-for="(file, index) in uploadedFiles" :key="file.id" class="q-mb-sm">
+        <q-item-section>
+          <q-item-label>{{ file.name }}</q-item-label>
+          <q-item-label caption>
+            {{ file.type }} • {{ formatFileSize(file.size) }}
+          </q-item-label>
+          <q-linear-progress 
+            v-if="file.status === 'uploading'"
+            :value="file.progress / 100"
+            :color="file.progress === 100 ? 'positive' : 'primary'"
+            class="q-mt-sm"
+          />
+        </q-item-section>
+
+        <q-item-section side>
+          <div class="row items-center">
+            <q-badge 
+              :color="getStatusColor(file.status)"
+              class="q-mr-sm"
+            >
+              {{ file.status }}
+            </q-badge>
+            <q-btn 
+              round 
+              flat 
+              icon="delete" 
+              color="negative"
+              @click="removeFile(index)"
+            />
+          </div>
+        </q-item-section>
+      </q-item>
+    </q-list>
+  </div>
+</template>
   
-  <script setup>
+<script setup>
   import { ref } from 'vue'  
+
+  const uploadedFiles = ref([]);
+  let fileIdCounter = 0;
+
+  //show the status of file
+  const getStatusColor = (status) => {
+    const statusColors = {
+      pending: 'grey',
+      uploading: 'primary',
+      completed: 'positive',
+      error: 'negative'
+    };
+    return statusColors[status] || 'grey';
+  };
+
+  // formatting file size
+  const formatFileSize = (bytes) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
   
+  // This function is used to check the file user upload to make sure file type is correct
+  const handleFileChange = (event) => {
+    const files = event.target.files;
+    if (!files) return;
+
+    Array.from(files).forEach(file => {
+      const validTypes = ['image/svg+xml', 'image/jpeg', 'image/png', 'image/gif'];
+    
+    if (validTypes.includes(file.type)) {
+        const newFile = {
+          id: fileIdCounter++,
+          name: file.name,
+          type: file.type.split('/')[1].toUpperCase(),
+          size: file.size,
+          progress: 0,
+          status: 'pending',
+          rawFile: file
+        };
+      
+        uploadedFiles.value.push(newFile);
+        startUpload(newFile); // start upload
+      } 
+      else {
+        fileInfo.value = 'Invalid file type. Please upload SVG, JPG, PNG, or GIF files.';
+      }
+    });
+  };
+ 
+  // Uploading file Simulation
+  const startUpload = (file) => {
+      file.status = 'uploading';
+  
+      // Simulation upload progress
+      const interval = setInterval(() => {
+        file.progress += Math.floor(Math.random() * 20 + 10);
+        if (file.progress >= 100) {
+          clearInterval(interval);
+          file.progress = 100;
+          file.status = 'completed';
+        }
+      }, 300);
+  };
+
+
   // Popup form fields
   const modelVersion = ref('')
   const siteId = ref('')
@@ -151,38 +257,22 @@
     { name: 'action', label: '', field: 'action' }
   ]
 
+  //This function is used to check the submission of model training
   const submitModelTraining = () => {
-  if (!modelVersion.value || !siteId.value) {
-    alert('please provide all information')
-    return
+    if (!modelVersion.value || !siteId.value) {
+      alert('please provide all information')
+      return
+    }
+    console.log('start model trainning: ', {
+      modelVersion: modelVersion.value,
+      siteId: siteId.value,
+      file: fileInfo.value
+    })
+    showModelDialog.value = false
   }
-  console.log('start model trainning: ', {
-    modelVersion: modelVersion.value,
-    siteId: siteId.value,
-    file: fileInfo.value
-  })
-  showModelDialog.value = false
-}
 
   const handleUploadClick = () => {
     fileInput.value.click()
-  }
-
-  const handleFileChange = (event) => {
-    const file = event.target.files[0]
-    if (file) {
-      const validTypes = ['image/svg+xml', 'image/jpeg', 'image/png', 'image/gif']
-
-      if (validTypes.includes(file.type)) {
-        fileInfo.value = `File selected: ${file.name} (${(file.size / 1024).toFixed(2)}KB)`
-        // add file preview logic here
-      } 
-      else {
-        fileInfo.value = 'Invalid file type. Please upload SVG, JPG, PNG, or GIF files.'
-        // Clear the file input
-        event.target.value = ''
-      }
-    }
   }
 
   const handleStartTraining = () => {
@@ -192,11 +282,21 @@
     }
     showModelDialog.value = true
   }
-  </script>
+</script>
   
-  <style scoped>
+<style scoped>
+  .q-item {
+    border: 1px solid #eee;
+    border-radius: 8px;
+  }
+
+  .q-linear-progress {
+    height: 8px;
+    border-radius: 4px;
+  }
+  
   .upload-page {
     margin: 0 auto;
   }
-  </style>
+</style>
   
