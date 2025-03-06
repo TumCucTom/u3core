@@ -232,6 +232,12 @@
       }, 300);
   };
 
+  // Delete the file
+  const removeFile = (index) => {
+    if (confirm('Are you sure you want to remove this file?')) {
+      uploadedFiles.value.splice(index, 1);
+    }
+  };
 
   // Popup form fields
   const modelVersion = ref('')
@@ -294,7 +300,7 @@
     height: 8px;
     border-radius: 4px;
   }
-  
+
   .upload-page {
     margin: 0 auto;
   }
