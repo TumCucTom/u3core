@@ -59,7 +59,7 @@
         try {
           let retrievedEmail = sessionStorage.getItem("emailTransfer")
           document.getElementById("retrievedEmail").innerHTML = retrievedEmail
-          const response = await axios.post('http://localhost:3002/api/sendVerifyEmail', { email: retrievedEmail });
+          const response = await axios.post('http://16.171.224.57:3000/api/sendVerifyEmail', { email: retrievedEmail });
 
         }
         catch (error) {
