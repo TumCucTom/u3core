@@ -496,7 +496,7 @@ def send_verify_email():
                 return jsonify({"message": "Email not found"}), 404
 
         token = secrets.token_hex(20)
-        verification_link = f"http://localhost:9000/#/verified-email?token={token}&email={email}"
+        verification_link = f"http://ai.u3core.com/#/verified-email?token={token}&email={email}"
         otp_code = ''.join(random.choices(string.digits, k=6))
         send_email(email, "Email Verification", verification_link, otp_code)
         return jsonify({"message": "Verification email sent successfully"})
