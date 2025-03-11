@@ -7,3 +7,5 @@ code/backend/env
 code/backend/logs/myapp.log
 tree.txt
 code/frontend/web-app/node_modules
+myenv/
+mainEnv

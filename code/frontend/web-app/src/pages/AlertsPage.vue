@@ -1,87 +1,100 @@
 <template>
-    <q-page class="q-pa-md">
-      <div>
-        <h1 class="text-h4">Alerts</h1>
-        <p class="text-subtitle2 q-mb-md">Track and manage your alerts</p>
-  
-       
-        <q-table
-          title="Alerts Table"
-          :columns="columns"
-          :rows="alertsData"
-          row-key="id"
-          selection="multiple"
-
-        >
-
-          <template v-slot:body-cell-siteName="{ _row }">
-            <q-td>{{ _row.siteName }}</q-td>
-          </template>
-  
-          
-          <template v-slot:body-cell-siteLocation="{ _row }">
-            <q-td>{{ _row.siteLocation }}</q-td>
-          </template>
+  <q-page class="q-pa-md">
+    <div>
+      <h1 class="text-h4">Alerts</h1>
+      <p class="text-subtitle2 q-mb-md">Track and manage your alerts</p>
 
 
-          
-          <template v-slot:body-cell-cameraID="{ _row }">
-            <q-td>{{ _row.cameraID }}</q-td>
-          </template>
-  
-         
-          <template v-slot:body-cell-faultType="{ _row }">
-            <q-td>
-              
-              <q-chip :label="_row.faultType" color="primary" text-color="white" />
-            </q-td>
-          </template>
-  
-          
-          <template v-slot:body-cell-timestamp="{ _row }">
-            <q-td>{{ _row.timestamp }}</q-td>
-          </template>
-  
-          
-          <template v-slot:body-cell-resourceLink>
-            <q-td>
-            </q-td>
-          </template>
-        </q-table>
-      </div>
-    </q-page>
-  </template>
-  
-  <script>
-  export default {
-    name: 'alertsData',
-    data() {
-      return {
+      <!-- Table to Display Alerts -->
+      <q-table
+        title="Alerts Table"
+        :columns="columns"
+        :rows="alertsData"
+        row-key="id"
+        selection="multiple"
+      >
+        <!-- cameraName -->
+        <template v-slot:body-cell-cameraName="{ row }">
+          <q-td>{{ row.cameraName }}</q-td>
+        </template>
 
-        columns: [
-          { name: 'siteName', label: 'Site Name', field: 'siteName', sortable: true },
-          { name: 'siteLocation', label: 'Site Location', field: 'siteLocation', sortable: true },
-          { name: 'cameraID', label: 'Camera ID', field: 'cameraID', sortable: true },
-          { name: 'faultType', label: 'Fault Type', field: 'faultType', sortable: true },
-          { name: 'timestamp', label: 'Timestamp', field: 'timestamp', sortable: true },
-          { name: 'resourceLink', label: 'Resource Link', field: 'resourceLink' }
-        ],
-        alertsData: [], 
-        pagination: {
-          page: 1,
-          rowsPerPage: 8,
-        }
-      };
-    },
-    //this is for when the server detects an alert and pushes 
-    methods: {
-      addAlert(alertData) {
-        this.alertsData.push(alertsData);
+        <!-- cameraAddress -->
+        <template v-slot:body-cell-cameraAddress="{ row }">
+          <q-td>{{ row.cameraAddress }}</q-td>
+        </template>
+
+        <!-- timestamp -->
+        <template v-slot:body-cell-timestamp="{ row }">
+          <q-td>{{ row.timestamp }}</q-td>
+        </template>
+
+        <!-- faultType -->
+        <template v-slot:body-cell-faultType="{ row }">
+          <q-td>
+            <q-chip :label="row.faultType" color="primary" text-color="white" />
+          </q-td>
+        </template>
+
+        <!-- numberOfHazards -->
+        <template v-slot:body-cell-numberOfHazards="{ row }">
+          <q-td>{{ row.numberOfHazards }}</q-td>
+        </template>
+
+        <!-- falsePositives -->
+        <template v-slot:body-cell-falsePositives="{ row }">
+          <q-td>{{ row.falsePositives }}</q-td>
+        </template>
+      </q-table>
+    </div>
+  </q-page>
+</template>
+
+<script>
+export default {
+  name: 'AlertsPage',
+  data() {
+    return {
+      columns: [
+        { name: 'cameraName', label: 'Camera Name', field: 'cameraName', sortable: true },
+        { name: 'cameraAddress', label: 'Camera Address', field: 'cameraAddress', sortable: true },
+        { name: 'timestamp', label: 'Timestamp', field: 'timestamp', sortable: true },
+        { name: 'faultType', label: 'Fault Type', field: 'faultType', sortable: true },
+        { name: 'numberOfHazards', label: 'Hazard count', field: 'numberOfHazards' },
+        { name: 'falsePositives', label: 'False positive?', field: 'falsePositives' }
+      ],
+      alertsData: [],
+      pollInterval: null
+    };
+  },
+  mounted() {
+    // Fetch logs once when component mounts
+    this.fetchAlerts();
+
+    // Set up polling every 5 seconds
+    this.pollInterval = setInterval(() => {
+      this.fetchAlerts();
+    }, 5000);
+  },
+  beforeUnmount() {
+    // Clear the interval to prevent memory leaks
+    clearInterval(this.pollInterval);
+  },
+  methods: {
+    // Fetch existing logs from the server
+    async fetchAlerts() {
+      try {
+        const response = await fetch("http://127.0.0.1:3002/api/get-logs");
+        const data = await response.json();
+        this.alertsData = data;
+      } catch (error) {
+        console.error("Error fetching alerts:", error);
       }
-    }
-  };
-  </script>
+    },
+
   
-  <style scoped>
-  </style>
-  
+  }
+};
+</script>
+
+<style scoped>
+</style>

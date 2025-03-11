@@ -9,8 +9,8 @@
             <q-rating value="5" readonly size="lg" color="amber" />
             <p class="q-my-md text-h5">
               {{ isLogin
-                ? "We've been using Untitled to kick start every new project and can't imagine working without it."
-                : "U3Core's safety compliance features helped us monitor workplace conditions more efficiently. We've not only reduced risks but also met the regulatory requirements with ease.'"
+                ? "U3Core's safety compliance features helped us monitor workplace conditions more efficiently. We've not only reduced risks but also met the regulatory requirements with ease."
+                : "U3Core's safety compliance features helped us monitor workplace conditions more efficiently. We've not only reduced risks but also met the regulatory requirements with ease."
               }}
             </p>
             <q-avatar size="80px">

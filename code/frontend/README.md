@@ -1,24 +1,45 @@
-# Front end
+# Frontend Web-APP
+ See at [ai.u3core.com](https://ai.u3core.com)
+
+## Contributing
+
+### Figma designs
 You can see the outline in the [docs](../../docs/frontend) and
 the [Figma Link](https://www.figma.com/design/0JBvMzvd6paWzBFzhuWlZX/U3-Core-App)
 for progress on the UI.
 
-## Run and Test
+### Run and Test
 To open the web app, run the following in your terminal:
 ```
-    cd code/frontend/web-app
+    cd web-app
+    npm i
     npm run dev
 ```
 
-## Structure
+### Deployment
+- The website is deployed with [the frontend workflow](../../../.github/workflows/deploy-frontend.yml)
+- The website is deployed to the [gh-pages branch](https://github.com/spe-uob/2024-MLAIPredictionMicroservices/tree/gh-pages)
+- Then uses FTP to upload the build website to bluehost to display at [ai.u3core.com](https:www.ai.u3core.com)
 
-- This section of the project contains two main directories:
-  - Web-app: the actual web app, holding pages and all information that may be displayed to users
-    - hosted by web server
+### Web App
+- Find all pages by:
+```angular2html
+cd web-app/src/pages
+```
+- Find all layouts by:
+```angular2html
+cd web-app/src/layouts
+```
+- Add public assets in:
+```angular2html
+cd web-app/src/assets
+```
+- To make a web page at ai.u3core.com/webpagename:
+```angular2html
+cd web-app/src/router/routes.js
+```
+- Build the page for deployment with:
+```angular2html
+quasar build
+```
 
-## Web App
-- Login page: Has elements for registering and logging in (login for generic user and admin)
-  - Contains scripts to handle the logging in and verification wrt communication with the server
-    - Server handles actual request with database
-  - Uses regex to ensure passwords and emails match the correct patterns
-  - Does not handle async encryption for passwords
