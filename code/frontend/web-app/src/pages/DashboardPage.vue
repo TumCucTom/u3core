@@ -163,6 +163,7 @@
               </div>
               <div class="text-grey-7 text-center q-mt-lg">No data available</div>
             </q-card>
+          </div>
       <!--  top level box -->
       <div class="row q-mb-lg">
         <q-card flat bordered class="col-12 col-md-4 q-pa-md">
@@ -210,6 +211,8 @@
                   color = "grey-7"
                 />
               </q-btn>
+            </div>
+        </q-card>
         <q-card flat bordered class="col-12 col-md-4 q-pa-md">
           <div class="row justify-between items-center q-mb-sm">
             <div class="text-caption text-grey-7">Cameras</div>
@@ -369,6 +372,7 @@
         </div>
         <div class="text-grey-7 text-center q-mt-lg">No data available</div>
       </q-card>
+    </div>
     </div>
   </q-page>
 </template>
