@@ -108,8 +108,9 @@ def start_fire_detection_for_all_cameras():
 
 @app.route('/health', methods=['GET'])
 def health_check():
+    """Return healthy if the database was connected to successfully"""
     if HEALTHY:
-        return jsonify(status="healthy"), 200  # Status 200 means OK
+        return jsonify(status="healthy"), 200
     return jsonify({"error": "Internal Server Error"}), 501
 
 
