@@ -45,5 +45,15 @@ jobs:
     - name: Health Check
       run: |
         sleep 30
-        curl -X GET http://16.171.224.57:0080/health
+        RESPONSE=$(curl -s -X GET http://16.171.224.57:80/health || echo "error")
+        echo "Response: $RESPONSE"
+
+        if echo "$RESPONSE" | jq -e '.status == "healthy"' > /dev/null; then
+          echo "Service is healthy."
+        else
+          echo "Database did not connect"
+          exit 1
+        fi
+      shell: bash
+
 
