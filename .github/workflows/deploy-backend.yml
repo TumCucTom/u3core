@@ -44,5 +44,6 @@ jobs:
         EOF
     - name: Health Check
       run: |
+        sleep 30
         curl -X GET http://16.171.224.57:0080/health
 
