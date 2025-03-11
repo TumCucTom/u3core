@@ -34,7 +34,7 @@ jobs:
           rm -rf 2024-MLAIPredictionMicroservices
 
           # Clone the latest version
-          git clone -b bug-deploy-aws git@github.com:spe-uob/2024-MLAIPredictionMicroservices.git
+          git clone --single-branch --branch "${{ github.ref_name }}" git@github.com:spe-uob/2024-MLAIPredictionMicroservices.git
           cd 2024-MLAIPredictionMicroservices/code/backend
 
           # Start the service using Docker Compose
