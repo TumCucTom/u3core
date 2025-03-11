@@ -12,12 +12,12 @@
             <!-- add button in the title line-->
             <div class="row justify-between items-center q-mb-sm">
               <div class="text-caption text-grey-7">Total Sites</div>
-              <q-btn 
-            
-                flat 
-                dense 
-                round 
-                class="q-ml-auto" 
+              <q-btn
+
+                flat
+                dense
+                round
+                class="q-ml-auto"
                 size="sm"
                 @click="handleSettingsClick"
 
@@ -38,12 +38,12 @@
           <q-card flat bordered class="col-12 col-md-4 q-pa-md">
             <div class="row justify-between items-center q-mb-sm">
               <div class="text-caption text-grey-7">Cameras</div>
-              <q-btn 
-            
-                flat 
-                dense 
-                round 
-                class="q-ml-auto" 
+              <q-btn
+
+                flat
+                dense
+                round
+                class="q-ml-auto"
                 size="sm"
                 @click="handleSettingsClick"
 
@@ -62,12 +62,12 @@
           <q-card flat bordered class="col-12 col-md-4 q-pa-md">
             <div class="row justify-between items-center q-mb-sm">
               <div class="text-caption text-grey-7">Alerts</div>
-              <q-btn 
-            
-                flat 
-                dense 
-                round 
-                class="q-ml-auto" 
+              <q-btn
+
+                flat
+                dense
+                round
+                class="q-ml-auto"
                 size="sm"
                 @click="handleSettingsClick"
 
@@ -94,12 +94,12 @@
             <q-card flat bordered class="q-pa-md q-mb-md">
               <div class="row justify-between items-center q-mb-sm">
               <div class="text-h6">Number of Anomalies Detected</div>
-              <q-btn 
-            
-                flat 
-                dense 
-                round 
-                class="q-ml-auto" 
+              <q-btn
+
+                flat
+                dense
+                round
+                class="q-ml-auto"
                 size="sm"
                 @click="handleSettingsClick"
 
@@ -118,12 +118,12 @@
             <q-card flat bordered class="q-pa-md">
               <div class="row justify-between items-center q-mb-sm">
               <div class="text-h6">Type of Anomalies Detected</div>
-              <q-btn 
-            
-                flat 
-                dense 
-                round 
-                class="q-ml-auto" 
+              <q-btn
+
+                flat
+                dense
+                round
+                class="q-ml-auto"
                 size="sm"
                 @click="handleSettingsClick"
 
@@ -145,12 +145,12 @@
             <q-card flat bordered class="q-pa-md">
               <div class="row justify-between items-center q-mb-sm">
               <div class="text-h6">Incidence Severity Overview</div>
-              <q-btn 
-            
-                flat 
-                dense 
-                round 
-                class="q-ml-auto" 
+              <q-btn
+
+                flat
+                dense
+                round
+                class="q-ml-auto"
                 size="sm"
                 @click="handleSettingsClick"
 
@@ -171,12 +171,12 @@
         <q-card flat bordered class="q-pa-md">
             <div class="row justify-between items-center q-mb-sm">
               <div class="text-h6">Anomaly Heat-map - Location-Based Anomaly Occurrence</div>
-              <q-btn 
-            
-                flat 
-                dense 
-                round 
-                class="q-ml-auto" 
+              <q-btn
+
+                flat
+                dense
+                round
+                class="q-ml-auto"
                 size="sm"
                 @click="handleSettingsClick"
 
@@ -215,7 +215,7 @@ export default {
       email.value = decodeURIComponent(route.query.email || '');
       if (email.value) {
         axios
-          .get(`http://16.171.224.57:3002/api/getName`, {
+          .get(`http://16.171.224.57:0080/api/getName`, {
             params: { email: email.value }, // Pass the email as a query parameter
           })
           .then((response) => {
