@@ -7,6 +7,7 @@ on:
       - 'bug-*'
     paths:
       - 'code/backend/**'
+      - '.github/workflows/deploy-backend.yml'
   workflow_dispatch:
 
 jobs:
