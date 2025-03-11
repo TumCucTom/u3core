@@ -106,7 +106,7 @@
       const resendEmail = async () => {
         try {
           let retrievedEmail = sessionStorage.getItem("emailTransfer")
-          const response = await axios.post('http://localhost:3002/api/sendVerifyEmail', { email: retrievedEmail });
+          const response = await axios.post('http://16.171.224.57:0080/api/sendVerifyEmail', { email: retrievedEmail });
           $q.notify({
             color: 'green-4',
             textColor: 'white',
