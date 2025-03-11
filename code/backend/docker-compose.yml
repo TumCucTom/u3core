@@ -12,13 +12,11 @@ services:
       - ./logs:/app/logs  # Mount the host machine's ./logs directory to the container
     ports:
       - "3000:3000"
-    env_file:
-      - ../../../.env
     environment:
-      DB_HOST: ${DB_HOST}
-      DB_USER: ${DB_USER}
-      DB_PASSWORD: ${DB_PASSWORD}
-      DB_NAME: ${DB_NAME}
+      DB_HOST: "db"
+      DB_USER: "general-user"
+      DB_PASSWORD: "MLAI2024"
+      DB_NAME: "MLAIDB"
     depends_on:
       db:
         condition: service_healthy
@@ -43,13 +41,12 @@ services:
     container_name: mysql_container
     ports:
       - "3306:3306"
-    env_file:
-      - ../../../.env
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: "MLAI2024"
+      MYSQL_ALLOW_EMPTY_PASSWORD: "true"
+      MYSQL_DATABASE: "MLAIDB"
+      MYSQL_USER: "general-user"
+      MYSQL_PASSWORD: "MLAI2024"
     volumes:
       - db_data:/var/lib/mysql
       - ./initdb:/docker-entrypoint-initdb.d
