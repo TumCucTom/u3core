@@ -29,10 +29,6 @@ from dotenv import load_dotenv
 load_dotenv()
 POSTMARK_API = os.getenv("POSTMARK_API")
 
-# Load configuration from JSON
-with open("config.json", "r", encoding="utf-8") as config_file:
-    config = json.load(config_file)
-
 # Alert message
 ALERT_MESSAGE = "Abnormal detected"
 
@@ -48,7 +44,7 @@ logging.basicConfig(
 )
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes
+CORS(app) # Enable CORS for all routes
 
 # Database Configuration
 db_config = {
@@ -56,14 +52,17 @@ db_config = {
     "user": os.getenv("DB_USER"),
     "password": os.getenv("DB_PASSWORD"),
     "database": os.getenv("DB_NAME"),
-    "port": int(os.getenv("DB_PORT"))
+    "port": 3306
 }
 
+HEALTHY = False
 MAX_RETRIES = 10
 for attempt in range(MAX_RETRIES):
+    logging.info(f"Attempting to access database with credentials {db_config}")
     try:
         connection = pymysql.connect(**db_config)
         logging.info("Database connection successful!")
+        HEALTHY = True
         break
     except pymysql.err.OperationalError as e:
         logging.warning(f"Attempt {attempt + 1}/{MAX_RETRIES}: Unable to connect to the database. Retrying...")
@@ -71,6 +70,10 @@ for attempt in range(MAX_RETRIES):
 else:
     logging.critical("Max retries exceeded. Could not connect to the database.")
 
+logging.info(f"Status: {HEALTHY}")
+def get_db_connection():
+    """Return a fresh connection to the database."""
+    return pymysql.connect(**db_config)
 
 # Auto fire detection startup
 
@@ -103,6 +106,14 @@ def start_fire_detection_for_all_cameras():
 
 # API endpoints
 
+@app.route('/health', methods=['GET'])
+def health_check():
+    if HEALTHY:
+        return jsonify(status="healthy"), 200  # Status 200 means OK
+    else:
+        return jsonify({"error": "Internal Server Error"}), 501
+
+
 @app.route('/api/add-camera', methods=['POST'])
 def add_camera():
     """
@@ -121,8 +132,9 @@ def add_camera():
         rtsp_url = "rtsp://" + rtsp_url[6:]
 
     try:
-        with connection.cursor() as cursor:
-            # Create the Cameras table if it doesn't exist
+        # Create the Cameras table if it doesn't exist
+        conn = get_db_connection()
+        with conn.cursor() as cursor:
             create_table_query = """
             CREATE TABLE IF NOT EXISTS Cameras (
                 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -145,7 +157,7 @@ def add_camera():
                 "INSERT INTO Cameras (name, rtsp_url) VALUES (%s, %s)",
                 (name, rtsp_url)
             )
-        connection.commit()
+        conn.commit()
 
         # Start fire detection for the new camera
         if rtsp_url not in fire_detection_processes:
@@ -159,7 +171,8 @@ def add_camera():
     except Exception as e:
         print(f"Error adding camera: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
-
+    finally:
+        conn.close()
 
 @app.route('/api/add-site', methods=['POST'])
 def add_site():
@@ -175,8 +188,9 @@ def add_site():
         return jsonify({"error": "Name, latitude, and longitude are required"}), 400
 
     try:
-        with connection.cursor() as cursor:
-            # Create the Sites table if it doesn't exist
+        conn = get_db_connection()
+        # Create the Sites table if it doesn't exist
+        with conn.cursor() as cursor:
             create_table_query = """
             CREATE TABLE IF NOT EXISTS Sites (
                 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -192,12 +206,13 @@ def add_site():
                 "INSERT INTO Sites (name, latitude, longitude) VALUES (%s, %s, %s)",
                 (name, latitude, longitude)
             )
-        connection.commit()
+        conn.commit()
         return jsonify({"message": "Site added successfully!"}), 201
     except Exception as e:
         print(f"Error adding site: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
-
+    finally:
+        conn.close()
 
 @app.route('/api/sites', methods=['GET'])
 def fetch_sites():
@@ -205,8 +220,9 @@ def fetch_sites():
     Fetches all sites and their associated cameras.
     """
     try:
-        with connection.cursor() as cursor:
-            # Fetch all sites
+        # Fetch all sites
+        conn = get_db_connection()
+        with conn.cursor() as cursor:
             cursor.execute("SELECT id, name FROM Sites")
             sites = cursor.fetchall()
 
@@ -223,7 +239,8 @@ def fetch_sites():
     except Exception as e:
         print(f"Error fetching sites: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
-
+    finally:
+        conn.close()
 
 @app.route('/api/add-hazard', methods=['POST'])
 def add_hazard():
@@ -233,14 +250,15 @@ def add_hazard():
     data = request.json
     timestamp = data.get('timestamp')
     hazard_type = data.get('type')
-    rtsp_url = data.get('cameraAddress')  # Assuming cameraAddress holds rtsp_url
+    rtsp_url = data.get('cameraAddress')   # Assuming cameraAddress holds rtsp_url
 
     if not all([rtsp_url, timestamp, hazard_type]):
         return jsonify({"error": "Camera address, time, and hazard type are required"}), 400
 
     try:
-        with connection.cursor() as cursor:
-            # Fetch camera name from the Cameras table
+        # Fetch camera name from the Cameras table
+        conn = get_db_connection()
+        with conn.cursor() as cursor:
             cursor.execute("SELECT name FROM Cameras WHERE rtsp_url = %s", (rtsp_url,))
             camera_result = cursor.fetchone()
 
@@ -267,7 +285,7 @@ def add_hazard():
             """
             cursor.execute(create_table_query)
 
-            # Check if an entry exists for the same cameraIP, hazardType, and hourTime
+ # Check if an entry exists for the same cameraIP, hazardType, and hourTime
             cursor.execute("""
                 SELECT id, number FROM Logs
                 WHERE cameraIP = %s AND hazardType = %s AND hourTime = %s
@@ -279,14 +297,12 @@ def add_hazard():
                 log_id, current_number = existing_entry
                 new_number = current_number + 1
                 false_positive = 1 <= new_number <= 9
-
                 # Update the existing entry
                 cursor.execute("""
                     UPDATE Logs
                     SET number = %s, falsePositive = %s
                     WHERE id = %s
                 """, (new_number, false_positive, log_id))
-
             else:
                 # Insert a new log entry
                 cursor.execute("""
@@ -294,12 +310,14 @@ def add_hazard():
                     VALUES (%s, %s, %s, %s, %s, %s)
                 """, (rtsp_url, camera_name, hour_time, hazard_type, 1, True))
 
-        connection.commit()
+        conn.commit()
         return jsonify({"message": "Log added successfully!"}), 201
 
     except Exception as e:
         print(f"Error adding log: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
+    finally:
+        conn.close()
 
 @app.route('/api/get-logs', methods=['GET'])
 def get_logs():
@@ -308,8 +326,9 @@ def get_logs():
     compatible with the front end
     """
     try:
-        with connection.cursor() as cursor:
-            # Retrieve all log entries sorted by most recent first
+        # Retrieve all log entries sorted by most recent first
+        conn = get_db_connection()
+        with conn.cursor() as cursor:
             cursor.execute("""
                 SELECT id, cameraIP, cameraName, hourTime, hazardType, number, falsePositive
                 FROM Logs
@@ -323,10 +342,10 @@ def get_logs():
                 log_id, camera_ip, camera_name, hour_time, hazard_type, number, false_positive = row
 
                 data.append({
-                    "id": log_id,                          
+                    "id": log_id,
                     "cameraName": camera_name,
                     "cameraAddress": camera_ip,
-                    "timestamp": hour_time,                
+                    "timestamp": hour_time,
                     "faultType": hazard_type,
                     "numberOfHazards": number,
                     "falsePositives": "Yes" if false_positive else "No"
@@ -338,8 +357,146 @@ def get_logs():
         print("Error retrieving logs:", e)
         return jsonify({"error": "Internal Server Error"}), 500
 
+    finally:
+        conn.close()
+
+def get_count_from_table(table_name, condition=None, condition_values=None):
+    """
+    Fetch hazard/cameraas/site count from the specified table.
+    """
+    try:
+        conn = get_db_connection()
+        with conn.cursor() as cursor:
+            # Check if table exists
+            cursor.execute("""
+                SELECT COUNT(*)
+                FROM information_schema.tables
+                WHERE table_schema = DATABASE()
+                AND table_name = %s;
+            """, (table_name,))
+            table_exists = cursor.fetchone()[0] > 0
+
+            if not table_exists:
+                print(f"Table '{table_name}' does not exist. Returning 0.")
+                return jsonify(0), 200  # Return 0 count if table does not exist
+
+            # Build query with an optional condition (falsePositive = 0)
+            query = f"SELECT COUNT(*) AS count FROM {table_name}"
+            if condition:
+                query += f" WHERE {condition}"
+
+            cursor.execute(query, condition_values or ())
+            row_count = cursor.fetchone()[0]
+
+        conn.commit()
+        return jsonify(row_count), 200
+
+    except pymysql.MySQLError as e:
+        print(f"MySQL error while fetching {table_name} count:", e)
+        return jsonify({"error": f"Internal Server Error regarding {table_name} count"}), 500
+
+    finally:
+        if conn:
+            conn.close()
+
+# Endpoint for site count (No extra condition)
+@app.route('/api/get-site-count', methods=['GET'])
+def get_site_count():
+    """
+    Get the count of sites from the Sites table.
+    """
+    return get_count_from_table('Sites')
+
+#Endpoint for camera count (No extra condition)
+@app.route('/api/get-camera-count', methods=['GET'])
+def get_camera_count():
+    """
+    Get the count of cameras from the Cameras table.
+    """
+    return get_count_from_table('Cameras')
+
+#Endpoint for hazard count (Condition: `falsePositive = 0`)
+@app.route('/api/get-hazard-count', methods=['GET'])
+def get_hazard_count():
+    """
+    Get the count of hazards from the Logs table where falsePositive = 0.
+    """
+    return get_count_from_table('Logs', "falsePositive = %s", (0,))
 
 
+@app.route('/api/anomalies-by-month', methods=['GET'])
+def get_anomalies_by_month():
+    """
+    Fetches the count of anomalies by month from the Logs table.
+    Returns data for the current year's monthly anomaly counts.
+    """
+    try:
+        conn = get_db_connection()
+        with conn.cursor() as cursor:
+            # Extract year and month from hourTime and count anomalies
+            #  hourTime format is "YYYY-MM-DD HH"
+            cursor.execute("""
+                SELECT
+                    SUBSTRING(hourTime, 6, 2) AS month,
+                    SUM(number) AS anomaly_count
+                FROM Logs
+                WHERE SUBSTRING(hourTime, 1, 4) = YEAR(CURDATE())
+                GROUP BY SUBSTRING(hourTime, 6, 2)
+                ORDER BY month;
+            """)
+            results = cursor.fetchall()
+
+            # Create a dictionary with all months initialized to 0
+            months = {f"{i:02d}": 0 for i in range(1, 13)}
+
+            # Update with actual data
+            for month, count in results:
+                months[month] = count
+
+            # Convert to list maintaining month order
+            monthly_data = [months[f"{i:02d}"] for i in range(1, 13)]
+
+        return jsonify(monthly_data), 200
+
+    except Exception as e:
+        print(f"Error fetching anomalies by month: {e}")
+        return jsonify({"error": "Internal Server Error"}), 500
+    finally:
+        conn.close()
+
+@app.route('/api/anomalies-by-type', methods=['GET'])
+def get_anomalies_by_type():
+    """
+    Fetches the count of anomalies grouped by type from the Logs table.
+    """
+    try:
+        conn = get_db_connection()
+        with conn.cursor() as cursor:
+            cursor.execute("""
+                SELECT
+                    hazardType,
+                    SUM(number) AS anomaly_count
+                FROM Logs
+                GROUP BY hazardType
+                ORDER BY hazardType;
+            """)
+            results = cursor.fetchall()
+
+            # Transform results into two lists: types and counts
+            types = []
+            counts = []
+
+            for hazard_type, count in results:
+                types.append(hazard_type)
+                counts.append(count)
+
+        return jsonify({"types": types, "counts": counts}), 200
+
+    except Exception as e:
+        print(f"Error fetching anomalies by type: {e}")
+        return jsonify({"error": "Internal Server Error"}), 500
+    finally:
+        conn.close()
 
 @app.route('/api/emails', methods=['GET'])
 def get_emails():
@@ -347,14 +504,16 @@ def get_emails():
     Fetches all emails from the CustLogin table.
     """
     try:
-        with connection.cursor() as cursor:
+        conn = get_db_connection()
+        with conn.cursor() as cursor:
             cursor.execute("SELECT email FROM CustLogin")
             emails = [row[0] for row in cursor.fetchall()]
         return jsonify(emails)
     except Exception as e:
         print(f"Error fetching emails: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
-
+    finally:
+        conn.close()
 
 @app.route('/api/getName', methods=['GET'])
 def get_name():
@@ -367,8 +526,8 @@ def get_name():
         return jsonify({"error": "Email required"}), 400
 
     try:
-        with connection.cursor() as cursor:
-            # Fetch the name for the given email
+        conn = get_db_connection()
+        with conn.cursor() as cursor:
             cursor.execute("""
                 SELECT Customer.firstname
                 FROM Customer
@@ -385,20 +544,22 @@ def get_name():
     except Exception as e:
         print(f"Error during login: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
+    finally:
+        conn.close()
 
 @app.route('/api/login', methods=['GET'])
 def login():
     """
     Authenticates a user by their email and password.
     """
-    email = request.args.get('emailVar')  # Fetch query parameter
+    email = request.args.get('emailVar') # Fetch query parameter
 
     if not email:
         return jsonify({"error": "Email required"}), 400
 
     try:
-        with connection.cursor() as cursor:
-            # Fetch the hashed password for the given email
+        conn = get_db_connection()
+        with conn.cursor() as cursor:
             cursor.execute("SELECT hashPWord FROM CustLogin WHERE email = %s", (email,))
             result = cursor.fetchone()
 
@@ -409,7 +570,8 @@ def login():
     except Exception as e:
         print(f"Error during login: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
-
+    finally:
+        conn.close()
 
 @app.route('/api/addToCustomer', methods=['POST'])
 def add_to_customer():
@@ -422,8 +584,9 @@ def add_to_customer():
     hashed_password = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
 
     try:
-        with connection.cursor() as cursor:
-            # Ensure the Customer table exists
+        # Ensure the Customer table exists
+        conn = get_db_connection()
+        with conn.cursor() as cursor:
             create_customer_table = """
             CREATE TABLE IF NOT EXISTS Customer (
                 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -456,12 +619,13 @@ def add_to_customer():
                 (email, hashed_password, customer_id)
             )
 
-        connection.commit()
+        conn.commit()
         return jsonify({"message": "Customer added successfully"})
     except Exception as e:
         print(f"Error adding customer: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
-
+    finally:
+        conn.close()
 
 @app.route('/api/sendResetEmail', methods=['POST'])
 def send_reset_email():
@@ -471,7 +635,8 @@ def send_reset_email():
         return jsonify({"error": "Email is required"}), 400
 
     try:
-        with connection.cursor() as cursor:
+        conn = get_db_connection()
+        with conn.cursor() as cursor:
             cursor.execute("SELECT email FROM CustLogin WHERE email = %s", (email,))
             if not cursor.fetchone():
                 return jsonify({"message": "Email not found"}), 404
@@ -480,7 +645,8 @@ def send_reset_email():
     except Exception as e:
         print(f"Error sending reset email: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
-
+    finally:
+        conn.close()
 
 @app.route('/api/sendVerifyEmail', methods=['POST'])
 def send_verify_email():
@@ -490,7 +656,8 @@ def send_verify_email():
         return jsonify({"error": "Email is required"}), 400
 
     try:
-        with connection.cursor() as cursor:
+        conn = get_db_connection()
+        with conn.cursor() as cursor:
             cursor.execute("SELECT email FROM CustLogin WHERE email = %s", (email,))
             if not cursor.fetchone():
                 return jsonify({"message": "Email not found"}), 404
@@ -503,12 +670,13 @@ def send_verify_email():
     except Exception as e:
         print(f"Error sending verification email: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
-
+    finally:
+        conn.close()
 
 def send_email(to_email, subject, link, code=None):
     """Send an email using the Postmark API"""
     postmark_token = POSTMARK_API  # Client's Postmark server API token
-    sender_email = "info@digitalU3.com"  # Client's Sender email
+    sender_email = "info@digitalU3.com" # Client's Sender email
 
     html_content = f"""
     <div>
@@ -549,7 +717,6 @@ def send_email(to_email, subject, link, code=None):
     except requests.exceptions.RequestException as e:
         print(f"Error sending email: {e}")
 
-
 if __name__ == '__main__':
-    start_fire_detection_for_all_cameras()  # Start fire detection for all cameras on launch
+    start_fire_detection_for_all_cameras() # Start fire detection for all cameras on launch
     app.run(host='0.0.0.0', port=3000, debug=True)
