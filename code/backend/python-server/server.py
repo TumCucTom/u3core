@@ -669,7 +669,7 @@ def send_verify_email():
         return jsonify({"message": "Verification email sent successfully"})
     except Exception as e:
         print(f"Error sending verification email: {e}")
-        return jsonify({f"error": "Internal Server Error - {e}"}), 500
+        return jsonify({"error": f"Internal Server Error - {e}"}), 500
     finally:
         conn.close()
 
