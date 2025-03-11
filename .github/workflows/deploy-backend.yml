@@ -5,6 +5,8 @@ on:
     branches:
       - dev
       - 'bug-*'
+    paths:
+      - 'code/backend/**'
   workflow_dispatch:
 
 jobs:
