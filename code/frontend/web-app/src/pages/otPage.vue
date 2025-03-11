@@ -59,7 +59,7 @@
         try {
           let retrievedEmail = sessionStorage.getItem("emailTransfer")
           document.getElementById("retrievedEmail").innerHTML = retrievedEmail
-          const response = await axios.post('http://16.171.224.57:3000/api/sendVerifyEmail', { email: retrievedEmail });
+          const response = await axios.post('http://16.171.224.57:0080/api/sendVerifyEmail', { email: retrievedEmail });
 
         }
         catch (error) {
@@ -75,7 +75,7 @@
 
       const verifyCode = async () => {
         try {
-          const response = await axios.post('http://localhost:3002/api/checkCode', { code: givenCode.value });
+          const response = await axios.post('http://16.171.224.57:0080/api/checkCode', { code: givenCode.value });
           if (response === true) {
             $q.notify({
               color: 'green-4',
