@@ -504,8 +504,30 @@ def get_emails():
     Fetches all emails from the CustLogin table.
     """
     try:
+        # Ensure the Customer table exists
         conn = get_db_connection()
         with conn.cursor() as cursor:
+            create_customer_table = """
+            CREATE TABLE IF NOT EXISTS Customer (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                firstname VARCHAR(255),
+                lastname VARCHAR(255)
+            );
+            """
+            cursor.execute(create_customer_table)
+
+            # Ensure the CustLogin table exists
+            create_custlogin_table = """
+            CREATE TABLE IF NOT EXISTS CustLogin (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                email VARCHAR(255) UNIQUE,
+                hashPWord VARCHAR(255),
+                customerID INT,
+                FOREIGN KEY (customerID) REFERENCES Customer(id)
+            );
+            """
+            cursor.execute(create_custlogin_table)
+
             cursor.execute("SELECT email FROM CustLogin")
             emails = [row[0] for row in cursor.fetchall()]
         return jsonify(emails)

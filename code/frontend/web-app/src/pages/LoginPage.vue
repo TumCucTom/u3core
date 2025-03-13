@@ -103,6 +103,7 @@
               :label="isLogin ? 'Sign in' : 'Continue'"
               color="primary"
               class="full-width q-my-md"
+              @click="isLogin ? onLogin() : onSubmit()"
             />
 
 
