@@ -9,15 +9,12 @@ import os
 import random
 import string
 import secrets
-from io import BytesIO
 import multiprocessing
-import json
 import time
 import logging
 import sys
 import datetime
 import pymysql
-import pycurl
 import requests
 from fire_detection_script import process_rtsp_stream_with_url
 from flask import Flask, request, jsonify
@@ -695,8 +692,6 @@ def send_verify_email():
     finally:
         conn.close()
 
-import json
-import requests
 
 def send_email(to_email, subject, link, code=None):
     """Send an email using the Postmark API using requests"""
@@ -731,7 +726,7 @@ def send_email(to_email, subject, link, code=None):
     # Make the request
     try:
         url = "https://api.postmarkapp.com/email"
-        response = requests.post(url, headers=headers, json=payload)
+        response = requests.post(url, headers=headers, json=payload, timeout=30)
         response.raise_for_status()  # Raise an error for bad responses (4xx, 5xx)
 
         print(f"Email sent successfully to {to_email}. Response: {response.json()}")
