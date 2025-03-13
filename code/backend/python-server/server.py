@@ -673,11 +673,15 @@ def send_verify_email():
     finally:
         conn.close()
 
-def send_email(to_email, subject, link, code=None):
-    """Send an email using the Postmark API"""
-    postmark_token = POSTMARK_API  # Client's Postmark server API token
-    sender_email = "info@digitalU3.com" # Client's Sender email
+import json
+import requests
 
+def send_email(to_email, subject, link, code=None):
+    """Send an email using the Postmark API using requests"""
+    postmark_token = POSTMARK_API  # Replace with your actual Postmark token
+    sender_email = "info@digitalU3.com"  # Verified sender email
+
+    # Construct the email body
     html_content = f"""
     <div>
         <p>Click <a href="{link}">here</a> to proceed.</p>
@@ -686,6 +690,7 @@ def send_email(to_email, subject, link, code=None):
         html_content += f"<p>Your OTP is: <strong>{code}</strong></p>"
     html_content += "</div>"
 
+    # Define the payload
     payload = {
         "From": sender_email,
         "To": to_email,
@@ -694,28 +699,25 @@ def send_email(to_email, subject, link, code=None):
         "MessageStream": "verify"
     }
 
+    # Define headers
+    headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "X-Postmark-Server-Token": postmark_token
+    }
+
+    # Make the request
     try:
         url = "https://api.postmarkapp.com/email"
-        headers = [
-            "Accept: application/json",
-            "Content-Type: application/json",
-            f"X-Postmark-Server-Token: {postmark_token}"
-        ]
-        data = json.dumps(payload)
-        response_buffer = BytesIO()
-        c = pycurl.Curl()
-        c.setopt(c.URL, url)
-        c.setopt(c.POST, 1)
-        c.setopt(c.POSTFIELDS, data)
-        c.setopt(c.HTTPHEADER, headers)
-        c.setopt(c.WRITEDATA, response_buffer)
-        c.setopt(c.TIMEOUT, 30)
-        c.perform()
-        response_body = response_buffer.getvalue().decode('utf-8')
-        c.close()
-        print(f"Email sent successfully to {to_email}. With {response_body}")
+        response = requests.post(url, headers=headers, json=payload)
+        response.raise_for_status()  # Raise an error for bad responses (4xx, 5xx)
+
+        print(f"Email sent successfully to {to_email}. Response: {response.json()}")
+        return response.json()  # Return the response for debugging
     except requests.exceptions.RequestException as e:
         print(f"Error sending email: {e}")
+        return None
+
 
 if __name__ == '__main__':
     start_fire_detection_for_all_cameras() # Start fire detection for all cameras on launch
