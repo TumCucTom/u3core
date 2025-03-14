@@ -1,308 +1,336 @@
 <template>
-    <q-page padding class="upload-page">
-      <div class="text-h4">Upload Training Data</div>
-      <div class="text-subtitle1 text-grey-7 q-mt-xs">
-        Upload model data.
-      </div>
-  
-      <!-- Tab for switching:  -->
-      <div class="q-mt-md">
-        <q-btn-group flat>
-          <q-btn
-            :flat="activeTab !== 'uploadData'"
-            color="primary"
-            label="Upload Data"
-            @click="activeTab = 'uploadData'"
-          />
-          <q-btn
-            :flat="activeTab !== 'uploadLogs'"
-            color="primary"
-            label="Upload logs"
-            @click="activeTab = 'uploadLogs'"
-          />
-        </q-btn-group>
-      </div>
-  
-      <!-- Upload -->
-      <div v-if="activeTab === 'uploadData'">
-        <!-- Drop area -->        
-        <div
-          class="q-mt-lg flex flex-center q-pa-md"
-          style="
-            border: 2px dashed #d3d3d3;
-            border-radius: 8px;
-            height: 200px;
-            cursor: pointer;
-          "
-          @click="handleUploadClick"
-        >
-          <div class="column items-center text-center">
-            <q-icon name="cloud_upload" size="36px" color="primary" />
-            <div class="text-body2 text-primary q-my-xs">
-              Click to upload
-            </div>
-            <div class="text-caption text-grey-7">
-              or drag and drop<br />
-              SVG, PNG, JPG or GIF (max. 800×400px)
-            </div>
-            <div v-if="fileInfo" class ="text-caption text-green q-mt-sm">
-              {{ fileInfo }}
-            </div>
-          </div>
-        </div>
-  
-        <!--File input (hidden)-->
-        <input 
-          type="file" 
-          ref="fileInput" 
-          accept=".svg,.jpg,.jpeg,.png,.gif"
-           @change="handleFileChange" 
-           style="display: none" 
+  <q-page padding class="upload-page">
+    <div class="text-h4">Upload Training Data</div>
+    <div class="text-subtitle1 text-grey-7 q-mt-xs">
+      Upload model data.
+    </div>
+
+    <!-- Tab for switching -->
+    <div class="q-mt-md">
+      <q-btn-group flat>
+        <q-btn
+          :flat="activeTab !== 'uploadData'"
+          color="primary"
+          label="Upload Data"
+          @click="activeTab = 'uploadData'"
         />
-  
-        <!-- Start model training -->
-        <div class="q-mt-lg row justify-end">
-          <q-btn flat label="Cancel" color="primary" class="q-mr-sm" />
-          <q-btn
-            label="Start Model Training"
-            color="dark"
-            @click="handleStartTraining"
-          />
-        </div>
-      </div>
-  
-      <!-- Upload logs content when tabbed, -->
-      <div v-else>
-        <div class="q-mt-md">
-          <!-- Empty table (no data) -->
-          <q-table
-            title="All Uploads"
-            :data="[]"
-            :columns="columns"
-            row-key="modelVersion"
-            dense
-            flat
-          >
-          </q-table>
-        </div>
-      </div>
-  
-      <!-- Popup dialog for training -->
-      <q-dialog v-model="showModelDialog" persistent>
-        <q-card style="min-width: 400px;">
-          <q-card-section class="row items-center">
-            <q-icon name="lock" size="md" class="q-mr-sm" />
-            <div class="text-h6">Model Training</div>
-          </q-card-section>
-          <q-card-section>
-            Create a new site with all the required information.
-          </q-card-section>
-  
-          <q-card-section>
-            <q-input
-              v-model="modelVersion"
-              label="Model version*"
-              filled
-              dense
-              class="q-mb-sm"
-            />
-            <q-select
-              v-model="siteId"
-              :options="siteOptions"
-              label="Site Id"
-              filled
-              dense
-            />
-          </q-card-section>
-  
-          <q-card-actions align="right">
-            <q-btn flat label="Cancel" @click="showModelDialog = false" />
-            <q-btn label="Submit" color="dark" @click="submitModelTraining" />
-          </q-card-actions>
-        </q-card>
-      </q-dialog>
-    </q-page>
+        <q-btn
+          :flat="activeTab !== 'uploadLogs'"
+          color="primary"
+          label="Upload logs"
+          @click="activeTab = 'uploadLogs'"
+        />
+      </q-btn-group>
+    </div>
 
-  <!-- preview area -->
-  <div v-if="uploadedFiles.length > 0" class="q-mt-lg">
-    <div class="text-h6 q-mb-md">Uploaded Files</div>
-    <q-list bordered class="rounded-borders">
-      <q-item v-for="(file, index) in uploadedFiles" :key="file.id" class="q-mb-sm">
-        <q-item-section>
-          <q-item-label>{{ file.name }}</q-item-label>
-          <q-item-label caption>
-            {{ file.type }} • {{ formatFileSize(file.size) }}
-          </q-item-label>
-          <q-linear-progress 
-            v-if="file.status === 'uploading'"
-            :value="file.progress / 100"
-            :color="file.progress === 100 ? 'positive' : 'primary'"
-            class="q-mt-sm"
-          />
-        </q-item-section>
-
-        <q-item-section side>
-          <div class="row items-center">
-            <q-badge 
-              :color="getStatusColor(file.status)"
-              class="q-mr-sm"
-            >
-              {{ file.status }}
-            </q-badge>
-            <q-btn 
-              round 
-              flat 
-              icon="delete" 
-              color="negative"
-              @click="removeFile(index)"
-            />
+    <!-- Upload data area -->
+    <div v-if="activeTab === 'uploadData'">
+      <!-- drop area -->
+      <div
+        class="q-mt-lg flex flex-center q-pa-md upload-area"
+        @click="handleUploadClick"
+      >
+        <div class="column items-center text-center">
+          <q-icon name="cloud_upload" size="36px" color="primary" />
+          <div class="text-body2 text-primary q-my-xs">
+            Click to upload
           </div>
-        </q-item-section>
-      </q-item>
-    </q-list>
-  </div>
+          <div class="text-caption text-grey-7">
+            or drag and drop<br />
+            SVG, PNG, JPG or GIF (max. 800×400px)
+          </div>
+          <div v-if="fileInfo" class="text-caption text-green q-mt-sm">
+            {{ fileInfo }}
+          </div>
+        </div>
+      </div>
+
+      <!-- preview area -->
+      <div v-if="uploadedFiles.length > 0" class="preview-area q-mt-md">
+        <div class="text-h6 q-mb-md">Uploaded Files</div>
+        <q-list bordered class="rounded-borders">
+          <q-item 
+            v-for="(file, index) in uploadedFiles" 
+            :key="file.id" 
+            class="q-mb-sm preview-item"
+          >
+            <q-item-section>
+              <q-item-label>{{ file.name }}</q-item-label>
+              <q-item-label caption>
+                {{ file.type }} • {{ formatFileSize(file.size) }}
+              </q-item-label>
+              <q-linear-progress 
+                v-if="file.status === 'uploading'"
+                :value="file.progress / 100"
+                :color="file.progress === 100 ? 'positive' : 'primary'"
+                class="q-mt-sm"
+              />
+            </q-item-section>
+
+            <q-item-section side>
+              <div class="row items-center">
+                <q-badge 
+                  :color="getStatusColor(file.status)"
+                  class="q-mr-sm"
+                >
+                  {{ file.status }}
+                </q-badge>
+                <q-btn 
+                  round 
+                  flat 
+                  icon="delete" 
+                  color="negative"
+                  @click="removeFile(index)"
+                />
+              </div>
+            </q-item-section>
+          </q-item>
+        </q-list>
+      </div>
+
+      <!-- hidden file input -->
+      <input
+        type="file"
+        ref="fileInput"
+        accept=".svg,.jpg,.jpeg,.png,.gif"
+        @change="handleFileChange"
+        style="display: none"
+      />
+
+      <!-- buttons -->
+      <div class="q-mt-lg row justify-end">
+        <q-btn flat label="Cancel" color="primary" class="q-mr-sm" />
+        <q-btn
+          label="Start Model Training"
+          color="dark"
+          @click="handleStartTraining"
+        />
+      </div>
+    </div>
+
+    <!-- Upload Logs area -->
+    <div v-else>
+      <div class="q-mt-md">
+        <q-table
+          title="All Uploads"
+          :data="[]"
+          :columns="columns"
+          row-key="modelVersion"
+          dense
+          flat
+        ></q-table>
+      </div>
+    </div>
+
+    <!-- Training simulator window -->
+    <q-dialog v-model="showModelDialog" persistent>
+      <q-card style="min-width: 400px;">
+        <q-card-section class="row items-center">
+          <q-icon name="lock" size="md" class="q-mr-sm" />
+          <div class="text-h6">Model Training</div>
+        </q-card-section>
+        <q-card-section>
+          Create a new site with all the required information.
+        </q-card-section>
+
+        <q-card-section>
+          <q-input
+            v-model="modelVersion"
+            label="Model version*"
+            filled
+            dense
+            class="q-mb-sm"
+          />
+          <q-select
+            v-model="siteId"
+            :options="siteOptions"
+            label="Site Id"
+            filled
+            dense
+          />
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn flat label="Cancel" @click="showModelDialog = false" />
+          <q-btn label="Submit" color="dark" @click="submitModelTraining" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+  </q-page>
 </template>
-  
+
 <script setup>
-  import { ref } from 'vue'  
+import { ref } from 'vue'
 
-  const uploadedFiles = ref([]);
-  let fileIdCounter = 0;
+const uploadedFiles = ref([]);
+let fileIdCounter = 0;
 
-  //show the status of file
-  const getStatusColor = (status) => {
-    const statusColors = {
-      pending: 'grey',
-      uploading: 'primary',
-      completed: 'positive',
-      error: 'negative'
-    };
-    return statusColors[status] || 'grey';
-  };
+// status manage
+const activeTab = ref('uploadData')
+const showModelDialog = ref(false)
+const modelVersion = ref('')
+const siteId = ref('')
+const fileInfo = ref('')
+const fileInput = ref(null)
 
-  // formatting file size
-  const formatFileSize = (bytes) => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  };
-  
-  // This function is used to check the file user upload to make sure file type is correct
-  const handleFileChange = (event) => {
-    const files = event.target.files;
-    if (!files) return;
+// site options
+const siteOptions = ['Site A', 'Site B', 'Site C']
 
-    Array.from(files).forEach(file => {
-      const validTypes = ['image/svg+xml', 'image/jpeg', 'image/png', 'image/gif'];
+// 
+const columns = [
+  { name: 'modelVersion', label: 'Model version', field: 'modelVersion' },
+  { name: 'siteId', label: 'Site Id', field: 'siteId' },
+  { name: 'dateUploaded', label: 'Date uploaded', field: 'dateUploaded' },
+  { name: 'lastUpdated', label: 'Last updated', field: 'lastUpdated' },
+  { name: 'trainingStatus', label: 'Training Status', field: 'trainingStatus' },
+  { name: 'action', label: '', field: 'action' }
+]
+
+// handle file upload
+const handleUploadClick = () => {
+  fileInput.value.click()
+}
+
+const handleFileChange = (event) => {
+  const files = event.target.files
+  if (!files.length) return
+
+  Array.from(files).forEach(file => {
+    const validTypes = ['image/svg+xml', 'image/jpeg', 'image/png', 'image/gif']
     
     if (validTypes.includes(file.type)) {
-        const newFile = {
-          id: fileIdCounter++,
-          name: file.name,
-          type: file.type.split('/')[1].toUpperCase(),
-          size: file.size,
-          progress: 0,
-          status: 'pending',
-          rawFile: file
-        };
-      
-        uploadedFiles.value.push(newFile);
-        startUpload(newFile); // start upload
-      } 
-      else {
-        fileInfo.value = 'Invalid file type. Please upload SVG, JPG, PNG, or GIF files.';
+      const newFile = {
+        id: fileIdCounter++,
+        name: file.name,
+        type: file.type.split('/')[1].toUpperCase(),
+        size: file.size,
+        progress: 0,
+        status: 'pending',
+        raw: file
       }
-    });
-  };
- 
-  // Uploading file Simulation
-  const startUpload = (file) => {
-      file.status = 'uploading';
-  
-      // Simulation upload progress
-      const interval = setInterval(() => {
-        file.progress += Math.floor(Math.random() * 20 + 10);
-        if (file.progress >= 100) {
-          clearInterval(interval);
-          file.progress = 100;
-          file.status = 'completed';
-        }
-      }, 300);
-  };
-
-  // Delete the file
-  const removeFile = (index) => {
-    if (confirm('Are you sure you want to remove this file?')) {
-      uploadedFiles.value.splice(index, 1);
+      uploadedFiles.value.push(newFile)
+      startUpload(newFile)
+    } else {
+      fileInfo.value = 'Invalid file type. Please upload SVG, JPG, PNG, or GIF files.'
     }
-  };
+  })
+}
 
-  // Popup form fields
-  const modelVersion = ref('')
-  const siteId = ref('')
-  const fileInfo = ref('')
-  
-  // fileinput
-  const fileInput = ref(null)
-
-  // Tabs
-  const activeTab = ref('uploadData') // or 'uploadLogs'
-  
-  // Dialog control
-  const showModelDialog = ref(false)
-  
-  // Table columns (empty data)
-  const columns = [
-    { name: 'modelVersion', label: 'Model version', field: 'modelVersion' },
-    { name: 'siteId', label: 'Site Id', field: 'siteId' },
-    { name: 'dateUploaded', label: 'Date uploaded', field: 'dateUploaded' },
-    { name: 'lastUpdated', label: 'Last updated', field: 'lastUpdated' },
-    { name: 'trainingStatus', label: 'Training Status', field: 'trainingStatus' },
-    { name: 'action', label: '', field: 'action' }
-  ]
-
-  //This function is used to check the submission of model training
-  const submitModelTraining = () => {
-    if (!modelVersion.value || !siteId.value) {
-      alert('please provide all information')
-      return
+// upload simulation
+const startUpload = (file) => {
+  file.status = 'uploading'
+  const interval = setInterval(() => {
+    file.progress = Math.min(file.progress + Math.random() * 20, 95)
+    if (file.progress >= 95) {
+      clearInterval(interval)
+      setTimeout(() => {
+        file.progress = 100
+        file.status = 'completed'
+      }, 500)
     }
-    console.log('start model trainning: ', {
-      modelVersion: modelVersion.value,
-      siteId: siteId.value,
-      file: fileInfo.value
-    })
-    showModelDialog.value = false
-  }
+  }, 300)
+}
 
-  const handleUploadClick = () => {
-    fileInput.value.click()
+// delete the file
+const removeFile = (index) => {
+  if (confirm('Are you sure you want to remove this file?')) {
+    uploadedFiles.value.splice(index, 1)
   }
+}
 
-  const handleStartTraining = () => {
-    if (!fileInfo.value) {
-      alert('Please select the file you want to upload')
-      return
-    }
-    showModelDialog.value = true
+// status color
+const getStatusColor = (status) => {
+  const statusColors = {
+    pending: 'grey',
+    uploading: 'primary',
+    completed: 'positive',
+    error: 'negative'
   }
+  return statusColors[status] || 'grey'
+}
+
+// formatting file size
+const formatFileSize = (bytes) => {
+  const units = ['B', 'KB', 'MB', 'GB']
+  let size = bytes
+  let unitIndex = 0
+  while (size >= 1024 && unitIndex < units.length - 1) {
+    size /= 1024
+    unitIndex++
+  }
+  return `${size.toFixed(1)} ${units[unitIndex]}`
+}
+
+// training modle submission
+const handleStartTraining = () => {
+  if (!uploadedFiles.value.length) {
+    alert('Please select files to upload')
+    return
+  }
+  showModelDialog.value = true
+}
+
+const submitModelTraining = () => {
+  if (!modelVersion.value || !siteId.value) {
+    alert('Please provide all required information')
+    return
+  }
+  console.log('Starting training with:', {
+    modelVersion: modelVersion.value,
+    siteId: siteId.value,
+    files: uploadedFiles.value
+  })
+  showModelDialog.value = false
+}
 </script>
-  
+
 <style scoped>
-  .q-item {
-    border: 1px solid #eee;
-    border-radius: 8px;
-  }
+.upload-page {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 24px;
+}
 
-  .q-linear-progress {
-    height: 8px;
-    border-radius: 4px;
-  }
+.upload-area {
+  border: 2px dashed #d3d3d3;
+  border-radius: 8px;
+  height: 200px;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+  background: white;
+  width: 100%;
+}
 
-  .upload-page {
-    margin: 0 auto;
-  }
+.preview-area {
+  width: 100%;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  margin-top: 16px;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.preview-item {
+  border: 1px solid #f0f0f0;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  transition: transform 0.2s;
+}
+
+.preview-item:hover {
+  transform: translateX(4px);
+}
+
+.q-linear-progress {
+  height: 6px;
+  border-radius: 3px;
+}
+
+.row.justify-end {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #eee;
+}
 </style>
   
