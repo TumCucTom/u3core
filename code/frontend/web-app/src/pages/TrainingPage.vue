@@ -4,6 +4,21 @@
       <h1 class="text-h4 text-bold">Upload Training Data</h1>
       <p class="text-subtitle2">Track, manage and forecast your customers and orders</p>
     </div>
+    
+    <!-- searching bar -->
+    <div class="q-mb-md">
+      <q-input
+        v-model="searchQuery"
+        dense
+        placeholder="Search by tags..."
+        clearable
+        class="search-input"
+      >
+        <template v-slot:prepend>
+          <q-icon name="search" />
+        </template>
+      </q-input>
+    </div>
 
     <!-- Tab for switching -->
     <div class="q-mt-md">
@@ -45,7 +60,7 @@
       <!-- preview area -->
       <div v-if="uploadedFiles.length > 0" class="file-list q-mt-md">
         <q-item 
-          v-for="(file, index) in uploadedFiles" 
+          v-for="(file, index) in filteredFiles" 
           :key="file.id" 
           class="q-mb-sm preview-item"
         >
@@ -237,7 +252,22 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
+
+//searching status 
+const searchQuery = ref('')
+
+// filtering files according to their tags
+const filteredFiles = computed(() => {
+  if (!searchQuery.value) return uploadedFiles.value
+  
+  const searchTerms = searchQuery.value.toLowerCase().split(' ')
+  return uploadedFiles.value.filter(file => 
+    { return file.tags.some(tag => 
+        searchTerms.some(term => tag.toLowerCase().includes(term))
+      )}
+  )
+})
 
 const uploadedFiles = ref([]);
 let fileIdCounter = 0;
@@ -411,6 +441,11 @@ const submitModelTraining = () => {
 </script>
 
 <style scoped>
+.search-input {
+  max-width: 400px;
+  margin-bottom: 20px;
+}
+
 .batch-toolbar {
   background: #f8f9fa;
   padding: 12px;
