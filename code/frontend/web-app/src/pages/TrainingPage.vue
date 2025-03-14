@@ -1,6 +1,6 @@
 <template>
   <q-page padding class="upload-page">
-    <div class="q-mb-lg"> 
+    <div class="q-mb-lg">
       <h1 class="text-h4 text-bold">Upload Training Data</h1>
       <p class="text-subtitle2">Track, manage and forecast your customers and orders</p>
     </div>
@@ -49,6 +49,14 @@
           :key="file.id" 
           class="q-mb-sm preview-item"
         >
+          <q-item-section side>
+            <q-checkbox 
+              v-model="selectedFiles" 
+              :val="file.id" 
+              color="primary"
+            />
+          </q-item-section>
+
           <q-item-section>
             <div class="row items-center">
               <q-icon name="insert_drive_file" class="q-mr-sm" />
@@ -60,7 +68,8 @@
                     {{ file.status }}
                   </q-badge>
                 </div>
-                <!-- 标签显示区域 -->
+
+                <!-- Tag-display area -->
                 <div v-if="file.tags?.length" class="q-mt-xs">
                   <q-badge 
                     v-for="(tag, tagIndex) in file.tags" 
@@ -73,7 +82,8 @@
                     <q-tooltip>Click to remove</q-tooltip>
                   </q-badge>
                 </div>
-                <!-- 标签输入区域 -->
+
+                <!-- Tag-input area -->
                 <div v-if="editingFileId === file.id" class="q-mt-xs row items-center">
                   <q-input
                     v-model="newTag"
@@ -126,6 +136,34 @@
           </q-item-section>
         </q-item>
       </div>
+
+    <!-- batch manipulation -->
+    <div v-if="selectedFiles.length > 0" class="q-mt-md q-mb-sm row items-center batch-toolbar">
+      <div class="text-caption q-mr-md">
+        Selected {{ selectedFiles.length }} files
+      </div>
+      <q-input
+        v-model="batchTag"
+        dense
+        placeholder="Enter tag for all selected"
+        class="col-3"
+        @keyup.enter="addBatchTag"
+      />
+      <q-btn
+        label="Apply Tag"
+        color="primary"
+        class="q-ml-sm"
+        @click="addBatchTag"
+      />
+      <q-btn
+        flat
+        round
+        icon="close"
+        color="grey"
+        class="q-ml-sm"
+        @click="clearSelection"
+      />
+    </div>
 
       <!-- hidden file input -->
       <input
@@ -204,9 +242,11 @@ import { ref } from 'vue'
 const uploadedFiles = ref([]);
 let fileIdCounter = 0;
 
-// 标签相关状态
+// tag related status
 const editingFileId = ref(null);
 const newTag = ref('');
+const selectedFiles = ref([]); // chosen-file ID arrary
+const batchTag = ref('');      // batch tag-input
 
 // status manage
 const activeTab = ref('uploadData')
@@ -219,7 +259,6 @@ const fileInput = ref(null)
 // site options
 const siteOptions = ['Site A', 'Site B', 'Site C']
 
-// 
 const columns = [
   { name: 'modelVersion', label: 'Model version', field: 'modelVersion' },
   { name: 'siteId', label: 'Site Id', field: 'siteId' },
@@ -229,38 +268,26 @@ const columns = [
   { name: 'action', label: '', field: 'action' }
 ]
 
-// handle file upload
-const handleUploadClick = () => {
-  fileInput.value.click()
-}
-
-const handleFileChange = (event) => {
-  const files = event.target.files
-  if (!files.length) return
-
-  Array.from(files).forEach(file => {
-    const validTypes = ['image/svg+xml', 'image/jpeg', 'image/png', 'image/gif']
-    
-    if (validTypes.includes(file.type)) {
-      const newFile = {
-        id: fileIdCounter++,
-        name: file.name,
-        type: file.type.split('/')[1].toUpperCase(),
-        size: file.size,
-        progress: 0,
-        status: 'pending',
-        raw: file,
-        tags: [] // 初始化标签数组
+// batch manipulation methods
+const addBatchTag = () => {
+  if (batchTag.value.trim()) {
+    uploadedFiles.value.forEach(file => {
+      if (selectedFiles.value.includes(file.id)) {
+        if (!file.tags.includes(batchTag.value.trim())) {
+          file.tags.push(batchTag.value.trim())
+        }
       }
-      uploadedFiles.value.push(newFile)
-      startUpload(newFile)
-    } else {
-      fileInfo.value = 'Invalid file type. Please upload SVG, JPG, PNG, or GIF files.'
-    }
-  })
+    })
+    clearSelection()
+  }
 }
 
-// 标签操作方法
+const clearSelection = () => {
+  selectedFiles.value = []
+  batchTag.value = ''
+}
+
+// single file tagging methods
 const startTagEdit = (fileId) => {
   editingFileId.value = fileId
   newTag.value = ''
@@ -282,6 +309,37 @@ const addTag = (file) => {
 
 const removeTag = (file, tagIndex) => {
   file.tags.splice(tagIndex, 1)
+}
+
+// handle file-uploads
+const handleUploadClick = () => {
+  fileInput.value.click()
+}
+
+const handleFileChange = (event) => {
+  const files = event.target.files
+  if (!files.length) return
+
+  Array.from(files).forEach(file => {
+    const validTypes = ['image/svg+xml', 'image/jpeg', 'image/png', 'image/gif']
+    
+    if (validTypes.includes(file.type)) {
+      const newFile = {
+        id: fileIdCounter++,
+        name: file.name,
+        type: file.type.split('/')[1].toUpperCase(),
+        size: file.size,
+        progress: 0,
+        status: 'pending',
+        raw: file,
+        tags: []
+      }
+      uploadedFiles.value.push(newFile)
+      startUpload(newFile)
+    } else {
+      fileInfo.value = 'Invalid file type. Please upload SVG, JPG, PNG, or GIF files.'
+    }
+  })
 }
 
 // upload simulation
@@ -353,20 +411,29 @@ const submitModelTraining = () => {
 </script>
 
 <style scoped>
+.batch-toolbar {
+  background: #f8f9fa;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #eee;
+}
+
 .file-list {
   width: 100%;
   background: transparent;
 }
 
-.file-item {
+.preview-item {
   border-radius: 4px;
   padding: 8px 12px;
   background: rgba(255, 255, 255, 0.9);
   border: 1px solid rgba(0, 0, 0, 0.12);
   transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
 }
 
-.file-item:hover {
+.preview-item:hover {
   background: #f8f9fa;
   transform: translateX(2px);
 }
@@ -398,27 +465,6 @@ const submitModelTraining = () => {
   width: 100%;
 }
 
-.preview-area {
-  width: 100%;
-  border: 1px solid #eee;
-  border-radius: 8px;
-  margin-top: 16px;
-  background: white;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-}
-
-.preview-item {
-  border: 1px solid #f0f0f0;
-  border-radius: 8px;
-  margin-bottom: 8px;
-  transition: transform 0.2s;
-  padding: 12px;
-}
-
-.preview-item:hover {
-  transform: translateX(4px);
-}
-
 .q-linear-progress {
   height: 6px;
   border-radius: 3px;
@@ -430,10 +476,13 @@ const submitModelTraining = () => {
   border-top: 1px solid #eee;
 }
 
-/* 标签输入区域样式 */
 .q-input {
   width: 150px;
   margin-top: 8px;
+}
+
+.q-checkbox {
+  margin-right: 12px;
 }
 </style>
   
