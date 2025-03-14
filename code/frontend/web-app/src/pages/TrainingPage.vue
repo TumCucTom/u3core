@@ -1,8 +1,8 @@
 <template>
   <q-page padding class="upload-page">
-    <div class="text-h4">Upload Training Data</div>
-    <div class="text-subtitle1 text-grey-7 q-mt-xs">
-      Upload model data.
+    <div class="q-mb-lg"> 
+      <h1 class="text-h4 text-bold">Upload Training Data</h1>
+      <p class="text-subtitle2">Track, manage and forecast your customers and orders</p>
     </div>
 
     <!-- Tab for switching -->
