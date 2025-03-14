@@ -49,10 +49,9 @@
           :key="file.id" 
           class="q-mb-sm preview-item"
         >
-
-        <q-item-section>
-          <div class="row items-center">
-            <q-icon name="insert_drive_file" class="q-mr-sm" />
+          <q-item-section>
+            <div class="row items-center">
+              <q-icon name="insert_drive_file" class="q-mr-sm" />
               <div>
                 <div class="text-caption">{{ file.name }}</div>
                 <div class="text-caption text-grey-6">
@@ -61,19 +60,69 @@
                     {{ file.status }}
                   </q-badge>
                 </div>
+                <!-- 标签显示区域 -->
+                <div v-if="file.tags?.length" class="q-mt-xs">
+                  <q-badge 
+                    v-for="(tag, tagIndex) in file.tags" 
+                    :key="tagIndex"
+                    color="secondary" 
+                    class="q-mr-xs cursor-pointer"
+                    @click="removeTag(file, tagIndex)"
+                  >
+                    {{ tag }}
+                    <q-tooltip>Click to remove</q-tooltip>
+                  </q-badge>
+                </div>
+                <!-- 标签输入区域 -->
+                <div v-if="editingFileId === file.id" class="q-mt-xs row items-center">
+                  <q-input
+                    v-model="newTag"
+                    dense
+                    placeholder="Enter tag"
+                    class="col"
+                    @keyup.enter="addTag(file)"
+                  />
+                  <q-btn 
+                    flat 
+                    dense 
+                    icon="check" 
+                    color="positive" 
+                    class="q-ml-sm"
+                    @click="addTag(file)"
+                  />
+                  <q-btn
+                    flat
+                    dense
+                    icon="close"
+                    color="negative"
+                    class="q-ml-xs"
+                    @click="cancelTagEdit"
+                  />
+                </div>
               </div>
-          </div>
-        </q-item-section>
+            </div>
+          </q-item-section>
 
-        <q-item-section side>
-            <q-btn 
-              round 
-              flat 
-              icon="delete" 
-              size="sm" 
-              color="grey-6"
-              @click="removeFile(index)"
-            />
+          <q-item-section side>
+            <div class="row items-center">
+              <q-btn 
+                round 
+                flat 
+                icon="local_offer" 
+                size="sm" 
+                color="grey-6"
+                class="q-mr-xs"
+                @click="startTagEdit(file.id)"
+              />
+              <q-btn 
+                round 
+                flat 
+                icon="delete" 
+                size="sm" 
+                color="grey-6"
+                @click="removeFile(index)"
+              />
+            </div>
           </q-item-section>
         </q-item>
       </div>
@@ -155,6 +204,10 @@ import { ref } from 'vue'
 const uploadedFiles = ref([]);
 let fileIdCounter = 0;
 
+// 标签相关状态
+const editingFileId = ref(null);
+const newTag = ref('');
+
 // status manage
 const activeTab = ref('uploadData')
 const showModelDialog = ref(false)
@@ -196,7 +249,8 @@ const handleFileChange = (event) => {
         size: file.size,
         progress: 0,
         status: 'pending',
-        raw: file
+        raw: file,
+        tags: [] // 初始化标签数组
       }
       uploadedFiles.value.push(newFile)
       startUpload(newFile)
@@ -204,6 +258,30 @@ const handleFileChange = (event) => {
       fileInfo.value = 'Invalid file type. Please upload SVG, JPG, PNG, or GIF files.'
     }
   })
+}
+
+// 标签操作方法
+const startTagEdit = (fileId) => {
+  editingFileId.value = fileId
+  newTag.value = ''
+}
+
+const cancelTagEdit = () => {
+  editingFileId.value = null
+  newTag.value = ''
+}
+
+const addTag = (file) => {
+  if (newTag.value.trim()) {
+    if (!file.tags.includes(newTag.value.trim())) {
+      file.tags.push(newTag.value.trim())
+    }
+    cancelTagEdit()
+  }
+}
+
+const removeTag = (file, tagIndex) => {
+  file.tags.splice(tagIndex, 1)
 }
 
 // upload simulation
@@ -296,6 +374,11 @@ const submitModelTraining = () => {
 .q-badge {
   font-size: 0.7em;
   padding: 2px 6px;
+  transition: opacity 0.2s;
+}
+
+.q-badge:hover {
+  opacity: 0.8;
 }
 
 .upload-page {
@@ -329,6 +412,7 @@ const submitModelTraining = () => {
   border-radius: 8px;
   margin-bottom: 8px;
   transition: transform 0.2s;
+  padding: 12px;
 }
 
 .preview-item:hover {
@@ -344,6 +428,12 @@ const submitModelTraining = () => {
   margin-top: 24px;
   padding-top: 24px;
   border-top: 1px solid #eee;
+}
+
+/* 标签输入区域样式 */
+.q-input {
+  width: 150px;
+  margin-top: 8px;
 }
 </style>
   
