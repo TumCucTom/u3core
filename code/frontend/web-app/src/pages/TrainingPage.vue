@@ -26,10 +26,7 @@
     <!-- Upload data area -->
     <div v-if="activeTab === 'uploadData'">
       <!-- drop area -->
-      <div
-        class="q-mt-lg flex flex-center q-pa-md upload-area"
-        @click="handleUploadClick"
-      >
+      <div class="q-mt-lg flex flex-center q-pa-md upload-area" @click="handleUploadClick">
         <div class="column items-center text-center">
           <q-icon name="cloud_upload" size="36px" color="primary" />
           <div class="text-body2 text-primary q-my-xs">
@@ -46,46 +43,39 @@
       </div>
 
       <!-- preview area -->
-      <div v-if="uploadedFiles.length > 0" class="preview-area q-mt-md">
-        <div class="text-h6 q-mb-md">Uploaded Files</div>
-        <q-list bordered class="rounded-borders">
-          <q-item 
-            v-for="(file, index) in uploadedFiles" 
-            :key="file.id" 
-            class="q-mb-sm preview-item"
-          >
-            <q-item-section>
-              <q-item-label>{{ file.name }}</q-item-label>
-              <q-item-label caption>
-                {{ file.type }} • {{ formatFileSize(file.size) }}
-              </q-item-label>
-              <q-linear-progress 
-                v-if="file.status === 'uploading'"
-                :value="file.progress / 100"
-                :color="file.progress === 100 ? 'positive' : 'primary'"
-                class="q-mt-sm"
-              />
-            </q-item-section>
+      <div v-if="uploadedFiles.length > 0" class="file-list q-mt-md">
+        <q-item 
+          v-for="(file, index) in uploadedFiles" 
+          :key="file.id" 
+          class="q-mb-sm preview-item"
+        >
 
-            <q-item-section side>
-              <div class="row items-center">
-                <q-badge 
-                  :color="getStatusColor(file.status)"
-                  class="q-mr-sm"
-                >
-                  {{ file.status }}
-                </q-badge>
-                <q-btn 
-                  round 
-                  flat 
-                  icon="delete" 
-                  color="negative"
-                  @click="removeFile(index)"
-                />
+        <q-item-section>
+          <div class="row items-center">
+            <q-icon name="insert_drive_file" class="q-mr-sm" />
+              <div>
+                <div class="text-caption">{{ file.name }}</div>
+                <div class="text-caption text-grey-6">
+                  {{ file.type }} • {{ formatFileSize(file.size) }}
+                  <q-badge :color="getStatusColor(file.status)" class="q-ml-sm">
+                    {{ file.status }}
+                  </q-badge>
+                </div>
               </div>
-            </q-item-section>
-          </q-item>
-        </q-list>
+          </div>
+        </q-item-section>
+
+        <q-item-section side>
+            <q-btn 
+              round 
+              flat 
+              icon="delete" 
+              size="sm" 
+              color="grey-6"
+              @click="removeFile(index)"
+            />
+          </q-item-section>
+        </q-item>
       </div>
 
       <!-- hidden file input -->
@@ -285,6 +275,29 @@ const submitModelTraining = () => {
 </script>
 
 <style scoped>
+.file-list {
+  width: 100%;
+  background: transparent;
+}
+
+.file-item {
+  border-radius: 4px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  transition: all 0.2s ease;
+}
+
+.file-item:hover {
+  background: #f8f9fa;
+  transform: translateX(2px);
+}
+
+.q-badge {
+  font-size: 0.7em;
+  padding: 2px 6px;
+}
+
 .upload-page {
   width: 100%;
   max-width: 100%;
