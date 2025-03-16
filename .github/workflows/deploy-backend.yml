@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - dev
-      - 'bug-*'
+      - 'bug-aws-*'
     paths:
       - 'code/backend/**'
       - '.github/workflows/deploy-backend.yml'
