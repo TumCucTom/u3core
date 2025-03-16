@@ -400,7 +400,7 @@ def get_count_from_table(table_name, condition=None, condition_values=None):
         if conn:
             conn.close()
 
-@app.route('/api/train-custom-model', methods=[''])
+@app.route('/api/train-custom-model', methods=['POST'])
 def train_model():
     data = request.json
     model_path = data.get('path')
