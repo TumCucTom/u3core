@@ -109,10 +109,10 @@ def start_fire_detection_for_all_cameras():
 
 @app.route('/health', methods=['GET'])
 def health_check():
+    """See if database connection is healthy"""
     if HEALTHY:
         return jsonify(status="healthy"), 200  # Status 200 means OK
-    else:
-        return jsonify({"error": "Internal Server Error"}), 501
+    return jsonify({"error": "Internal Server Error"}), 501
 
 
 @app.route('/api/add-camera', methods=['POST'])
@@ -402,6 +402,7 @@ def get_count_from_table(table_name, condition=None, condition_values=None):
 
 @app.route('/api/train-custom-model', methods=['POST'])
 def train_model():
+    """Train a model using data at a path"""
     data = request.json
     model_path = data.get('path')
 
