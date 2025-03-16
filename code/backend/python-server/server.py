@@ -410,6 +410,7 @@ def train_model():
         return jsonify({"error": "Path to data required"}), 400
     try:
         train_yolo_model(f"{model_path}/data.yaml", epochs=100, img_size=640)
+        return jsonify(status="training"), 200
     except Exception as e:
         print(f"Error during model training: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
