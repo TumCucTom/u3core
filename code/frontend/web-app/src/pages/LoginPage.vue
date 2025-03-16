@@ -137,8 +137,8 @@
   import {colors} from 'quasar';
   import obamaImage from '@/assets/obama.jpg';
   import anotherUserImage from '@/assets/Lori.png';
-  
-  
+
+
   export default {
     data() {
       return {
@@ -179,7 +179,7 @@
 
   const onSubmit = () => {
 
-  axios.get('http://16.171.224.57:3002/api/emails')
+  axios.get('http://16.171.224.57:0080/api/emails')
   .then(response => {
   allEmails.value = response.data;
   if (allEmails.value.includes(email.value)) {
@@ -211,7 +211,7 @@
 };
 
 
-  axios.post('http://16.171.224.57:3002/api/addToCustomer', requestData)
+  axios.post('http://16.171.224.57:0080/api/addToCustomer', requestData)
   .then(response => {
   console.log(response.data);
 })
@@ -224,7 +224,7 @@
   const emailSend = String(emailLogin.value);
 
   try {
-  const response = await axios.get('http://16.171.224.57:3002/api/login', { params: { emailVar: emailSend } });
+  const response = await axios.get('http://16.171.224.57:0080/api/login', { params: { emailVar: emailSend } });
   const fetchedHashedPassword = response.data;
 
   const result = await bcrypt.compare(passwordLogin.value, fetchedHashedPassword);

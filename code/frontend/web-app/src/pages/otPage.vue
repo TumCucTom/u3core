@@ -56,7 +56,7 @@
 
       const verifyCode = async () => {
         try {
-          const response = await axios.post('http://localhost:3002/api/checkCode', { code: givenCode.value });
+          const response = await axios.post('http://localhost:0080/api/checkCode', { code: givenCode.value });
           if (response === true) {
             $q.notify({
               color: 'green-4',
@@ -86,7 +86,7 @@
 
       const resendEmail = async () => {
         try {
-          const response = await axios.post('http://localhost:3002/api/sendVerifyEmail', { email: 'info@shopveloworks.com' });
+          const response = await axios.post('http://localhost:0080/api/sendVerifyEmail', { email: 'info@shopveloworks.com' });
           $q.notify({
             color: 'green-4',
             textColor: 'white',
