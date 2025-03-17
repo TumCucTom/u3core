@@ -96,7 +96,6 @@ export default {
       menuItems: [
         { label: 'Dashboard', icon: 'dashboard', route: '/app/dashboard' },
         { label: 'Upload Training Data', icon: 'upload', route: '/app/training-page' },
-        { label: 'Configuration', icon: 'menu_open', route: '/pages/ErrorNotFound.vue' },
         { label: 'Cloud Settings', icon: 'filter_drama', route: '/app/cloud-settings' },
         { label: 'Manage Sites', icon: 'place', route: '/app/manage-sites' },
         { label: 'Alerts Console', icon: 'notifications', route: '/app/alerts-page' },
