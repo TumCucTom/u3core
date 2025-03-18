@@ -54,7 +54,7 @@
 
           <q-item-section>
             <div>user name</div>
-            <div class="text-caption text-grey">username@email.com</div>
+            <div class="text-caption text-grey" id="retrievedEmail"></div>
           </q-item-section>
         </q-item>
 
@@ -105,6 +105,11 @@ export default {
       ],
     };
   },
+
+  mounted() {
+      this.sendEmail();
+    },
+
   computed: {
     filteredItems() {
       return this.menuItems.filter((item) =>
@@ -113,6 +118,16 @@ export default {
     },
   },
   methods: {
+    async sendEmail() {
+        try {
+          let retrievedEmail = sessionStorage.getItem("emailTransfer")
+          document.getElementById("retrievedEmail").innerHTML = retrievedEmail
+        }
+        catch (error) {
+        console.error("Error fetching alerts:", error);
+      }
+      },
+
     confirmLogout() {
       this.showLogoutDialog = false;
       this.$router.push('/'); // skip to login page
