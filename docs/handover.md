@@ -23,7 +23,11 @@
 - You can run a local dev version of this by:
   - ```cd code/frontend```
   - ```npm run dev```
-- You can deploy this
+- You can deploy this with
+  - ```cd code/frontend```
+  - ``` quasar build```
+  - Then put the files under spa/dist in the blue host
+  - NOTE: This is done on github actions to www.ai.u3core.com using FTP
 
 ## Other
 
