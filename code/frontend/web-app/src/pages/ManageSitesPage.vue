@@ -324,6 +324,41 @@ export default {
 </script>
 
 <style>
+ .sites-list {
+   border: 1px solid #e0e0e0;
+   border-radius: 4px;
+   overflow: hidden;
+ }
+
+ .site-item {
+   border-bottom: 1px solid #e0e0e0;
+ }
+
+ .site-header {
+   background-color: #f5f5f5;
+   cursor: pointer;
+   transition: background-color 0.2s;
+ }
+
+ .site-active {
+   font-weight: 500;
+ }
+
+ .camera-list {
+   background-color: white;
+ }
+
+ .camera-item {
+   padding-left: 24px;
+   cursor: pointer;
+   transition: background-color 0.2s;
+ }
+
+ .add-site-btn {
+   background-color: #1e1e2f;
+   color: white;
+   height: 42px;
+ }
 .q-page {
   background: #f9f9f9;
 }
