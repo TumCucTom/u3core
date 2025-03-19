@@ -227,6 +227,24 @@
               </div>
             </q-card>
 
+            <q-card flat bordered class="q-pa-md q-mb-sm">
+              <div class="row">
+                <div class="col-12 col-md-3 text-body2 text-bold">
+                  Data Sharing Policy
+                </div>
+                <div class="col-12 col-md-9 text-caption text-grey-7 q-mb-md">
+                  Sharing of anonymised data
+                </div>
+              </div>
+              <div class="col-auto">
+                <q-toggle
+                  v-model="anonymisedData"
+                  color="pink"
+                  label="Share data"
+                  />
+              </div>
+            </q-card>
+
         </q-tab-panel>
 
         <!-- Integrations -->
@@ -271,6 +289,8 @@
 
   const dataRest = ref(false)
   const dataTransit = ref(false)
+
+  const anonymisedData = ref(false)
 
   // Array of sample retention plans
   const retentionPlans = [
