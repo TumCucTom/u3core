@@ -17,6 +17,12 @@
   - ```docker compose --env-file ../../../.env up --build -d```
 - Once you've got docker and docker compose installed and working
 
+### Docker compose
+
+You can find docker compose file at ```code/backend/docker-compose.yml```
+This sets up the environment, how containers interact and runs the database.
+
+The ```Dockerfile.xx``` run the parts of the backend. The only relevant one currently is the backend which runs the python server
 ## Frontend
 - This a quasar webapp
 - This use vue.js scripts
@@ -30,6 +36,8 @@
   - NOTE: This is done on github actions to www.ai.u3core.com using FTP
 
 ## Other
+ # AWS
+
 
 ## What's to do?
 
