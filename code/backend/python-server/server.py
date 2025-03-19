@@ -660,6 +660,72 @@ def delete_site(site_id):
     finally:
         conn.close()
 
+# 4. Update Site Endpoint
+@app.route('/api/update-site/<int:site_id>', methods=['PUT'])
+def update_site(site_id):
+    """
+    Updates site details in the database.
+    """
+    data = request.json
+    name = data.get('name')
+    latitude = data.get('latitude')
+    longitude = data.get('longitude')
+    location = data.get('location')
+
+    # Check if at least one field is provided
+    if not any([name, latitude, longitude, location]):
+        return jsonify({"error": "At least one field (name, latitude, longitude, or location) must be provided"}), 400
+
+    try:
+        conn = get_db_connection()
+        with conn.cursor() as cursor:
+            # Check if the site exists
+            cursor.execute("SELECT id FROM Sites WHERE id = %s", (site_id,))
+            if not cursor.fetchone():
+                return jsonify({"error": "Site not found"}), 404
+
+            # Build the update query dynamically
+            update_query = "UPDATE Sites SET "
+            update_values = []
+
+            if name:
+                update_query += "name = %s, "
+                update_values.append(name)
+
+            if latitude:
+                update_query += "latitude = %s, "
+                update_values.append(latitude)
+
+            if longitude:
+                update_query += "longitude = %s, "
+                update_values.append(longitude)
+
+            if location:
+                update_query += "location = %s, "
+                update_values.append(location)
+
+            # Remove trailing comma and space
+            update_query = update_query.rstrip(", ")
+
+            # Add the WHERE clause
+            update_query += " WHERE id = %s"
+            update_values.append(site_id)
+
+            # Execute the update
+            cursor.execute(update_query, tuple(update_values))
+
+            # Check if any rows were affected
+            if cursor.rowcount == 0:
+                return jsonify({"error": "No changes were made"}), 400
+
+        conn.commit()
+        return jsonify({"message": "Site updated successfully"}), 200
+    except Exception as e:
+        print(f"Error updating site: {e}")
+        return jsonify({"error": "Internal Server Error"}), 500
+    finally:
+        conn.close()
+
 @app.route('/api/emails', methods=['GET'])
 def get_emails():
     """
