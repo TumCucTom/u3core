@@ -245,6 +245,27 @@
               </div>
             </q-card>
 
+            <q-card flat bordered class="q-pa-md q-mb-sm">
+              <div class="row">
+                <div class="col-12 col-md-3 text-body2 text-bold">
+                  Compliance Standards
+                </div>
+                <div class="col-12 col-md-9 text-caption text-grey-7 q-mb-md">
+                  Select applicable Standard
+                </div>
+              </div>
+              <div class ="row q-col-gutter-sm q-pt-sm">
+                <div class="col-auto">
+                  <label for="Standards">Choose a Standard:</label>
+                  <select name="Standards" id="Standards">
+                    <option value="GDPR">GDPR</option>
+                    <option value="HIPAA">HIPAA</option>
+                    <option value="FISMA">FISMA</option>
+                  </select>
+                </div>
+              </div>
+            </q-card>
+
         </q-tab-panel>
 
         <!-- Integrations -->
