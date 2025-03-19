@@ -14,26 +14,43 @@
       <div class="row">
         <!-- sidebar section -->
         <div class="col-12 col-md-3">
-          <q-list bordered>
-            <!-- dropdown for each site -->
-            <q-expansion-item
-              v-for="site in sites"
-              :key="site.id"
-              :label="site.name"
-              dense
-            >
-              <q-item v-for="camera in site.cameras" :key="camera.id" clickable v-ripple>
-                <q-item-section>{{ camera.name }}</q-item-section>
-              </q-item>
-            </q-expansion-item>
+          + <!-- Sites with dropdown style like Figma -->
+     <div class="sites-list">
+      <div v-for="site in sites" :key="site.id" class="site-item">
+        <div
+          class="site-header q-py-sm q-px-md"
+          @click="toggleSite(site)"
+          :class="{ 'site-active': site.expanded }"
+        >
+          <div class="row items-center justify-between">
+            <div>{{ site.name }}</div>
+            <q-icon :name="site.expanded ? 'keyboard_arrow_down' : 'keyboard_arrow_right'" />
+          </div>
+        </div>
+        <div v-show="site.expanded" class="camera-list">
+          <div
+            v-for="camera in site.cameras"
+            :key="camera.id"
+            class="camera-item q-py-sm q-px-md"
+            @click="selectCamera(camera, site)"
+          >
+            {{ camera.name }}
+          </div>
+        </div>
+      </div>
+    </div>
 
-            <q-btn
-              label="+ Add New Site"
-              flat
-              class="bg-dark text-white q-mt-md"
-              @click="openAddSiteDialog"
-            />
-          </q-list>
+    <q-btn
+      label="+ Add New Site"
+      flat
+      class="add-site-btn full-width q-mt-md"
+      @click="openAddSiteDialog"
+    />
+
+
+
+
+
         </div>
 
         <div class="col-12 col-md-9">
@@ -269,7 +286,12 @@ export default {
     async fetchSites() {
       try {
         const response = await axios.get('http://16.171.224.57:3002/sites');
-        this.sites = response.data.sites;
+        // Add expanded property to each site for dropdown functionality
+        this.sites = (response.data.sites || []).map(site => ({
+          ...site,
+          expanded: false,
+          cameras: site.cameras || []
+        }));
       } catch (error) {
         console.error('Error fetching sites:', error);
       }
@@ -285,6 +307,18 @@ export default {
         RTSPURL: '',
       };
     },
+  toggleSite(site) {
+    // Toggle expanded state for this site
+    site.expanded = !site.expanded;
+
+    // Close all other sites
+    this.sites.forEach(s => {
+      if (s.id !== site.id) {
+        s.expanded = false;
+      }
+    });
+  },
+
   }
 };
 </script>
