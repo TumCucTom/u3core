@@ -490,6 +490,46 @@ def get_anomalies_by_type():
     finally:
         conn.close()
 
+@app.route('/api/delete-camera/<int:camera_id>', methods=['DELETE'])
+def delete_camera(camera_id):
+    """
+    Deletes a camera from the database by its ID and stops any associated fire detection process.
+    """
+    try:
+        conn = get_db_connection()
+        with conn.cursor() as cursor:
+            # First, get the camera's rtsp_url to stop the fire detection process
+            cursor.execute("SELECT rtsp_url FROM Cameras WHERE id = %s", (camera_id,))
+            result = cursor.fetchone()
+
+            if not result:
+                return jsonify({"error": "Camera not found"}), 404
+
+            rtsp_url = result[0]
+
+            # Delete the camera from the database
+            cursor.execute("DELETE FROM Cameras WHERE id = %s", (camera_id,))
+
+            # Check if any rows were affected
+            if cursor.rowcount == 0:
+                return jsonify({"error": "Camera not found"}), 404
+
+        conn.commit()
+
+        # Stop the fire detection process if it's running
+        if rtsp_url in fire_detection_processes:
+            process = fire_detection_processes.pop(rtsp_url)
+            process.terminate()
+            print(f"Stopped fire detection for: {rtsp_url}")
+
+        return jsonify({"message": "Camera deleted successfully"}), 200
+    except Exception as e:
+        print(f"Error deleting camera: {e}")
+        return jsonify({"error": "Internal Server Error"}), 500
+    finally:
+        conn.close()
+
+
 @app.route('/api/emails', methods=['GET'])
 def get_emails():
     """
