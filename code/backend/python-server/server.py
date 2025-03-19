@@ -613,6 +613,52 @@ def update_camera(camera_id):
     finally:
         conn.close()
 
+@app.route('/api/delete-site/<int:site_id>', methods=['DELETE'])
+def delete_site(site_id):
+    """
+    Deletes a site from the database.
+    Optionally handles associated cameras based on the 'delete_cameras' parameter.
+    """
+    delete_cameras = request.args.get('delete_cameras', 'false').lower() == 'true'
+
+    try:
+        conn = get_db_connection()
+        with conn.cursor() as cursor:
+            if delete_cameras:
+                # Get all cameras associated with this site to stop their fire detection processes
+                cursor.execute("SELECT id, rtsp_url FROM Cameras WHERE site_id = %s", (site_id,))
+                cameras = cursor.fetchall()
+
+                # Delete all cameras associated with this site
+                cursor.execute("DELETE FROM Cameras WHERE site_id = %s", (site_id,))
+
+                # Stop fire detection processes for these cameras
+                for _, rtsp_url in cameras:
+                    if rtsp_url in fire_detection_processes:
+                        process = fire_detection_processes.pop(rtsp_url)
+                        process.terminate()
+                        print(f"Stopped fire detection for: {rtsp_url}")
+            else:
+                # Unlink cameras from this site (set site_id to NULL)
+                cursor.execute("UPDATE Cameras SET site_id = NULL WHERE site_id = %s", (site_id,))
+
+            # Delete the site
+            cursor.execute("DELETE FROM Sites WHERE id = %s", (site_id,))
+
+            # Check if any rows were affected
+            if cursor.rowcount == 0:
+                return jsonify({"error": "Site not found"}), 404
+
+        conn.commit()
+        return jsonify({
+            "message": "Site deleted successfully",
+            "cameras": "deleted" if delete_cameras else "unlinked"
+        }), 200
+    except Exception as e:
+        print(f"Error deleting site: {e}")
+        return jsonify({"error": "Internal Server Error"}), 500
+    finally:
+        conn.close()
 
 @app.route('/api/emails', methods=['GET'])
 def get_emails():
