@@ -108,10 +108,10 @@ def start_fire_detection_for_all_cameras():
 
 @app.route('/health', methods=['GET'])
 def health_check():
+    """See if database connected successfully"""
     if HEALTHY:
         return jsonify(status="healthy"), 200  # Status 200 means OK
-    else:
-        return jsonify({"error": "Internal Server Error"}), 501
+    return jsonify({"error": "Internal Server Error"}), 501
 
 
 @app.route('/api/add-camera', methods=['POST'])
