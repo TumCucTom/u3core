@@ -1,11 +1,10 @@
 """
-Fire Detection and Alert System
+Fire Detection and Alert System (YOLOv8)
 
-This script captures video from an RTSP stream, detects fire using the Roboflow API,
+This script captures video from an RTSP stream, detects fire using a trained YOLOv8 model,
 and sends alerts via AWS SNS (SMS) and Twilio (WhatsApp) when fire is detected.
 
-Configuration values are loaded from `config.json`, which should contain AWS, Twilio,
-and Roboflow credentials, as well as recipient contact details.
+Configuration values are loaded from environment variables.
 """
 import os
 import time
@@ -15,8 +14,9 @@ import boto3
 from twilio.rest import Client
 import requests
 from dotenv import load_dotenv
+from ultralytics import YOLO
 
-# Load environment variables from ../../../.env
+# Load environment variables
 dotenv_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../.env"))
 load_dotenv(dotenv_path)
 
@@ -34,18 +34,8 @@ TWILO_NUMBER = os.getenv("TWILIO_WHATSAPP_NUMBER")
 REC_NUMBER = os.getenv("RECIPIENT_PHONE_NUMBER")
 REC_WHATSAPP_NUMBER = os.getenv("RECIPIENT_WHATSAPP_NUMBER")
 
-# Roboflow setup
-R_API_KEY = os.getenv("R_API_KEY")
-R_MODEL_URL = os.getenv("R_MODEL_URL")
-R_CONFIDENCE = 0.5
-
-R_PARAMS = {
-    "api_key": R_API_KEY,
-    "confidence": R_CONFIDENCE
-}
-
 # Alert message
-ALERT_MESSAGE = "Abnormal detected"
+ALERT_MESSAGE = "Fire detected! Immediate action required!"
 
 def send_hazard_log(rtsp_url, hazard):
     """
@@ -64,7 +54,7 @@ def send_hazard_log(rtsp_url, hazard):
     }
 
     try:
-        response = requests.post(url, json=payload, timeout="15")
+        response = requests.post(url, json=payload, timeout=15)
         return response.json()
     except requests.exceptions.RequestException as e:
         print(f"Error sending request: {e}")
@@ -72,7 +62,7 @@ def send_hazard_log(rtsp_url, hazard):
 
 # Send SMS via AWS SNS
 def send_sms_via_sns(phone_number, message):
-    """send message via SMS"""
+    """Send message via SMS."""
     sns_client = boto3.client(
         "sns",
         region_name=AWS_REGION,
@@ -96,42 +86,42 @@ def send_whatsapp_via_twilio(to_number, message):
     )
     print(f"WhatsApp message sent! Message SID: {message.sid}")
 
-# Detect fire using Roboflow
-def detect_fire_with_roboflow(frame):
-    """Detect fire using Roboflow API."""
-    _, img_encoded = cv2.imencode(".jpg", frame)
-    response = requests.post(
-        R_MODEL_URL,
-        params=R_PARAMS,
-        files={"file": img_encoded.tobytes()},
-        timeout=5.0
-    )
-    response_data = response.json()
-    predictions = response_data.get("predictions", [])
+# Detect fire using YOLOv8
+def detect_fire_with_yolo(frame, model):
+    """Detect fire using the trained YOLOv8 model."""
+    results = model(frame)  # Run inference on the frame
+    detections = results[0].boxes  # Get detected bounding boxes
 
-    for prediction in predictions:
-        if prediction["class"] == "fire" and prediction["confidence"] >= R_PARAMS["confidence"]:
-            return True , "fire"
+    for box in detections:
+        class_id = int(box.cls[0].item())  # Get class index
+        confidence = box.conf[0].item()  # Get confidence score
+
+        if class_id == 0 and confidence >= 0.5:  # Assuming 'fire' is class 0
+            return True, "fire"
+
     return False, "none"
 
 # Process RTSP stream
-def process_rtsp_stream_with_url(rtsp_url):
+def process_rtsp_stream_with_url(rtsp_url,model_path = "models/default/default.pt" ):
     """Process RTSP stream for fire detection."""
+    # Load trained YOLOv8 model
+    model = YOLO(model_path)
+
     cap = cv2.VideoCapture(rtsp_url)
     if not cap.isOpened():
         print("Error: Unable to open RTSP stream.")
         return
 
     last_alert_time = 0
-    alert_interval = 30
+    alert_interval = 30  # Minimum time between alerts (seconds)
 
     while True:
         ret, frame = cap.read()
         if not ret:
-            print("Error: Unable to read frame from webcam.")
+            print("Error: Unable to read frame from RTSP stream.")
             break
 
-        fire_detected, alert_type = detect_fire_with_roboflow(frame)
+        fire_detected, alert_type = detect_fire_with_yolo(frame, model)
 
         if fire_detected:
             current_time = time.time()
@@ -139,12 +129,12 @@ def process_rtsp_stream_with_url(rtsp_url):
                 print("Fire detected! Sending alerts...")
                 send_sms_via_sns(REC_NUMBER, ALERT_MESSAGE)
                 send_whatsapp_via_twilio(REC_WHATSAPP_NUMBER, ALERT_MESSAGE)
-
-                send_hazard_log(rtsp_url,alert_type)
+                send_hazard_log(rtsp_url, alert_type)
 
                 last_alert_time = current_time
 
-        cv2.imshow("Webcam Stream", frame)
+        # Display the stream with fire detection
+        cv2.imshow("Fire Detection Stream", frame)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
