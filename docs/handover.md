@@ -1,5 +1,7 @@
 # State of the project
 
+In any main section of the repo, you should find a README that provides information on what that section does and how to work on it
+
 ## Backend
 
 ### Server
@@ -36,8 +38,13 @@ The ```Dockerfile.xx``` run the parts of the backend. The only relevant one curr
   - NOTE: This is done on github actions to www.ai.u3core.com using FTP
 
 ## Other
- # AWS
+### AWS
+- The server being used for the backend is the u3CoreServer instance.
+- This is a t2-small instance with a 100GB volume attached
 
+### Github
+- Github action workflows can be found under ```.github/workflows```
+- Two other contributors must approve a PR before it is pulled into dev
 
 ## What's to do?
 
