@@ -45,13 +45,3 @@ The ```Dockerfile.xx``` run the parts of the backend. The only relevant one curr
 ### Github
 - Github action workflows can be found under ```.github/workflows```
 - Two other contributors must approve a PR before it is pulled into dev
-
-## What's to do?
-
-## Backend
-LATER
-
-## Frontend
-LATER
-## Other
-LATER
