@@ -428,6 +428,11 @@ export default {
    this.addRTSP = true;
  },
 
+  confirmDeleteCamera(camera) {
+   this.cameraToDelete = camera;
+   this.deleteConfirmDialog = true;
+ },
+
 
 
 
