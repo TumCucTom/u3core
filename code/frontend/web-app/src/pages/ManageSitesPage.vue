@@ -204,12 +204,15 @@ export default {
       newCamera: {
         name: '',
         RTSPURL: '',
+        siteId: null,
+        id: null
       },
       streaming: false,
       videoSrc: '', // RTSP URL
       sites: [], // List of sites fetched from the server
       socket: null, // WebSocket instance
       currentFrame: '', // Current frame as blob URL
+      editingCamera: false,
     };
   },
 
@@ -225,7 +228,14 @@ export default {
        return this.selectedSite.longitude;
      }
      return '48.8584° E';
-   }
+   },
+
+  siteOptions() {
+     return this.sites.map(site => ({
+       label: site.name,
+       value: site.id
+     }));
+   },
  },
 
 
@@ -293,8 +303,13 @@ export default {
       this.resetForm();
     },
     openAddRTSP() {
+      this.editingCamera = false;
       this.addRTSP = true;
       this.resetForm();
+         // If a site is selected, pre-select it for the new camera
+      if (this.selectedSite) {
+        this.newCamera.siteId = this.selectedSite.id;
+      }
     },
     closeAddRTSP() {
       this.addRTSP = false;
@@ -351,6 +366,8 @@ export default {
       this.newCamera = {
         name: '',
         RTSPURL: '',
+        siteId: this.selectedSite ? this.selectedSite.id : null,
+       id: null
       };
     },
   toggleSite(site) {
@@ -372,7 +389,9 @@ export default {
     this.videoSrc = camera.rtsp_url;
  },
 
+
   }
+
 };
 
 
