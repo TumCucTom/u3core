@@ -54,39 +54,55 @@
         </div>
 
         <div class="col-12 col-md-9">
-          <q-card bordered class="q-pa-md">
-            <div class="row justify-between items-center">
-              <h2 class="text-h6">CAM 01 View</h2>
-              <q-btn label="Live View" color="amber" flat @click="startLiveStream"/>
-            </div>
+          + <div class="col-12 col-md-9 q-pl-md">
+   <q-card v-if="selectedCamera" class="camera-view-card">
+     <q-card-section>
+       <div class="row justify-between items-center">
+         <div>
+           <h2 class="text-h6">{{ selectedCamera.name }}</h2>
+           <p class="text-caption q-mt-none">{{ selectedCamera.rtsp_url || '192.168.1.100' }}</p>
+         </div>
+         <q-btn
+           label="Live View"
+           color="amber"
+           text-color="dark"
+           class="live-view-btn"
+           @click="startLiveStream"
+         />
+       </div>
+     </q-card-section>
 
-            <div class="bg-grey-8 q-mt-md" style="height: 250px; position: relative;">
-              <img
-                v-if="streaming"
-                ref="imagePlayer"
-                style="width: 100%; height: 100%; object-fit: cover;"
-                :src="currentFrame"
-                alt="Live Stream"
-              />
-              <div
-                v-else
-                style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: black; color: white; font-size: 2rem;">
-                Loading stream...
-              </div>
-            </div>
+     <div class="bg-grey-8 q-mt-md" style="height: 250px; position: relative;">
+       <img
+         v-if="streaming"
+         ref="imagePlayer"
+         style="width: 100%; height: 100%; object-fit: cover;"
+         :src="currentFrame"
+         alt="Live Stream"
+       />
+       <div
+         v-else
+         style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: black; color: white; font-size: 2rem;">
+         Loading stream...
+       </div>
+     </div>
 
+     <div class="row q-mt-md">
+       <q-card flat bordered class="col-6 q-pa-md">
+         <div class="text-caption text-grey-7">Latitude</div>
+         <div class="text-h5 text-bold">{{ currentSiteLatitude }}</div>
+       </q-card>
+       <q-card flat bordered class="col-6 q-pa-md">
+         <div class="text-caption text-grey-7">Longitude</div>
+         <div class="text-h5 text-bold">{{ currentSiteLongitude }}</div>
+       </q-card>
+     </div>
+   </q-card>
 
-            <div class="row q-mt-md">
-              <q-card flat bordered class="col-6 q-pa-md">
-                <div class="text-caption text-grey-7">Latitude</div>
-                <div class="text-h5 text-bold">48.8584° N</div>
-              </q-card>
-              <q-card flat bordered class="col-6 q-pa-md">
-                <div class="text-caption text-grey-7">Longitude</div>
-                <div class="text-h5 text-bold">48.8584° E</div>
-              </q-card>
-            </div>
-          </q-card>
+   <div v-else class="no-camera-selected">
+     <p>Select a camera to view details</p>
+   </div>
+ </div>
         </div>
       </div>
 
