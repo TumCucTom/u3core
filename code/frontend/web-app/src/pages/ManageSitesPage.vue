@@ -433,10 +433,41 @@ export default {
    this.deleteConfirmDialog = true;
  },
 
+  async deleteCamera() {
+   if (!this.cameraToDelete) return;
+
+   try {
+
+     await axios.delete(`http://16.171.224.57:3002/api/delete-camera/${this.cameraToDelete.id}`);
+
+     // Remove the camera from the local state
+     if (this.selectedSite) {
+       this.selectedSite.cameras = this.selectedSite.cameras.filter(
+         c => c.id !== this.cameraToDelete.id
+       );
+     }
+
+     // If this was the selected camera, clear the selection
+     if (this.selectedCamera && this.selectedCamera.id === this.cameraToDelete.id) {
+       this.selectedCamera = null;
+     }
+
+     // Refresh the sites data
+     await this.fetchSites();
+
+    // Reset
+     this.cameraToDelete = null;
+   } catch (error) {
+     console.error('Error deleting camera:', error);
+   }
+ },
+},
 
 
 
-  }
+
+
+
 
 };
 
