@@ -696,7 +696,7 @@ def send_verify_email():
 def send_email(to_email, subject, link, code=None):
     """Send an email using the Postmark API using requests"""
     postmark_token = POSTMARK_API  # Replace with your actual Postmark token
-    sender_email = "info@digitalU3.com"  # Verified sender email
+    sender_email = "info@digitalu3.com"  # Verified sender email
 
     # Construct the email body
     html_content = f"""
@@ -713,7 +713,6 @@ def send_email(to_email, subject, link, code=None):
         "To": to_email,
         "Subject": subject,
         "HtmlBody": html_content,
-        "MessageStream": "verify"
     }
 
     # Define headers
