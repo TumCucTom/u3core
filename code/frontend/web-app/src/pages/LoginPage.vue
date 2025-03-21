@@ -222,14 +222,13 @@
 };
 
   const onLogin = async () => {
-  const emailSend = String(emailLogin.value);
-
+  const emailSend = String(email.value);
+  sessionStorage.setItem("emailTransfer", emailSend)
   try {
   const response = await axios.get('http://16.171.224.57:0080/api/login', { params: { emailVar: emailSend } });
   const fetchedHashedPassword = response.data;
 
-  const result = await bcrypt.compare(passwordLogin.value, fetchedHashedPassword);
-
+  const result = await bcrypt.compare(password.value, fetchedHashedPassword);
   if (result) {
   // Passwords match, allow the user to log in
   $q.notify({
@@ -240,7 +239,7 @@
 });
 
   // Redirect user
-  router.push('/OTPVerification');
+  router.push('/otp');
 } else {
   // Passwords don't match, notify the user
   $q.notify({
