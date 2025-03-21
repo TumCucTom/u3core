@@ -28,14 +28,22 @@
           </div>
         </div>
         <div v-show="site.expanded" class="camera-list">
-          <div
+         <div
             v-for="camera in site.cameras"
             :key="camera.id"
             class="camera-item q-py-sm q-px-md"
             @click="selectCamera(camera, site)"
+            :class="{ 'camera-active': selectedCamera && selectedCamera.id === camera.id }"
           >
-            {{ camera.name }}
+            <div class="row items-center justify-between">
+              <div>{{ camera.name }}</div>
+              <div class="camera-actions">
+                <q-btn flat round dense icon="edit" size="sm" @click.stop="openEditCamera(camera)" />
+                <q-btn flat round dense icon="delete" size="sm" @click.stop="confirmDeleteCamera(camera)" />
+              </div>
+            </div>
           </div>
+
         </div>
       </div>
     </div>
