@@ -183,6 +183,9 @@ import axios from 'axios';
 export default {
   data() {
     return {
+
+      selectedCamera: null,
+     selectedSite: null,
       addSiteDialog: false,
       addRTSP: false,
       newSite: {
@@ -201,6 +204,25 @@ export default {
       currentFrame: '', // Current frame as blob URL
     };
   },
+
+  computed: {
+   currentSiteLatitude() {
+     if (this.selectedSite && this.selectedSite.latitude) {
+       return this.selectedSite.latitude;
+     }
+     return '48.8584° N';
+   },
+   currentSiteLongitude() {
+     if (this.selectedSite && this.selectedSite.longitude) {
+       return this.selectedSite.longitude;
+     }
+     return '48.8584° E';
+   }
+ },
+
+
+
+
   created() {
     this.fetchSites();
   },
@@ -335,11 +357,41 @@ export default {
     });
   },
 
+
+   selectCamera(camera, site) {
+    this.selectedCamera = camera;
+    this.selectedSite = site;
+    this.videoSrc = camera.rtsp_url;
+ },
+
   }
 };
+
+
+
 </script>
 
 <style>
+
+ .camera-view-card {
+   border-radius: 8px;
+   overflow: hidden;
+ }
+
+ .live-view-btn {
+   font-weight: 500;
+ }
+
+ .no-camera-selected {
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   height: 350px;
+   border: 1px dashed #e0e0e0;
+   border-radius: 8px;
+   color: #9e9e9e;
+   font-size: 1.2rem;
+ }
  .sites-list {
    border: 1px solid #e0e0e0;
    border-radius: 4px;
