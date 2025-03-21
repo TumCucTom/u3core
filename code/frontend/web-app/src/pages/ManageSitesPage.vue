@@ -144,10 +144,9 @@
         </q-card>
       </q-dialog>
 
-      <q-dialog v-model="addRTSP">
         <q-card style="min-width: 400px">
           <q-card-section>
-            <div class="text-h6">Add RTSP Camera</div>
+            <div class="text-h6">{{ editingCamera ? 'Edit Camera' : 'Add RTSP Camera' }}</div>
           </q-card-section>
           <q-card-section>
             <q-form>
@@ -165,14 +164,23 @@
                 class="q-mb-md"
                 placeholder="Enter RTSP URL"
               />
+
+              <q-select
+                v-model="newCamera.siteId"
+                outlined
+                label="Assign to Site"
+                :options="siteOptions"
+                class="q-mb-md"
+                option-label="label"
+                option-value="value"
+              />
             </q-form>
           </q-card-section>
           <q-card-actions align="right">
             <q-btn flat label="Cancel" color="primary" @click="closeAddRTSP" />
-            <q-btn flat label="Save" color="primary" @click="saveNewRTSP" />
+            <q-btn flat label="Save" color="primary" @click="saveCamera" />
           </q-card-actions>
         </q-card>
-      </q-dialog>
     </div>
   </q-page>
 </template>
