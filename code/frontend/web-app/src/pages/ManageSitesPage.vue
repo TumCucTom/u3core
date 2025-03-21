@@ -44,6 +44,24 @@
             </div>
           </div>
 
+
+        <q-dialog v-model="deleteConfirmDialog">
+          <q-card>
+            <q-card-section class="row items-center">
+              <q-avatar icon="delete" color="negative" text-color="white" />
+              <span class="q-ml-sm">Are you sure you want to delete this camera?</span>
+            </q-card-section>
+
+            <q-card-actions align="right">
+              <q-btn flat label="Cancel" color="primary" v-close-popup />
+              <q-btn flat label="Delete" color="negative" @click="deleteCamera" v-close-popup />
+            </q-card-actions>
+          </q-card>
+        </q-dialog>
+
+
+
+
         </div>
       </div>
     </div>
@@ -200,6 +218,10 @@ export default {
   data() {
     return {
 
+    deleteConfirmDialog: false,
+    cameraToDelete: null,
+    editingCamera: false,
+
       selectedCamera: null,
      selectedSite: null,
       addSiteDialog: false,
@@ -220,7 +242,6 @@ export default {
       sites: [], // List of sites fetched from the server
       socket: null, // WebSocket instance
       currentFrame: '', // Current frame as blob URL
-      editingCamera: false,
     };
   },
 
@@ -396,6 +417,18 @@ export default {
     this.selectedSite = site;
     this.videoSrc = camera.rtsp_url;
  },
+  openEditCamera(camera) {
+   this.editingCamera = true;
+   this.newCamera = {
+     id: camera.id,
+     name: camera.name,
+     RTSPURL: camera.rtsp_url || '',
+     siteId: camera.site_id || null
+   };
+   this.addRTSP = true;
+ },
+
+
 
 
   }
