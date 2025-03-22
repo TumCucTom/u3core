@@ -343,36 +343,41 @@ export default {
     closeAddRTSP() {
       this.addRTSP = false;
     },
-    async saveNewRTSP() {
-      try {
-        const response = await axios.post('http://16.171.224.57:3002/api/add-camera', {
-          name: this.newCamera.name,
-          rtsp_url: this.newCamera.RTSPURL,
-        });
-        console.log('Server Response:', response.data);
-        this.closeAddRTSP();
 
-        // Update video source and start live streaming
-        this.videoSrc = this.newCamera.RTSPURL;
-        console.log('Video Source:', this.videoSrc)
-        await this.startLiveStream();
-      } catch (error) {
-        console.error('Error saving new RTSP:', error);
-      }
-    },
-    async saveNewSite() {
-      try {
-        const response = await axios.post('http://16.171.224.57:3002/add-site', {
-          name: this.newSite.name,
-          latitude: this.newSite.latitude,
-          longitude: this.newSite.longitude,
-        });
-        console.log('Server Response:', response.data);
-        this.closeAddSiteDialog();
-      } catch (error) {
-        console.error('Error saving new site:', error);
-      }
-    },
+     async saveCamera() {
+   try {
+     if (this.editingCamera) {
+       // Update existing camera
+       await axios.put(`http://16.171.224.57:3002/api/update-camera/${this.newCamera.id}`, {
+         name: this.newCamera.name,
+         rtsp_url: this.newCamera.RTSPURL,
+         site_id: this.newCamera.siteId
+       });
+     } else {
+       // Add new camera
+       await axios.post('http://16.171.224.57:3002/api/add-camera', {
+         name: this.newCamera.name,
+         rtsp_url: this.newCamera.RTSPURL,
+         site_id: this.newCamera.siteId
+       });
+     }
+
+     // Refresh the sites data
+     await this.fetchSites();
+
+     // Close the dialog
+     this.closeAddRTSP();
+
+     // If adding a new camera, set it as video source
+     if (!this.editingCamera) {
+       this.videoSrc = this.newCamera.RTSPURL;
+       await this.startLiveStream();
+     }
+   } catch (error) {
+     console.error('Error saving camera:', error);
+   }
+ },
+
     async fetchSites() {
       try {
         const response = await axios.get('http://16.171.224.57:3002/sites');
