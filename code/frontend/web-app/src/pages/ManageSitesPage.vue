@@ -477,6 +477,19 @@ export default {
 
 <style>
 
+ .camera-actions {
+   opacity: 0;
+   transition: opacity 0.2s;
+ }
+
+ .camera-item:hover .camera-actions {
+   opacity: 1;
+ }
+
+ .camera-active {
+   background-color: #e3f2fd;
+ }
+
  .camera-view-card {
    border-radius: 8px;
    overflow: hidden;
