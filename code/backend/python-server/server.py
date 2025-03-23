@@ -75,6 +75,55 @@ def get_db_connection():
     """Return a fresh connection to the database."""
     return pymysql.connect(**db_config)
 
+def initialise_database():
+    """Create all required tables if they don't exist."""
+    try:
+        conn = get_db_connection()
+        with conn.cursor() as cursor:
+            # Create Sites table
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS Sites (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    name VARCHAR(255),
+                    latitude VARCHAR(50),
+                    longitude VARCHAR(50)
+                );
+            """)
+
+            # Create Cameras table
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS Cameras (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    name VARCHAR(255),
+                    rtsp_url TEXT,
+                    site_id INT,
+                    FOREIGN KEY (site_id) REFERENCES Sites(id)
+                );
+            """)
+
+            # Create Logs table
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS Logs (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    cameraIP VARCHAR(255),
+                    cameraName VARCHAR(255),
+                    hourTime VARCHAR(50),
+                    hazardType VARCHAR(50),
+                    number INT DEFAULT 1,
+                    falsePositive BOOLEAN DEFAULT FALSE
+                );
+            """)
+
+        conn.commit()
+        logging.info("Database tables initialized successfully")
+    except Exception as e:
+        logging.error(f"Error initializing database tables: {e}")
+    finally:
+        conn.close()
+
+# Call this function during startup
+initialise_database()
+
 # Auto fire detection startup
 
 # Dictionary to track running fire detection processes
@@ -103,6 +152,7 @@ def start_fire_detection_for_all_cameras():
         logging.info("Started fire detection for all cameras")
     except Exception as e:
         print(f"Error starting fire detection processes: {e}")
+
 
 # API endpoints
 
