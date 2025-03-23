@@ -151,6 +151,7 @@
                 label="Site Name"
                 class="q-mb-md"
                 placeholder="Enter site name"
+                :rules="[val => !!val || 'Site name is required']"
               />
               <q-input
                 v-model="newSite.latitude"
