@@ -98,20 +98,19 @@
        </div>
      </q-card-section>
 
-     <div class="bg-grey-8 q-mt-md" style="height: 250px; position: relative;">
-       <img
-         v-if="streaming"
-         ref="imagePlayer"
-         style="width: 100%; height: 100%; object-fit: cover;"
-         :src="currentFrame"
-         alt="Live Stream"
-       />
-       <div
-         v-else
-         style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: black; color: white; font-size: 2rem;">
-         Loading stream...
-       </div>
-     </div>
+     + <div class="stream-container">
+   <img
+     v-if="streaming"
+     ref="imagePlayer"
+     class="stream-image"
+     :src="currentFrame"
+     alt="Live Stream"
+   />
+   <div v-else class="stream-placeholder">
+     Loading stream...
+   </div>
+ </div>
+
 
      <div class="row q-mt-md">
        <q-card flat bordered class="col-6 q-pa-md">
