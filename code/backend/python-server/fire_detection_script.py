@@ -37,7 +37,7 @@ REC_WHATSAPP_NUMBER = os.getenv("RECIPIENT_WHATSAPP_NUMBER")
 # Roboflow setup
 R_API_KEY = os.getenv("R_API_KEY")
 R_MODEL_URL = os.getenv("R_MODEL_URL")
-R_CONFIDENCE = float(os.getenv("R_CONFIDENCE"))
+R_CONFIDENCE = 0.5
 
 R_PARAMS = {
     "api_key": R_API_KEY,

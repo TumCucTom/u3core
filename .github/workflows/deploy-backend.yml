@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - dev
-      - cd-backend
+      - bug-deploy-aws
   workflow_dispatch:
 
 jobs:
@@ -23,7 +23,6 @@ jobs:
         ssh-keyscan -H github.com >> ~/.ssh/known_hosts
         ssh-keyscan -H ${{ secrets.AWS_HOST }} >> ~/.ssh/known_hosts
 
-
     - name: Deploy to AWS
       run: |
         ssh ${{ secrets.AWS_USER }}@${{ secrets.AWS_HOST }} << 'EOF'
@@ -32,14 +31,29 @@ jobs:
           
           # Navigate to home directory and remove any existing repo
           cd ~
-          rm -r 2024-MLAIPredictionMicroservices
+          rm -rf 2024-MLAIPredictionMicroservices
 
           # Clone the latest version
-          git clone git@github.com:spe-uob/2024-MLAIPredictionMicroservices.git
+          git clone --single-branch --branch "${{ github.ref_name }}" git@github.com:spe-uob/2024-MLAIPredictionMicroservices.git
           cd 2024-MLAIPredictionMicroservices/code/backend
 
           # Start the service using Docker Compose
-          docker compose down
+          docker compose down -v
           docker compose pull
-          docker compose up -d --build
+          docker compose --env-file ../../../.env up -d --build
         EOF
+    - name: Health Check
+      run: |
+        sleep 30
+        RESPONSE=$(curl -s -X GET http://16.171.224.57:80/health || echo "error")
+        echo "Response: $RESPONSE"
+
+        if echo "$RESPONSE" | jq -e '.status == "healthy"' > /dev/null; then
+          echo "Service is healthy."
+        else
+          echo "Database did not connect"
+          exit 1
+        fi
+      shell: bash
+
+

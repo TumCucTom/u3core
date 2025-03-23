@@ -31,7 +31,7 @@
           Didn’t receive the email?
           <span class="text-pink cursor-pointer">Click to resend</span>
         </p>
-        <q-btn flat class="q-mt-md" label="Back to log in" icon="west" color="dark" />
+        <q-btn flat class="q-mt-md" label="Back to log in" icon="west" color="dark" @click="backtologin" />
       </div>
     </q-page>
   </template>
@@ -56,7 +56,7 @@
 
       const verifyCode = async () => {
         try {
-          const response = await axios.post('http://localhost:3002/api/checkCode', { code: givenCode.value });
+          const response = await axios.post('http://localhost:0080/api/checkCode', { code: givenCode.value });
           if (response === true) {
             $q.notify({
               color: 'green-4',
@@ -86,7 +86,7 @@
 
       const resendEmail = async () => {
         try {
-          const response = await axios.post('http://localhost:3002/api/sendVerifyEmail', { email: 'info@shopveloworks.com' });
+          const response = await axios.post('http://localhost:0080/api/sendVerifyEmail', { email: 'info@shopveloworks.com' });
           $q.notify({
             color: 'green-4',
             textColor: 'white',
@@ -109,7 +109,12 @@
         verifyCode,
         resendEmail
       };
-    }
+    },
+    methods:{
+      backtologin() {
+        this.$router.push('/'); // skip to login page
+      },
+    },
   }
   </script>
 
