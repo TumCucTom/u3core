@@ -488,6 +488,30 @@ export default {
 <style>
 
 
+ .stream-placeholder {
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   width: 100%;
+   height: 100%;
+   color: white;
+   font-size: 1.5rem;
+ }
+
+ .location-card {
+   border: 1px solid #e0e0e0;
+   border-radius: 4px;
+   padding: 16px;
+ }
+
+ .location-label {
+   color: #757575;
+   margin-bottom: 4px;
+ }
+
+ .location-value {
+   font-weight: 500;
+ }
 
 
  .camera-actions {
