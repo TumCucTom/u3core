@@ -115,9 +115,10 @@ def add_camera():
     data = request.json
     name = data.get('name')
     rtsp_url = data.get('rtsp_url')
+    site_id = data.get('site_id')
 
-    if not all([name, rtsp_url]):
-        return jsonify({"error": "Name and RTSP URL are required"}), 400
+    if not all([name, rtsp_url, site_id]):
+        return jsonify({"error": "Name,RTSP URL or site id  required"}), 400
 
     # Convert tcp:// to rtsp://
     if rtsp_url.startswith("tcp://"):
@@ -131,7 +132,7 @@ def add_camera():
             CREATE TABLE IF NOT EXISTS Cameras (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 name VARCHAR(255),
-                rtsp_url TEXT
+                rtsp_url TEXT,
                 site_id INT,
                 FOREIGN KEY (site_id) REFERENCES Sites(id)
             );
@@ -148,8 +149,8 @@ def add_camera():
 
             # Insert the new camera data
             cursor.execute(
-                "INSERT INTO Cameras (name, rtsp_url) VALUES (%s, %s)",
-                (name, rtsp_url)
+                "INSERT INTO Cameras (name, rtsp_url,site_id) VALUES (%s, %s,%s)",
+                (name, rtsp_url, site_id)
             )
         conn.commit()
 
