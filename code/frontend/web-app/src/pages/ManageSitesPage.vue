@@ -112,16 +112,22 @@
  </div>
 
 
-     <div class="row q-mt-md">
-       <q-card flat bordered class="col-6 q-pa-md">
-         <div class="text-caption text-grey-7">Latitude</div>
-         <div class="text-h5 text-bold">{{ currentSiteLatitude }}</div>
-       </q-card>
-       <q-card flat bordered class="col-6 q-pa-md">
-         <div class="text-caption text-grey-7">Longitude</div>
-         <div class="text-h5 text-bold">{{ currentSiteLongitude }}</div>
-       </q-card>
+  <q-card-section>
+   <div class="row q-col-gutter-md">
+     <div class="col-6">
+       <div class="location-card">
+         <div class="text-caption location-label">Latitude</div>
+         <div class="text-h6 location-value">{{ currentSiteLatitude }}</div>
+       </div>
      </div>
+     <div class="col-6">
+       <div class="location-card">
+         <div class="text-caption location-label">Longitude</div>
+         <div class="text-h6 location-value">{{ currentSiteLongitude }}</div>
+       </div>
+     </div>
+   </div>
+ </q-card-section>
    </q-card>
 
    <div v-else class="no-camera-selected">
@@ -480,6 +486,9 @@ export default {
 </script>
 
 <style>
+
+
+
 
  .camera-actions {
    opacity: 0;
