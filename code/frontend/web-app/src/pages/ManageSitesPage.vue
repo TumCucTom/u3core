@@ -384,6 +384,25 @@ export default {
    }
  },
 
+ async saveNewSite() {
+  try {
+
+   const response = await axios.post('http://16.171.224.57:3002/api/add-site', {
+      name: this.newSite.name,
+      latitude: this.newSite.latitude,
+      longitude: this.newSite.longitude,
+    });
+
++   // Refresh the sites data after saving
++   await this.fetchSites();
+
+    // Close the dialog
+    this.closeAddSiteDialog();
+  } catch (error) {
+    console.error('Error saving new site:', error);
+  }
+},
+
     async fetchSites() {
       try {
         const response = await axios.get('http://16.171.224.57:3002/sites');
