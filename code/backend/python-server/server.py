@@ -132,6 +132,8 @@ def add_camera():
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 name VARCHAR(255),
                 rtsp_url TEXT
+                site_id INT,
+                FOREIGN KEY (site_id) REFERENCES Sites(id)
             );
             """
             cursor.execute(create_table_query)

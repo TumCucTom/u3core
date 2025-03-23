@@ -354,14 +354,14 @@ export default {
    try {
      if (this.editingCamera) {
        // Update existing camera
-       await axios.put(`http://16.171.224.57:3002/api/update-camera/${this.newCamera.id}`, {
+       await axios.put(`http://127.0.0.1:3002/api/update-camera/${this.newCamera.id}`, {
          name: this.newCamera.name,
          rtsp_url: this.newCamera.RTSPURL,
          site_id: this.newCamera.siteId
        });
      } else {
        // Add new camera
-       await axios.post('http://16.171.224.57:3002/api/add-camera', {
+       await axios.post('http://127.0.0.1:3002/api/add-camera', {
          name: this.newCamera.name,
          rtsp_url: this.newCamera.RTSPURL,
          site_id: this.newCamera.siteId
@@ -387,7 +387,7 @@ export default {
  async saveNewSite() {
   try {
 
-   const response = await axios.post('http://16.171.224.57:3002/api/add-site', {
+   const response = await axios.post('http://127.0.0.1:3002/api/add-site', {
       name: this.newSite.name,
       latitude: this.newSite.latitude,
       longitude: this.newSite.longitude,
@@ -405,7 +405,7 @@ export default {
 
     async fetchSites() {
       try {
-        const response = await axios.get('http://16.171.224.57:3002/sites');
+        const response = await axios.get('http://127.0.0.1:3002/sites');
         // Add expanded property to each site for dropdown functionality
         this.sites = (response.data.sites || []).map(site => ({
           ...site,
@@ -468,7 +468,7 @@ export default {
 
    try {
 
-     await axios.delete(`http://16.171.224.57:3002/api/delete-camera/${this.cameraToDelete.id}`);
+     await axios.delete(`http://127.0.0.1:3002/api/delete-camera/${this.cameraToDelete.id}`);
 
      // Remove the camera from the local state
      if (this.selectedSite) {
