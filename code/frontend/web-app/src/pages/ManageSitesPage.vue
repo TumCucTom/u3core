@@ -445,10 +445,16 @@ export default {
 
         // Close the dialog
         this.closeAddSiteDialog();
-
-
+        this.$q.notify({
+          message: 'Site added successfully',
+          color: 'positive'
+        });
       } catch (error) {
         console.error('Error saving new site:', error);
+        this.$q.notify({
+          message: 'Error adding site',
+          color: 'negative'
+        });
       }
     },
 
