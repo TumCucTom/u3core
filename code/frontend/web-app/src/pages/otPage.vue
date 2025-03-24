@@ -13,20 +13,6 @@
         </p>
 
 
-        <div class="row q-my-lg justify-center">
-          <q-input
-            v-for="(otp, index) in otpFields"
-            :key="index"
-            v-model="otpFields[index]"
-            maxlength="1"
-            type="text"
-            class="otp-box text-center q-mx-xs"
-            input-class="text-pink text-h5"
-          />
-        </div>
-
-
-        <q-btn label="Verify email" color="pink" class="full-width q-my-md text-white" @click="verifyCode"/>
         <p class="text-caption text-center q-mt-sm" @click="resendEmail">
           Didn’t receive the email?
           <span class="text-pink cursor-pointer">Click to resend</span>
@@ -43,11 +29,6 @@
   import axios from 'axios';
 
   export default {
-    data() {
-      return {
-        otpFields: ['', '', '', ''], // array for the code
-      };
-    },
     name: "CodeVerification",
 
     mounted() {
