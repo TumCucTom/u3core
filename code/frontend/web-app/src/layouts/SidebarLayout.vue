@@ -53,7 +53,6 @@
           </q-item-section>
 
           <q-item-section>
-            <div>user name</div>
             <div class="text-caption text-grey" id="retrievedEmail"></div>
           </q-item-section>
         </q-item>
