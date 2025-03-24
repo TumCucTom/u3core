@@ -54,35 +54,6 @@
       const $q = useQuasar();
       let givenCode = ref(null);
 
-      const verifyCode = async () => {
-        try {
-          const response = await axios.post('http://16.171.224.57:0080/api/checkCode', { code: givenCode.value });
-          if (response === true) {
-            $q.notify({
-              color: 'green-4',
-              textColor: 'white',
-              icon: 'email',
-              message: 'Verification successful. Please wait to be redirected.'
-            });
-          }
-          else{
-            $q.notify({
-              color: 'red-5',
-              textColor: 'white',
-              icon: 'error',
-              message: 'Incorrect code. Please try again'
-            });
-          }
-        } catch (error) {
-          console.error('Error with verification of email:', error);
-          $q.notify({
-            color: 'red-5',
-            textColor: 'white',
-            icon: 'error',
-            message: 'Error with verification of email'
-          });
-        }
-      };
 
       const resendEmail = async () => {
         try {
