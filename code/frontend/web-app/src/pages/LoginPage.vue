@@ -6,11 +6,11 @@
         <div class="text-left">
           <q-img src="../assets/u3logo1.png" alt="Digital U3" style="width: 150px;" />
           <div class="q-mt-xl text-center">
-            <q-rating value="5" readonly size="lg" color="amber" />
+            <q-rating v-model="ratingModel" value="5" readonly size="lg" color="amber" />
             <p class="q-my-md text-h5">
               {{ isLogin
-                ? "We've been using Untitled to kick start every new project and can't imagine working without it."
-                : "U3Core's safety compliance features helped us monitor workplace conditions more efficiently. We've not only reduced risks but also met the regulatory requirements with ease.'"
+                ? "U3Core's safety compliance features helped us monitor workplace conditions more efficiently. We've not only reduced risks but also met the regulatory requirements with ease."
+                : "U3Core's safety compliance features helped us monitor workplace conditions more efficiently. We've not only reduced risks but also met the regulatory requirements with ease."
               }}
             </p>
             <q-avatar size="80px">
@@ -262,6 +262,7 @@
 };
 
   return {
+  ratingModel:ref(5),
   firstName,
   lastName,
   email,

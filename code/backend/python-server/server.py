@@ -16,11 +16,12 @@ import sys
 import datetime
 import pymysql
 import requests
-from fire_detection_script import process_rtsp_stream_with_url
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import bcrypt
 from dotenv import load_dotenv
+from fire_detection_script import process_rtsp_stream_with_url
+from train_yolo import train_yolo_model
 
 
 load_dotenv()
@@ -395,6 +396,21 @@ def get_count_from_table(table_name, condition=None, condition_values=None):
     finally:
         if conn:
             conn.close()
+
+@app.route('/api/train-custom-model', methods=['POST'])
+def train_model():
+    """Train a model using data at a path"""
+    data = request.json
+    model_path = data.get('path')
+
+    if not model_path:
+        return jsonify({"error": "Path to data required"}), 400
+    try:
+        train_yolo_model(f"{model_path}/data.yaml", epochs=100, img_size=640)
+        return jsonify(status="training"), 200
+    except Exception as e:
+        print(f"Error during model training: {e}")
+        return jsonify({"error": "Internal Server Error"}), 500
 
 # Endpoint for site count (No extra condition)
 @app.route('/api/get-site-count', methods=['GET'])

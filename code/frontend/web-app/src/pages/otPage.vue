@@ -17,7 +17,7 @@
           Didn’t receive the email?
           <span class="text-pink cursor-pointer"><b>Click to resend</b></span>
         </p>
-        <q-btn flat class="q-mt-md" label="Back to log in" icon="west" color="dark" />
+        <q-btn flat class="q-mt-md" label="Back to log in" icon="west" color="dark" @click="backtologin" />
       </div>
     </q-page>
   </template>
@@ -81,7 +81,12 @@
         verifyCode,
         resendEmail
       };
-    }
+    },
+    methods:{
+      backtologin() {
+        this.$router.push('/'); // skip to login page
+      },
+    },
   }
   </script>
 
