@@ -699,8 +699,7 @@ def send_verify_email():
 
         token = secrets.token_hex(20)
         verification_link = f"http://ai.u3core.com/#/verified-email?token={token}&email={email}"
-        otp_code = ''.join(random.choices(string.digits, k=6))
-        send_email(email, "Email Verification", verification_link, otp_code)
+        send_email(email, "Email Verification", verification_link)
         return jsonify({"message": "Verification email sent successfully"})
     except Exception as e:
         print(f"Error sending verification email: {e}")
@@ -709,7 +708,7 @@ def send_verify_email():
         conn.close()
 
 
-def send_email(to_email, subject, link, code=None):
+def send_email(to_email, subject, link):
     """Send an email using the Postmark API using requests"""
     postmark_token = POSTMARK_API  # Replace with your actual Postmark token
     sender_email = "info@digitalu3.com"  # Verified sender email
@@ -719,9 +718,6 @@ def send_email(to_email, subject, link, code=None):
     <div>
         <p>Click <a href="{link}">here</a> to proceed.</p>
     """
-    if code:
-        html_content += f"<p>Your OTP is: <strong>{code}</strong></p>"
-    html_content += "</div>"
 
     # Define the payload
     payload = {

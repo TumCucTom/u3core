@@ -46,7 +46,10 @@
         catch (error) {
         console.error("Error fetching alerts:", error);
       }
-      }
+      },
+      backtologin() {
+        this.$router.push('/'); // skip to login page
+      },
     },
 
     setup() {
@@ -78,14 +81,8 @@
 
       return {
         givenCode,
-        verifyCode,
         resendEmail
       };
-    },
-    methods:{
-      backtologin() {
-        this.$router.push('/'); // skip to login page
-      },
     },
   }
   </script>
@@ -99,17 +96,6 @@
   }
   .verification-box {
     max-width: 400px;
-  }
-  .otp-box {
-    width: 50px;
-    height: 50px;
-    border: 2px solid #f48fb1;
-    border-radius: 8px;
-  }
-  .otp-box input {
-    font-size: 24px;
-    font-weight: bold;
-    text-align: center;
   }
   .text-pink {
     color: #f48fb1;
