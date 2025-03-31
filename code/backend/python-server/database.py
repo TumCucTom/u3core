@@ -66,7 +66,7 @@ def initialise_database(db_config):
 
         conn.commit()
         logging.info("Database tables initialized successfully")
-    except Exception as e:
-        logging.error(f"Error initializing database tables: {e}")
+    except Exception as error:
+        logging.error("Error initializing database tables: %(error)s", {"error": error})
     finally:
         conn.close()
