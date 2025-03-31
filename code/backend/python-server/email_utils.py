@@ -6,10 +6,12 @@ import pycurl
 import requests
 
 def send_email(to_email, subject, link, code=None, postmark_api=None):
-    """Send an email using the Postmark API"""
-    postmark_token = postmark_api  # Client's Postmark server API token
-    sender_email = "info@digitalU3.com" # Client's Sender email
+    """
+    Send an email using the Postmark API
+    """
+    sender_email = "info@digitalU3.com"  # Client's Sender email
 
+    # Build email content
     html_content = f"""
     <div>
         <p>Click <a href="{link}">here</a> to proceed.</p>
@@ -18,6 +20,7 @@ def send_email(to_email, subject, link, code=None, postmark_api=None):
         html_content += f"<p>Your OTP is: <strong>{code}</strong></p>"
     html_content += "</div>"
 
+    # Prepare payload
     payload = {
         "From": sender_email,
         "To": to_email,
@@ -27,14 +30,17 @@ def send_email(to_email, subject, link, code=None, postmark_api=None):
     }
 
     try:
+        # Send request to Postmark API
         url = "https://api.postmarkapp.com/email"
         headers = [
             "Accept: application/json",
             "Content-Type: application/json",
-            f"X-Postmark-Server-Token: {postmark_token}"
+            f"X-Postmark-Server-Token: {postmark_api}"
         ]
         data = json.dumps(payload)
         response_buffer = BytesIO()
+
+        # Using pycurl to send the request
         c = pycurl.Curl()
         c.setopt(c.URL, url)
         c.setopt(c.POST, 1)
@@ -45,8 +51,12 @@ def send_email(to_email, subject, link, code=None, postmark_api=None):
         c.perform()
         response_body = response_buffer.getvalue().decode('utf-8')
         c.close()
-        logging.info(f"Email sent successfully to {to_email}. With {response_body}")
+
+        logging.info(
+            "Email sent successfully to %(email)s. Response: %(response)s",
+            {"email": to_email, "response": response_body}
+        )
         return True
-    except requests.exceptions.RequestException as e:
-        logging.error(f"Error sending email: {e}")
+    except requests.exceptions.RequestException as error:
+        logging.error("Error sending email: %(error)s", {"error": error})
         return False
