@@ -3,10 +3,12 @@ import logging
 from datetime import datetime
 from flask import jsonify, request
 from database import get_db_connection
+from endpoints.endpoint_utils import get_count_from_table
 
 def register_hazard_endpoints(app, db_config):
-    """Register all hazard/logs related endpoints"""
-
+    """
+    Register all hazard/logs related endpoints
+    """
     @app.route('/api/add-hazard', methods=['POST'])
     def add_hazard():
         """
@@ -22,7 +24,7 @@ def register_hazard_endpoints(app, db_config):
 
         try:
             # Fetch camera name from the Cameras table
-            conn = get_db_connection()
+            conn = get_db_connection(db_config)
             with conn.cursor() as cursor:
                 cursor.execute("SELECT name FROM Cameras WHERE rtsp_url = %s", (rtsp_url,))
                 camera_result = cursor.fetchone()
@@ -50,7 +52,7 @@ def register_hazard_endpoints(app, db_config):
                 """
                 cursor.execute(create_table_query)
 
-    # Check if an entry exists for the same cameraIP, hazardType, and hourTime
+                # Check if an entry exists for the same cameraIP, hazardType, and hourTime
                 cursor.execute("""
                     SELECT id, number FROM Logs
                     WHERE cameraIP = %s AND hazardType = %s AND hourTime = %s
@@ -78,12 +80,11 @@ def register_hazard_endpoints(app, db_config):
             conn.commit()
             return jsonify({"message": "Log added successfully!"}), 201
 
-        except Exception as e:
-            print(f"Error adding log: {e}")
+        except Exception as error:
+            logging.error("Error adding log: %s", error)
             return jsonify({"error": "Internal Server Error"}), 500
         finally:
             conn.close()
-
 
     @app.route('/api/get-logs', methods=['GET'])
     def get_logs():
@@ -93,7 +94,7 @@ def register_hazard_endpoints(app, db_config):
         """
         try:
             # Retrieve all log entries sorted by most recent first
-            conn = get_db_connection()
+            conn = get_db_connection(db_config)
             with conn.cursor() as cursor:
                 cursor.execute("""
                     SELECT id, cameraIP, cameraName, hourTime, hazardType, number, falsePositive
@@ -119,17 +120,16 @@ def register_hazard_endpoints(app, db_config):
 
             return jsonify(data), 200
 
-        except Exception as e:
-            print("Error retrieving logs:", e)
+        except Exception as error:
+            logging.error("Error retrieving logs: %s", error)
             return jsonify({"error": "Internal Server Error"}), 500
 
         finally:
             conn.close()
-
 
     @app.route('/api/get-hazard-count', methods=['GET'])
     def get_hazard_count():
         """
         Get the count of hazards from the Logs table where falsePositive = 0.
         """
-        return get_count_from_table('Logs', "falsePositive = %s", (0,))
+        return get_count_from_table('Logs', db_config, "falsePositive = %s", (0,))
