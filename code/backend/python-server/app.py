@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 
 # Import modules
 from config import load_config
-from database import get_db_connection, initialise_database
+from database import initialise_database
 from fire_detection import (
     fire_detection_processes,
     run_fire_detection,
@@ -26,7 +26,7 @@ def create_app():
     """Create and configure the Flask app"""
     # Load environment variables
     load_dotenv()
-    POSTMARK_API = os.getenv("POSTMARK_API")
+    postmark_api = os.getenv("POSTMARK_API")
 
     # Load environment variables from ../../../.env
     dotenv_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../.env"))
@@ -40,10 +40,10 @@ def create_app():
     )
 
     # Load configuration from JSON
-    config = load_config()
+    _ = load_config()  # Config loaded but not used directly here
 
-    app = Flask(__name__)
-    CORS(app)  # Enable CORS for all routes
+    flask_app = Flask(__name__)
+    CORS(flask_app)  # Enable CORS for all routes
 
     # Database Configuration
     db_config = {
@@ -55,15 +55,18 @@ def create_app():
     }
 
     # Try connecting to the database with retries
-    MAX_RETRIES = 10
-    connection = None
-    for attempt in range(MAX_RETRIES):
+    max_retries = 10
+    db_connection = None
+    for attempt in range(max_retries):
         try:
-            connection = pymysql.connect(**db_config)
+            db_connection = pymysql.connect(**db_config)
             logging.info("Database connection successful!")
             break
-        except pymysql.err.OperationalError as e:
-            logging.warning(f"Attempt {attempt + 1}/{MAX_RETRIES}: Unable to connect to the database. Retrying...")
+        except pymysql.err.OperationalError as error:
+            logging.warning(
+                "Attempt %(attempt)s/%(max_retries)s: Unable to connect to the database. Retrying...",
+                {"attempt": attempt + 1, "max_retries": max_retries}
+            )
             time.sleep(5)
     else:
         logging.critical("Max retries exceeded. Could not connect to the database.")
@@ -72,13 +75,13 @@ def create_app():
     initialise_database(db_config)
 
     # Register endpoints
-    register_camera_endpoints(app, db_config, fire_detection_processes, run_fire_detection)
-    register_site_endpoints(app, db_config, fire_detection_processes)
-    register_hazard_endpoints(app, db_config)
-    register_analytics_endpoints(app, db_config)
-    register_user_endpoints(app, db_config, POSTMARK_API)
+    register_camera_endpoints(flask_app, db_config, fire_detection_processes, run_fire_detection)
+    register_site_endpoints(flask_app, db_config, fire_detection_processes)
+    register_hazard_endpoints(flask_app, db_config)
+    register_analytics_endpoints(flask_app, db_config)
+    register_user_endpoints(flask_app, db_config, postmark_api)
 
-    return app, connection
+    return flask_app, db_connection
 
 if __name__ == '__main__':
     app, connection = create_app()
