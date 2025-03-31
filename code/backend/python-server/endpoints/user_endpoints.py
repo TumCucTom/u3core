@@ -1,38 +1,36 @@
 """User endpoint handlers"""
-import logging
 import random
 import string
 import secrets
-import json
 import bcrypt
 from flask import jsonify, request
 from database import get_db_connection
 from email_utils import send_email
 
 def register_user_endpoints(app, db_config, postmark_api):
-    """Register all user related endpoints"""
-
+    """
+    Register all user related endpoints
+    """
     @app.route('/api/emails', methods=['GET'])
     def get_emails():
         """
         Fetches all emails from the CustLogin table.
         """
         try:
-            conn = get_db_connection()
+            conn = get_db_connection(db_config)
             with conn.cursor() as cursor:
                 cursor.execute("SELECT email FROM CustLogin")
                 emails = [row[0] for row in cursor.fetchall()]
             return jsonify(emails)
-        except Exception as e:
-            print(f"Error fetching emails: {e}")
-            return jsonify({"error": "Internal Server Error"}), 500
+        except Exception as error:
+            return jsonify({"error": f"Internal Server Error: {error}"}), 500
         finally:
             conn.close()
 
     @app.route('/api/getName', methods=['GET'])
     def get_name():
         """
-        Authenticates a user by their email and password.
+        Fetches a user's name by their email.
         """
         email = request.args.get('email')  # Fetch query parameter
 
@@ -40,7 +38,7 @@ def register_user_endpoints(app, db_config, postmark_api):
             return jsonify({"error": "Email required"}), 400
 
         try:
-            conn = get_db_connection()
+            conn = get_db_connection(db_config)
             with conn.cursor() as cursor:
                 cursor.execute("""
                     SELECT Customer.firstname
@@ -55,12 +53,10 @@ def register_user_endpoints(app, db_config, postmark_api):
                     name = result[0]
                     return name
                 return jsonify({"error": "User not found"}), 404
-        except Exception as e:
-            print(f"Error during login: {e}")
-            return jsonify({"error": "Internal Server Error"}), 500
+        except Exception as error:
+            return jsonify({"error": f"Internal Server Error: {error}"}), 500
         finally:
             conn.close()
-
 
     @app.route('/api/login', methods=['GET'])
     def login():
@@ -73,7 +69,7 @@ def register_user_endpoints(app, db_config, postmark_api):
             return jsonify({"error": "Email required"}), 400
 
         try:
-            conn = get_db_connection()
+            conn = get_db_connection(db_config)
             with conn.cursor() as cursor:
                 cursor.execute("SELECT hashPWord FROM CustLogin WHERE email = %s", (email,))
                 result = cursor.fetchone()
@@ -82,9 +78,8 @@ def register_user_endpoints(app, db_config, postmark_api):
                     stored_hashed_password = result[0]
                     return stored_hashed_password
                 return jsonify({"error": "User not found"}), 404
-        except Exception as e:
-            print(f"Error during login: {e}")
-            return jsonify({"error": "Internal Server Error"}), 500
+        except Exception as error:
+            return jsonify({"error": f"Internal Server Error: {error}"}), 500
         finally:
             conn.close()
 
@@ -100,7 +95,7 @@ def register_user_endpoints(app, db_config, postmark_api):
 
         try:
             # Ensure the Customer table exists
-            conn = get_db_connection()
+            conn = get_db_connection(db_config)
             with conn.cursor() as cursor:
                 create_customer_table = """
                 CREATE TABLE IF NOT EXISTS Customer (
@@ -125,7 +120,7 @@ def register_user_endpoints(app, db_config, postmark_api):
 
                 # Insert into Customer table
                 cursor.execute("INSERT INTO Customer (firstname, lastname) VALUES (%s, %s)",
-                            (first_name, last_name))
+                               (first_name, last_name))
                 customer_id = cursor.lastrowid
 
                 # Insert into CustLogin table
@@ -136,9 +131,8 @@ def register_user_endpoints(app, db_config, postmark_api):
 
             conn.commit()
             return jsonify({"message": "Customer added successfully"})
-        except Exception as e:
-            print(f"Error adding customer: {e}")
-            return jsonify({"error": "Internal Server Error"}), 500
+        except Exception as error:
+            return jsonify({"error": f"Internal Server Error: {error}"}), 500
         finally:
             conn.close()
 
@@ -150,16 +144,17 @@ def register_user_endpoints(app, db_config, postmark_api):
             return jsonify({"error": "Email is required"}), 400
 
         try:
-            conn = get_db_connection()
+            conn = get_db_connection(db_config)
             with conn.cursor() as cursor:
                 cursor.execute("SELECT email FROM CustLogin WHERE email = %s", (email,))
                 if not cursor.fetchone():
                     return jsonify({"message": "Email not found"}), 404
 
+            # email verification logic needs to be placed here
+
             return jsonify({"message": "Email sent successfully"})
-        except Exception as e:
-            print(f"Error sending reset email: {e}")
-            return jsonify({"error": "Internal Server Error"}), 500
+        except Exception as error:
+            return jsonify({"error": f"Internal Server Error: {error}"}), 500
         finally:
             conn.close()
 
@@ -171,7 +166,7 @@ def register_user_endpoints(app, db_config, postmark_api):
             return jsonify({"error": "Email is required"}), 400
 
         try:
-            conn = get_db_connection()
+            conn = get_db_connection(db_config)
             with conn.cursor() as cursor:
                 cursor.execute("SELECT email FROM CustLogin WHERE email = %s", (email,))
                 if not cursor.fetchone():
@@ -180,10 +175,14 @@ def register_user_endpoints(app, db_config, postmark_api):
             token = secrets.token_hex(20)
             verification_link = f"http://localhost:9000/#/verified-email?token={token}&email={email}"
             otp_code = ''.join(random.choices(string.digits, k=6))
-            send_email(email, "Email Verification", verification_link, otp_code)
-            return jsonify({"message": "Verification email sent successfully"})
-        except Exception as e:
-            print(f"Error sending verification email: {e}")
-            return jsonify({"error": "Internal Server Error"}), 500
+
+            # Send email using the imported function
+            send_result = send_email(email, "Email Verification", verification_link, otp_code, postmark_api)
+
+            if send_result:
+                return jsonify({"message": "Verification email sent successfully"})
+            return jsonify({"error": "Failed to send email"}), 500
+        except Exception as error:
+            return jsonify({"error": f"Internal Server Error: {error}"}), 500
         finally:
             conn.close()
