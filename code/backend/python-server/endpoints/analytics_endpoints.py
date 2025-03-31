@@ -1,11 +1,11 @@
 """Analytics endpoint handlers"""
-import logging
 from flask import jsonify
 from database import get_db_connection
 
 def register_analytics_endpoints(app, db_config):
-    """Register all analytics related endpoints"""
-
+    """
+    Register all analytics related endpoints
+    """
     @app.route('/api/anomalies-by-month', methods=['GET'])
     def get_anomalies_by_month():
         """
@@ -13,7 +13,7 @@ def register_analytics_endpoints(app, db_config):
         Returns data for the current year's monthly anomaly counts.
         """
         try:
-            conn = get_db_connection()
+            conn = get_db_connection(db_config)
             with conn.cursor() as cursor:
                 # Extract year and month from hourTime and count anomalies
                 #  hourTime format is "YYYY-MM-DD HH"
@@ -40,12 +40,10 @@ def register_analytics_endpoints(app, db_config):
 
             return jsonify(monthly_data), 200
 
-        except Exception as e:
-            print(f"Error fetching anomalies by month: {e}")
-            return jsonify({"error": "Internal Server Error"}), 500
+        except Exception as error:
+            return jsonify({"error": f"Internal Server Error: {error}"}), 500
         finally:
             conn.close()
-
 
     @app.route('/api/anomalies-by-type', methods=['GET'])
     def get_anomalies_by_type():
@@ -53,7 +51,7 @@ def register_analytics_endpoints(app, db_config):
         Fetches the count of anomalies grouped by type from the Logs table.
         """
         try:
-            conn = get_db_connection()
+            conn = get_db_connection(db_config)
             with conn.cursor() as cursor:
                 cursor.execute("""
                     SELECT
@@ -75,8 +73,7 @@ def register_analytics_endpoints(app, db_config):
 
             return jsonify({"types": types, "counts": counts}), 200
 
-        except Exception as e:
-            print(f"Error fetching anomalies by type: {e}")
-            return jsonify({"error": "Internal Server Error"}), 500
+        except Exception as error:
+            return jsonify({"error": f"Internal Server Error: {error}"}), 500
         finally:
             conn.close()
