@@ -3,10 +3,12 @@ import logging
 import multiprocessing
 from flask import jsonify, request
 from database import get_db_connection
+from endpoints.endpoint_utils import get_count_from_table
 
 def register_camera_endpoints(app, db_config, fire_detection_processes, run_fire_detection):
-    """Register all camera related endpoints"""
-
+    """
+    Register all camera related endpoints
+    """
     @app.route('/api/add-camera', methods=['POST'])
     def add_camera():
         """
@@ -19,7 +21,7 @@ def register_camera_endpoints(app, db_config, fire_detection_processes, run_fire
         site_id = data.get('site_id')
 
         if not all([name, rtsp_url, site_id]):
-            return jsonify({"error": "Name,RTSP URL or site id  required"}), 400
+            return jsonify({"error": "Name, RTSP URL or site id required"}), 400
 
         # Convert tcp:// to rtsp://
         if rtsp_url.startswith("tcp://"):
@@ -27,7 +29,7 @@ def register_camera_endpoints(app, db_config, fire_detection_processes, run_fire
 
         try:
             # Create the Cameras table if it doesn't exist
-            conn = get_db_connection()
+            conn = get_db_connection(db_config)
             with conn.cursor() as cursor:
                 create_table_query = """
                 CREATE TABLE IF NOT EXISTS Cameras (
@@ -60,12 +62,12 @@ def register_camera_endpoints(app, db_config, fire_detection_processes, run_fire
                 process = multiprocessing.Process(target=run_fire_detection, args=(rtsp_url,))
                 process.start()
                 fire_detection_processes[rtsp_url] = process
-                print(f"Started fire detection for new camera: {rtsp_url}")
+                logging.info("Started fire detection for new camera: %s", rtsp_url)
             return jsonify(
                 {"message": "Camera added, TCP URLs updated, and fire detection started!"}), 201
 
-        except Exception as e:
-            print(f"Error adding camera: {e}")
+        except Exception as error:
+            logging.error("Error adding camera: %s", error)
             return jsonify({"error": "Internal Server Error"}), 500
         finally:
             conn.close()
@@ -76,7 +78,7 @@ def register_camera_endpoints(app, db_config, fire_detection_processes, run_fire
         Deletes a camera from the database by its ID and stops any associated fire detection process.
         """
         try:
-            conn = get_db_connection()
+            conn = get_db_connection(db_config)
             with conn.cursor() as cursor:
                 # First, get the camera's rtsp_url to stop the fire detection process
                 cursor.execute("SELECT rtsp_url FROM Cameras WHERE id = %s", (camera_id,))
@@ -100,16 +102,14 @@ def register_camera_endpoints(app, db_config, fire_detection_processes, run_fire
             if rtsp_url in fire_detection_processes:
                 process = fire_detection_processes.pop(rtsp_url)
                 process.terminate()
-                print(f"Stopped fire detection for: {rtsp_url}")
+                logging.info("Stopped fire detection for: %s", rtsp_url)
 
             return jsonify({"message": "Camera deleted successfully"}), 200
-        except Exception as e:
-            print(f"Error deleting camera: {e}")
+        except Exception as error:
+            logging.error("Error deleting camera: %s", error)
             return jsonify({"error": "Internal Server Error"}), 500
         finally:
             conn.close()
-
-
 
     @app.route('/api/update-camera/<int:camera_id>', methods=['PUT'])
     def update_camera(camera_id):
@@ -127,7 +127,7 @@ def register_camera_endpoints(app, db_config, fire_detection_processes, run_fire
             return jsonify({"error": "At least one field (name, rtsp_url, or site_id) must be provided"}), 400
 
         try:
-            conn = get_db_connection()
+            conn = get_db_connection(db_config)
             with conn.cursor() as cursor:
                 # First, check if the camera exists and get its current RTSP URL
                 cursor.execute("SELECT rtsp_url FROM Cameras WHERE id = %s", (camera_id,))
@@ -179,25 +179,24 @@ def register_camera_endpoints(app, db_config, fire_detection_processes, run_fire
                 if old_rtsp_url in fire_detection_processes:
                     process = fire_detection_processes.pop(old_rtsp_url)
                     process.terminate()
-                    print(f"Stopped fire detection for: {old_rtsp_url}")
+                    logging.info("Stopped fire detection for: %s", old_rtsp_url)
 
                 # Start a new process
                 process = multiprocessing.Process(target=run_fire_detection, args=(rtsp_url,))
                 process.start()
                 fire_detection_processes[rtsp_url] = process
-                print(f"Started fire detection for updated camera: {rtsp_url}")
+                logging.info("Started fire detection for updated camera: %s", rtsp_url)
 
             return jsonify({"message": "Camera updated successfully"}), 200
-        except Exception as e:
-            print(f"Error updating camera: {e}")
+        except Exception as error:
+            logging.error("Error updating camera: %s", error)
             return jsonify({"error": "Internal Server Error"}), 500
         finally:
             conn.close()
-
 
     @app.route('/api/get-camera-count', methods=['GET'])
     def get_camera_count():
         """
         Get the count of cameras from the Cameras table.
         """
-        return get_count_from_table('Cameras')
+        return get_count_from_table('Cameras', db_config)
