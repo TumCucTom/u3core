@@ -8,9 +8,20 @@ In any main section of the repo, you should find a README that provides informat
 
 - This can be found under ```code/backend/python-server```
 - This contains:
-  - server.py - this holds the api endpoints that get called by the website
-    - It also starts fire detection on all stored rtsp addresses
-  - fire_detection_script.py - holds the implementation of fire detection
+  - server.py - The main entry point for the backend, registers all the endpoints and initialises the server
+  -database.py - database.py - Manages database connections and table initialisation
+  - fire_detection.py -  Contains functions for running fire detection on RTSP streams
+  - email_utils.py - Provides utilities for sending emails via Postmark API
+  - fire_detection_script.py - Holds the implementation of fire detection
+  - Endpoints directory - Contains modularised api endpoint handlers
+    -init.py - Package initialisation, exports all api registration functions
+    -endpoint_utils.py - Shared utility functions for endpoints (such as table counting)
+    -camera_endpoints.py - Endpoints for camera management (add, update, delete, get count)
+    -site_endpoints.py - Endpoints for site management (add, update, delete, fetch, get count)
+    -hazard_endpoints.py - Endpoints for hazard logging and retrieval
+    -analytics_endpoints.py - Endpoints for analytics data (anomalies by month, by type, for dashboard)
+    -user_endpoints.py - Endpoints for user authentication and management
+    
   - A copy of yolov8 to be used for training user models
   - A datasets directory that holds user's datasets they've uploaded for training
 - You run this on AWS: done automatically on github with an action
