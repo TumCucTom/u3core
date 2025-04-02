@@ -166,9 +166,15 @@
       />
       <q-btn
         label="Apply Tag"
-        color="primary"
+        color="primary"   
         class="q-ml-sm"
         @click="addBatchTag"
+      />
+      <q-btn 
+        label="Delete Selected"
+        color="negative"
+        class="q-ml-sm"
+        @click="deleteSelectedFiles"
       />
       <q-btn
         flat
@@ -391,6 +397,18 @@ const startUpload = (file) => {
 const removeFile = (index) => {
   if (confirm('Are you sure you want to remove this file?')) {
     uploadedFiles.value.splice(index, 1)
+  }
+}
+
+// delete the file in batch
+const deleteSelectedFiles = () => {
+  if (selectedFiles.value.length === 0) return
+  
+  if (confirm(`Are you sure you want to delete ${selectedFiles.value.length} files?`)) {
+    uploadedFiles.value = uploadedFiles.value.filter(
+      file => !selectedFiles.value.includes(file.id)
+    )
+    clearSelection()
   }
 }
 
