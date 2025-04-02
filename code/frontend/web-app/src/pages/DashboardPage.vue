@@ -21,8 +21,8 @@
                 @click="handleSettingsClick"
 
                 >
-                <q-icon
-                  name = "img:src/assets/infobutton.png"
+                <q-img
+                  src = "/infobutton.png"
                   size = "25px"
                   color = "grey-7"
                 />
@@ -47,8 +47,8 @@
                 @click="handleSettingsClick"
 
                 >
-                <q-icon
-                  name = "img:src/assets/infobutton.png"
+                <q-img
+                  src = "/infobutton.png"
                   size = "25px"
                   color = "grey-7"
                 />
@@ -71,8 +71,8 @@
                 @click="handleSettingsClick"
 
                 >
-                <q-icon
-                  name = "img:src/assets/infobutton.png"
+                <q-img
+                  src = "/infobutton.png"
                   size = "25px"
                   color = "grey-7"
                 />
@@ -103,8 +103,8 @@
                 @click="handleSettingsClick"
 
                 >
-                <q-icon
-                  name = "img:src/assets/infobutton.png"
+                <q-img
+                  src = "/infobutton.png"
                   size = "25px"
                   color = "grey-7"
                 />
@@ -127,8 +127,8 @@
                 @click="handleSettingsClick"
 
                 >
-                <q-icon
-                  name = "img:src/assets/infobutton.png"
+                <q-img
+                  src = "/infobutton.png"
                   size = "25px"
                   color = "grey-7"
                 />
@@ -154,8 +154,8 @@
                 @click="handleSettingsClick"
 
                 >
-                <q-icon
-                  name = "img:src/assets/infobutton.png"
+                <q-img
+                  src = "/infobutton.png"
                   size = "25px"
                   color = "grey-7"
                 />
@@ -178,8 +178,8 @@
               size="sm"
               @click="handleSettingsClick"
             >
-              <q-icon
-                name="img:src/assets/infobutton.png"
+              <q-img
+                src="/infobutton.png"
                 size="25px"
                 color="grey-7"
               />
@@ -205,8 +205,8 @@
                 @click="handleSettingsClick"
 
                 >
-                <q-icon
-                  name = "img:src/assets/infobutton.png"
+                <q-img
+                  src = "/infobutton.png"
                   size = "25px"
                   color = "grey-7"
                 />
@@ -224,8 +224,8 @@
               size="sm"
               @click="handleSettingsClick"
             >
-              <q-icon
-                name="img:src/assets/infobutton.png"
+              <q-img
+                src="/infobutton.png"
                 size="25px"
                 color="grey-7"
               />
@@ -248,8 +248,8 @@
               size="sm"
               @click="handleSettingsClick"
             >
-              <q-icon
-                name="img:src/assets/infobutton.png"
+              <q-img
+                src="/infobutton.png"
                 size="25px"
                 color="grey-7"
               />
@@ -278,8 +278,8 @@
                 size="sm"
                 @click="handleSettingsClick"
               >
-                <q-icon
-                  name="img:src/assets/infobutton.png"
+                <q-img
+                  src="/infobutton.png"
                   size="25px"
                   color="grey-7"
                 />
@@ -307,8 +307,8 @@
                 size="sm"
                 @click="handleSettingsClick"
               >
-                <q-icon
-                  name="img:src/assets/infobutton.png"
+                <q-img
+                  src="/infobutton.png"
                   size="25px"
                   color="grey-7"
                 />
@@ -339,8 +339,8 @@
                 size="sm"
                 @click="handleSettingsClick"
               >
-                <q-icon
-                  name="img:src/assets/infobutton.png"
+                <q-img
+                  src="/infobutton.png"
                   size="25px"
                   color="grey-7"
                 />
@@ -363,8 +363,8 @@
             size="sm"
             @click="handleSettingsClick"
           >
-            <q-icon
-              name="img:src/assets/infobutton.png"
+            <q-img
+              src="/infobutton.png"
               size="25px"
               color="grey-7"
             />
