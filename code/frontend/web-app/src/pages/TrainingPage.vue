@@ -15,7 +15,7 @@
         class="search-input"
       >
         <template v-slot:prepend>
-          <q-icon name="search" />
+          <q-icon name="search" />              
         </template>
       </q-input>
     </div>
@@ -208,17 +208,59 @@
 
     <!-- Upload Logs area -->
     <div v-else>
-      <div class="q-mt-md">
-        <q-table
-          title="All Uploads"
-          :data="[]"
-          :columns="columns"
-          row-key="modelVersion"
-          dense
-          flat
-        ></q-table>
-      </div>
+    <div class="q-mt-md">
+    <div v-if="uploadLogs.length === 0" class="text-grey-6 text-center q-pa-lg">
+      No training records yet
     </div>
+    
+    <div v-else class="file-list">
+      <q-item 
+        v-for="log in uploadLogs" 
+        :key="log.id" 
+        class="q-mb-sm preview-item"
+      >
+      <q-item-section>
+        <div class="row items-center">
+          <q-icon name="model_training" class="q-mr-sm text-primary" />
+          <div>
+            <div class="text-caption text-weight-bold">{{ log.modelVersion }}</div>
+            <div class="text-caption text-grey-6">
+              Site: {{ log.siteId }} • {{ log.dateUploaded }}
+              <q-badge :color="getTrainingStatusColor(log.status)" class="q-ml-sm">
+                {{ log.status }} ({{ log.progress.toFixed(0) }}%)
+              </q-badge>
+            </div>
+              
+            <!-- associated file form -->
+            <div class="q-mt-xs">
+              <q-chip 
+                v-for="(file, index) in log.files" 
+                :key="index"
+                dense
+                color="secondary"
+                text-color="white"
+                icon="insert_drive_file"
+                class="q-mr-xs"
+              >
+                {{ file }}
+              </q-chip>
+            </div>
+          </div>
+        </div>
+      </q-item-section>
+
+      <q-item-section side>
+        <q-linear-progress
+          :value="log.progress / 100"
+          :color="getTrainingStatusColor(log.status)"
+          class="q-mt-xs"
+          style="width: 120px; height: 8px"
+        />
+        </q-item-section>
+      </q-item>
+    </div>
+  </div>
+</div>
 
     <!-- Training simulator window -->
     <q-dialog v-model="showModelDialog" persistent>
@@ -444,18 +486,57 @@ const handleStartTraining = () => {
   showModelDialog.value = true
 }
 
+
+const uploadLogs = ref([])
+
 const submitModelTraining = () => {
   if (!modelVersion.value || !siteId.value) {
     alert('Please provide all required information')
     return
   }
-  console.log('Starting training with:', {
+
+  // create a new training model
+  const newLog = {
+    id: Date.now(),
     modelVersion: modelVersion.value,
     siteId: siteId.value,
-    files: uploadedFiles.value
-  })
+    dateUploaded: new Date().toLocaleString(),
+    status: 'training', // initial status
+    progress: 0,
+    files: uploadedFiles.value.map(f => f.name) // save related file name
+  }
+
+  uploadLogs.value.unshift(newLog) // add to the log 
+  simulateModelTraining(newLog) // start training simulation
   showModelDialog.value = false
+  modelVersion.value = '' // reset the form
+  siteId.value = ''
 }
+
+// simulate training process
+const simulateModelTraining = (log) => {
+  const interval = setInterval(() => {
+    log.progress = Math.min(log.progress + Math.random() * 20, 95)
+    if (log.progress >= 95) {
+      clearInterval(interval)
+      setTimeout(() => {
+        log.progress = 100
+        log.status = 'completed'
+      }, 500)
+    }
+  }, 300)
+}
+
+// training data status color
+const getTrainingStatusColor = (status) => {
+  const statusColors = {
+    training: 'primary',
+    completed: 'positive',
+    error: 'negative'
+  }
+  return statusColors[status] || 'grey'
+}
+
 </script>
 
 <style scoped>
@@ -536,6 +617,19 @@ const submitModelTraining = () => {
 
 .q-checkbox {
   margin-right: 12px;
+}
+
+.model-preview-item {
+  border-radius: 4px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  transition: all 0.2s ease;
+}
+
+.model-preview-item:hover {
+  background: #f8f9fa;
+  transform: translateX(2px);
 }
 </style>
   
