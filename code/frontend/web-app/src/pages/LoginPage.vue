@@ -6,11 +6,11 @@
         <div class="text-left">
           <q-img src="../assets/u3logo1.png" alt="Digital U3" style="width: 150px;" />
           <div class="q-mt-xl text-center">
-            <q-rating value="5" readonly size="lg" color="amber" />
+            <q-rating v-model="ratingModel" value="5" readonly size="lg" color="amber" />
             <p class="q-my-md text-h5">
               {{ isLogin
-                ? "We've been using Untitled to kick start every new project and can't imagine working without it."
-                : "U3Core's safety compliance features helped us monitor workplace conditions more efficiently. We've not only reduced risks but also met the regulatory requirements with ease.'"
+                ? "U3Core's safety compliance features helped us monitor workplace conditions more efficiently. We've not only reduced risks but also met the regulatory requirements with ease."
+                : "U3Core's safety compliance features helped us monitor workplace conditions more efficiently. We've not only reduced risks but also met the regulatory requirements with ease."
               }}
             </p>
             <q-avatar size="80px">
@@ -137,8 +137,8 @@
   import {colors} from 'quasar';
   import obamaImage from '@/assets/obama.jpg';
   import anotherUserImage from '@/assets/Lori.png';
-  
-  
+
+
   export default {
     data() {
       return {
@@ -179,7 +179,7 @@
 
   const onSubmit = () => {
 
-  axios.get('http://16.171.224.57:3002/api/emails')
+  axios.get('http://16.171.224.57:0080/api/emails')
   .then(response => {
   allEmails.value = response.data;
   if (allEmails.value.includes(email.value)) {
@@ -211,7 +211,7 @@
 };
 
 
-  axios.post('http://16.171.224.57:3002/api/addToCustomer', requestData)
+  axios.post('http://16.171.224.57:0080/api/addToCustomer', requestData)
   .then(response => {
   console.log(response.data);
 })
@@ -224,7 +224,7 @@
   const emailSend = String(emailLogin.value);
 
   try {
-  const response = await axios.get('http://16.171.224.57:3002/api/login', { params: { emailVar: emailSend } });
+  const response = await axios.get('http://16.171.224.57:0080/api/login', { params: { emailVar: emailSend } });
   const fetchedHashedPassword = response.data;
 
   const result = await bcrypt.compare(passwordLogin.value, fetchedHashedPassword);
@@ -262,6 +262,7 @@
 };
 
   return {
+  ratingModel:ref(5),
   firstName,
   lastName,
   email,

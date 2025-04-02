@@ -29,10 +29,6 @@ from dotenv import load_dotenv
 load_dotenv()
 POSTMARK_API = os.getenv("POSTMARK_API")
 
-# Load configuration from JSON
-with open("config.json", "r", encoding="utf-8") as config_file:
-    config = json.load(config_file)
-
 # Alert message
 ALERT_MESSAGE = "Abnormal detected"
 
@@ -56,14 +52,17 @@ db_config = {
     "user": os.getenv("DB_USER"),
     "password": os.getenv("DB_PASSWORD"),
     "database": os.getenv("DB_NAME"),
-    "port": int(os.getenv("DB_PORT"))
+    "port": 3306
 }
 
+HEALTHY = False
 MAX_RETRIES = 10
 for attempt in range(MAX_RETRIES):
+    logging.info(f"Attempting to access database with credentials {db_config}")
     try:
         connection = pymysql.connect(**db_config)
         logging.info("Database connection successful!")
+        HEALTHY = True
         break
     except pymysql.err.OperationalError as e:
         logging.warning(f"Attempt {attempt + 1}/{MAX_RETRIES}: Unable to connect to the database. Retrying...")
@@ -71,6 +70,7 @@ for attempt in range(MAX_RETRIES):
 else:
     logging.critical("Max retries exceeded. Could not connect to the database.")
 
+logging.info(f"Status: {HEALTHY}")
 def get_db_connection():
     """Return a fresh connection to the database."""
     return pymysql.connect(**db_config)
@@ -155,6 +155,14 @@ def start_fire_detection_for_all_cameras():
 
 
 # API endpoints
+
+@app.route('/health', methods=['GET'])
+def health_check():
+    if HEALTHY:
+        return jsonify(status="healthy"), 200  # Status 200 means OK
+    else:
+        return jsonify({"error": "Internal Server Error"}), 501
+
 
 @app.route('/api/add-camera', methods=['POST'])
 def add_camera():
