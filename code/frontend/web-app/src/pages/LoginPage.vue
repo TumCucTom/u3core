@@ -152,6 +152,7 @@
         this.isLogin = !this.isLogin; // switches between login and register
       },
       proceedToOtp() {
+        sessionStorage.setItem("emailTransfer", this.email)
       this.$router.push("/otp");
     }
     },
