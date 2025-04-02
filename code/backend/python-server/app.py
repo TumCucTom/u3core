@@ -62,9 +62,9 @@ def create_app():
             db_connection = pymysql.connect(**db_config)
             logging.info("Database connection successful!")
             break
-        except pymysql.err.OperationalError as error:
+        except pymysql.err.OperationalError:
             logging.warning(
-                "Attempt %(attempt)s/%(max_retries)s: Unable to connect to the database. Retrying...",
+                "Attempt %(attempt)s/%(max_retries)s: Unable to connect to database. Retrying...",
                 {"attempt": attempt + 1, "max_retries": max_retries}
             )
             time.sleep(5)

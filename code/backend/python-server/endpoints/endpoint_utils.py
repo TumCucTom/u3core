@@ -1,5 +1,6 @@
 """Utility functions for API endpoints"""
 import logging
+import pymysql
 from flask import jsonify
 from database import get_db_connection
 
@@ -33,12 +34,12 @@ def get_count_from_table(table_name, db_config, condition=None, condition_values
 
         return jsonify(row_count), 200
 
-    except Exception as error:
+    except (pymysql.Error, ValueError) as error:
         logging.error(
             "Error fetching count from %(table)s: %(error)s",
             {"table": table_name, "error": error}
         )
-        return jsonify({"error": f"Internal Server Error"}), 500
+        return jsonify({"error": "Internal Server Error"}), 500
 
     finally:
         if conn:

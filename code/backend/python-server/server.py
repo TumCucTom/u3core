@@ -15,7 +15,7 @@ import json
 import time
 import logging
 import sys
-import datetime
+from datetime import datetime
 import pymysql
 import pycurl
 import requests

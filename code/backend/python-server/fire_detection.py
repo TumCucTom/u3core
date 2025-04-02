@@ -1,6 +1,7 @@
 """Fire detection processing module"""
 import logging
 import multiprocessing
+import pymysql
 from fire_detection_script import process_rtsp_stream_with_url
 
 # Dictionary to track running fire detection processes
@@ -28,5 +29,5 @@ def start_fire_detection_for_all_cameras(connection, processes, detection_func):
                 processes[rtsp_url] = process
                 logging.info("Started fire detection for: %(url)s", {"url": rtsp_url})
         logging.info("Started fire detection for all cameras")
-    except Exception as error:
+    except (pymysql.Error, RuntimeError, ValueError) as error:
         logging.error("Error starting fire detection processes: %(error)s", {"error": error})
