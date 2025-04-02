@@ -10,4 +10,4 @@ code/frontend/web-app/node_modules
 myenv/
 mainEnv
 code/frontend/node_modules/
-/code/frontend/web-app/node_modules
+code/frontend/web-app/node_modules
