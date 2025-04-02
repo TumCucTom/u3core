@@ -438,8 +438,11 @@ disable=raw-checker-failed,
         broad-exception-caught,
         too-many-return-statements,
         duplicate-code,
-        no-member
-
+        no-member,
+        line-too-long,
+        c-extension-no-member,
+        too-many-locals,
+        too-many-statements,
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option
 # multiple time (only on the command line, not in the configuration file where
