@@ -15,6 +15,8 @@ import boto3
 from twilio.rest import Client
 import requests
 from dotenv import load_dotenv
+# pylint: disable=no-member
+
 
 # Load environment variables from ../../../.env
 dotenv_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../.env"))
