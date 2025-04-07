@@ -21,6 +21,7 @@ from endpoints.site_endpoints import register_site_endpoints
 from endpoints.hazard_endpoints import register_hazard_endpoints
 from endpoints.analytics_endpoints import register_analytics_endpoints
 from endpoints.user_endpoints import register_user_endpoints
+from endpoints.health_endpoints import register_health_endpoints
 
 def create_app():
     """Create and configure the Flask app"""
@@ -80,6 +81,7 @@ def create_app():
     register_hazard_endpoints(flask_app, db_config)
     register_analytics_endpoints(flask_app, db_config)
     register_user_endpoints(flask_app, db_config, postmark_api)
+    register_health_endpoints(flask_app, db_config)
 
     return flask_app, db_connection
 
