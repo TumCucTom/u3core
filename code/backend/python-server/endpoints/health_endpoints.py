@@ -13,27 +13,26 @@ def register_health_endpoints(app, db_config):
         """
         Database health check endpoint
         """
-        HEALTHY = False
-        MAX_RETRIES = 10
-        
-        for attempt in range(MAX_RETRIES):
+        healthy = False
+        max_retries = 10
+
+        for attempt in range(max_retries):
             logging.info("Attempting to access database with credentials %s", db_config)
             try:
                 connection = pymysql.connect(**db_config)
                 logging.info("Database connection successful!")
-                HEALTHY = True
+                healthy = True
                 connection.close()
                 break
-            except pymysql.err.OperationalError as e:
+            except pymysql.err.OperationalError:
                 logging.warning("Attempt %(attempt)s/%(max_retries)s: Unable to connect to the database. Retrying...",
-                              {"attempt": attempt + 1, "max_retries": MAX_RETRIES})
+                              {"attempt": attempt + 1, "max_retries": max_retries})
                 time.sleep(5)
         else:
             logging.critical("Max retries exceeded. Could not connect to the database.")
 
-        logging.info("Status: %s", HEALTHY)
-        
-        if HEALTHY:
+        logging.info("Status: %s", healthy)
+
+        if healthy:
             return jsonify({"status": "healthy", "database_connection": True}), 200
-        else:
-            return jsonify({"status": "unhealthy", "database_connection": False}), 503
+        return jsonify({"status": "unhealthy", "database_connection": False}), 503
