@@ -1,0 +1,3 @@
+[submodule "code/backend/python-server/yolov5"]
+	path = code/backend/python-server//yolov5
+	url = https://github.com/ultralytics/yolov5.git

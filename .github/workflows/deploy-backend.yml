@@ -4,7 +4,10 @@ on:
   push:
     branches:
       - dev
-      - bug-deploy-aws
+      - 'bug-aws-*'
+    paths:
+      - 'code/backend/**'
+      - '.github/workflows/deploy-backend.yml'
   workflow_dispatch:
 
 jobs:
@@ -12,48 +15,46 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Set up SSH
-      run: |
-        mkdir -p ~/.ssh
-        echo "${{ secrets.AWS_SSH_KEY }}" | tr -d '\r' > ~/.ssh/id_rsa
-        chmod 600 ~/.ssh/id_rsa
-        ssh-keyscan -H github.com >> ~/.ssh/known_hosts
-        ssh-keyscan -H ${{ secrets.AWS_HOST }} >> ~/.ssh/known_hosts
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.AWS_SSH_KEY }}" | tr -d '\r' > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+          ssh-keyscan -H ${{ secrets.AWS_HOST }} >> ~/.ssh/known_hosts
 
-    - name: Deploy to AWS
-      run: |
-        ssh ${{ secrets.AWS_USER }}@${{ secrets.AWS_HOST }} << 'EOF'
-          set -e  # Exit on any error
-          sudo yum update && sudo yum install -y git  # Ensure git is installed
+      - name: Deploy to AWS
+        run: |
+          ssh ${{ secrets.AWS_USER }}@${{ secrets.AWS_HOST }} << 'EOF'
+            set -e  # Exit on any error
+            sudo yum update && sudo yum install -y git  # Ensure git is installed
           
-          # Navigate to home directory and remove any existing repo
-          cd ~
-          rm -rf 2024-MLAIPredictionMicroservices
-
-          # Clone the latest version
-          git clone --single-branch --branch "${{ github.ref_name }}" git@github.com:spe-uob/2024-MLAIPredictionMicroservices.git
-          cd 2024-MLAIPredictionMicroservices/code/backend
-
-          # Start the service using Docker Compose
-          docker compose down -v
-          docker compose pull
-          docker compose --env-file ../../../.env up -d --build
-        EOF
-    - name: Health Check
-      run: |
-        sleep 30
-        RESPONSE=$(curl -s -X GET http://16.171.224.57:80/health || echo "error")
-        echo "Response: $RESPONSE"
-
-        if echo "$RESPONSE" | jq -e '.status == "healthy"' > /dev/null; then
-          echo "Service is healthy."
-        else
-          echo "Database did not connect"
-          exit 1
-        fi
-      shell: bash
-
-
+            # Navigate to home directory and remove any existing repo
+            cd ~
+            rm -rf 2024-MLAIPredictionMicroservices
+          
+            # Clone the latest version
+            git clone --single-branch --branch "${{ github.ref_name }}" git@github.com:spe-uob/2024-MLAIPredictionMicroservices.git
+            cd 2024-MLAIPredictionMicroservices/code/backend
+          
+            # Start the service using Docker Compose
+            docker compose down -v
+            docker compose pull
+            docker compose --env-file ../../../.env up -d --build
+          EOF
+      - name: Health Check
+        run: |
+          sleep 30
+          RESPONSE=$(curl -s -X GET http://16.171.224.57:80/health || echo "error")
+          echo "Response: $RESPONSE"
+          
+          if echo "$RESPONSE" | jq -e '.status == "healthy"' > /dev/null; then
+            echo "Service is healthy."
+          else
+            echo "Database did not connect"
+            exit 1
+          fi
+        shell: bash
