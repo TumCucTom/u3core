@@ -210,15 +210,15 @@ export default {
     const siteCount = ref(0)
     const cameraCount = ref(0)
     const alertCount = ref(0)
-    
+
     // Loading states
     const isLoadingAnomaliesData = ref(true)
     const isLoadingTypesData = ref(true)
-    
+
     // Chart references
     const anomaliesChart = ref(null)
     const typesChart = ref(null)
-    
+
     // Chart instances
     let anomaliesChartInstance = null
     let typesChartInstance = null
@@ -229,14 +229,14 @@ export default {
     const anomalyCounts = ref([])
 
     const route = useRoute()
-    
+
     const handleSettingsClick = () => {
       console.log('Settings button clicked')
       // add logic here for the button
     }
 
     // API base URL
-    const apiBaseUrl = 'http://127.0.0.1:3002'
+    const apiBaseUrl = 'http://16.171.224.57:0080'
 
     const fetchCounts = async () => {
       try {
@@ -389,7 +389,7 @@ export default {
 
     onMounted(() => {
       email.value = decodeURIComponent(route.query.email || '')
-      
+
       fetchUserName()
       fetchCounts()
       fetchAnomalyData()

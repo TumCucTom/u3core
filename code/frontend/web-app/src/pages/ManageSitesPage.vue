@@ -13,6 +13,7 @@
 
       <div class="row">
         <div class="col-12 col-md-3">
+
           <!-- Only show site list if there are sites -->
           <div v-if="sites.length > 0" class="sites-container">
             <div v-for="site in sites" :key="site.id" class="site-box">
@@ -365,6 +366,7 @@ export default {
         this.$q.notify({
           message: 'Please select a site for this camera',
           color: 'negative'
+
         });
         return;
       }
@@ -424,6 +426,7 @@ export default {
     async saveNewSite() {
       try {
         await axios.post('http://16.171.224.57:0080/api/add-site', {
+
           name: this.newSite.name,
           latitude: this.newSite.latitude,
           longitude: this.newSite.longitude,
@@ -489,6 +492,7 @@ export default {
             this.selectedCamera = null;
           }
         }
+
       } catch (error) {
         console.error('Error fetching sites:', error);
         this.$q.notify({
