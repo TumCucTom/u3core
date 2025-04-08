@@ -232,7 +232,7 @@ export default {
 
     const handleSettingsClick = () => {
       console.log('Settings button clicked')
-      // add logic here for the button
+      // add logic here for the settings button, settings arent outlined in figma
     }
 
     // API base URL
