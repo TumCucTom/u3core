@@ -217,8 +217,20 @@ To start the stream:
 ## Releases
 
 ## Technologies Used
-### Tech Stack Analysis
-![tech_stack_analysis](https://github.com/user-attachments/assets/e3b63935-56bb-4581-ab9c-28c13fd8fe1e)
+### Architecture Diagram
+![tech_slack_analysis](docs/arch.png)
+
+
+
+|          **Component**          |                                        **Description**                                         |
+|:-------------------------------:|:----------------------------------------------------------------------------------------------:|
+|       **AI edge Camera**        |                    Captures video of current environment and runs all code                     |
+|        **Cloud Camera**         |                       Video capture via openCV and uploads to the cloud                        |
+|           **SMS API**           |                Send a given message to the store phone numbers/email addresses                 |
+|   **Roboflow trained model**    |                     Holds all of the nodes and biases of the trained model                     |
+| **Roboflow feed-forwards pass** |            One pass of the input data through the network giving prediction results            |
+|        **Roboflow API**         | Takes input data for the network and runs a feedforward remotely, returning prediction results 
+|       **multinodal LLM**        |          Takes natural language as input and outputs: system data or natural language          |  
 
 
 
@@ -266,21 +278,6 @@ To start the stream:
 | Object detection | Can lead to catastophe with great fincaical loss and threat to human life |
 | SMS/Email alert | Can lead to catastophe with great fincaical loss and threat to human life                                                            |
 
-
-## Architecture Diagram
-![tech_slack_analysis](https://github.com/user-attachments/assets/da6118a8-02a5-4962-9596-0909103e30b7)
-
-
-
-|          **Component**          |                                        **Description**                                         |
-|:-------------------------------:|:----------------------------------------------------------------------------------------------:|
-|       **AI edge Camera**        |                    Captures video of current environment and runs all code                     |
-|        **Cloud Camera**         |                       Video capture via openCV and uploads to the cloud                        |
-|           **SMS API**           |                Send a given message to the store phone numbers/email addresses                 |
-|   **Roboflow trained model**    |                     Holds all of the nodes and biases of the trained model                     |
-| **Roboflow feed-forwards pass** |            One pass of the input data through the network giving prediction results            |
-|        **Roboflow API**         | Takes input data for the network and runs a feedforward remotely, returning prediction results 
-|       **multinodal LLM**        |          Takes natural language as input and outputs: system data or natural language          |  
 
 ## Flow of Information
 ### AI Edge
