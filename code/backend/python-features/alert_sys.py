@@ -1,6 +1,6 @@
 """Alert users when a user when a hazard is detected"""
-import os
 import time
+import os
 import cv2
 import boto3
 from twilio.rest import Client
@@ -118,3 +118,4 @@ def process_webcam_stream():
 
 if __name__ == "__main__":
     process_webcam_stream()
+    

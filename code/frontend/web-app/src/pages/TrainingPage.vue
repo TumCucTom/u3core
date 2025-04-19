@@ -1,167 +1,635 @@
 <template>
-    <q-page padding class="upload-page">
-  
-      
-      <div class="text-h4">Upload Training Data</div>
-      <div class="text-subtitle1 text-grey-7 q-mt-xs">
-        Upload model data.
+  <q-page padding class="upload-page">
+    <div class="q-mb-lg">
+      <h1 class="text-h4 text-bold">Upload Training Data</h1>
+      <p class="text-subtitle2">Track, manage and forecast your customers and orders</p>
+    </div>
+    
+    <!-- searching bar -->
+    <div class="q-mb-md">
+      <q-input
+        v-model="searchQuery"
+        dense
+        placeholder="Search by tags..."
+        clearable
+        class="search-input"
+      >
+        <template v-slot:prepend>
+          <q-icon name="search" />              
+        </template>
+      </q-input>
+    </div>
+
+    <!-- Tab for switching -->
+    <div class="q-mt-md">
+      <q-btn-group flat>
+        <q-btn
+          :flat="activeTab !== 'uploadData'"
+          color="primary"
+          label="Upload Data"
+          @click="activeTab = 'uploadData'"
+        />
+        <q-btn
+          :flat="activeTab !== 'uploadLogs'"
+          color="primary"
+          label="Upload logs"
+          @click="activeTab = 'uploadLogs'"
+        />
+      </q-btn-group>
+    </div>
+
+    <!-- Upload data area -->
+    <div v-if="activeTab === 'uploadData'">
+      <!-- drop area -->
+      <div class="q-mt-lg flex flex-center q-pa-md upload-area" @click="handleUploadClick">
+        <div class="column items-center text-center">
+          <q-icon name="cloud_upload" size="36px" color="primary" />
+          <div class="text-body2 text-primary q-my-xs">
+            Click to upload
+          </div>
+          <div class="text-caption text-grey-7">
+            or drag and drop<br />
+            SVG, PNG, JPG or GIF (max. 800×400px)
+          </div>
+          <div v-if="fileInfo" class="text-caption text-green q-mt-sm">
+            {{ fileInfo }}
+          </div>
+        </div>
       </div>
-  
-      <!-- Tab for switching:  -->
-      <div class="q-mt-md">
-        <q-btn-group flat>
-          <q-btn
-            :flat="activeTab !== 'uploadData'"
-            color="primary"
-            label="Upload Data"
-            @click="activeTab = 'uploadData'"
-          />
-          <q-btn
-            :flat="activeTab !== 'uploadLogs'"
-            color="primary"
-            label="Upload logs"
-            @click="activeTab = 'uploadLogs'"
-          />
-        </q-btn-group>
-      </div>
-  
-      <!-- Upload -->
-      <div v-if="activeTab === 'uploadData'">
-        <!-- Drop area -->
-        <div
-          class="q-mt-lg flex flex-center q-pa-md"
-          style="
-            border: 2px dashed #d3d3d3;
-            border-radius: 8px;
-            height: 200px;
-            cursor: pointer;
-          "
-          @click="showModelDialog = true"
+
+      <!-- preview area -->
+      <div v-if="uploadedFiles.length > 0" class="file-list q-mt-md">
+        <q-item 
+          v-for="(file, index) in filteredFiles" 
+          :key="file.id" 
+          class="q-mb-sm preview-item"
         >
-          <div class="column items-center text-center">
-            <q-icon name="cloud_upload" size="36px" color="primary" />
-            <div class="text-body2 text-primary q-my-xs">
-              Click to upload
+          <q-item-section side>
+            <q-checkbox 
+              v-model="selectedFiles" 
+              :val="file.id" 
+              color="primary"
+            />
+          </q-item-section>
+
+          <q-item-section>
+            <div class="row items-center">
+              <q-icon name="insert_drive_file" class="q-mr-sm" />
+              <div>
+                <div class="text-caption">{{ file.name }}</div>
+                <div class="text-caption text-grey-6">
+                  {{ file.type }} • {{ formatFileSize(file.size) }}
+                  <q-badge :color="getStatusColor(file.status)" class="q-ml-sm">
+                    {{ file.status }}
+                  </q-badge>
+                </div>
+
+                <!-- Tag-display area -->
+                <div v-if="file.tags?.length" class="q-mt-xs">
+                  <q-badge 
+                    v-for="(tag, tagIndex) in file.tags" 
+                    :key="tagIndex"
+                    color="secondary" 
+                    class="q-mr-xs cursor-pointer"
+                    @click="removeTag(file, tagIndex)"
+                  >
+                    {{ tag }}
+                    <q-tooltip>Click to remove</q-tooltip>
+                  </q-badge>
+                </div>
+
+                <!-- Tag-input area -->
+                <div v-if="editingFileId === file.id" class="q-mt-xs row items-center">
+                  <q-input
+                    v-model="newTag"
+                    dense
+                    placeholder="Enter tag"
+                    class="col"
+                    @keyup.enter="addTag(file)"
+                  />
+                  <q-btn 
+                    flat 
+                    dense 
+                    icon="check" 
+                    color="positive" 
+                    class="q-ml-sm"
+                    @click="addTag(file)"
+                  />
+                  <q-btn
+                    flat
+                    dense
+                    icon="close"
+                    color="negative"
+                    class="q-ml-xs"
+                    @click="cancelTagEdit"
+                  />
+                </div>
+              </div>
             </div>
-            <div class="text-caption text-grey-7">
-              or drag and drop<br />
-              SVG, PNG, JPG or GIF (max. 800×400px)
+          </q-item-section>
+
+          <q-item-section side>
+            <div class="row items-center">
+              <q-btn 
+                round 
+                flat 
+                icon="local_offer" 
+                size="sm" 
+                color="grey-6"
+                class="q-mr-xs"
+                @click="startTagEdit(file.id)"
+              />
+              <q-btn 
+                round 
+                flat 
+                icon="delete" 
+                size="sm" 
+                color="grey-6"
+                @click="removeFile(index)"
+              />
+            </div>
+          </q-item-section>
+        </q-item>
+      </div>
+
+    <!-- batch manipulation -->
+    <div v-if="selectedFiles.length > 0" class="q-mt-md q-mb-sm row items-center batch-toolbar">
+      <div class="text-caption q-mr-md">
+        Selected {{ selectedFiles.length }} files
+      </div>
+      <q-input
+        v-model="batchTag"
+        dense
+        placeholder="Enter tag for all selected"
+        class="col-3"
+        @keyup.enter="addBatchTag"
+      />
+      <q-btn
+        label="Apply Tag"
+        color="primary"   
+        class="q-ml-sm"
+        @click="addBatchTag"
+      />
+      <q-btn 
+        label="Delete Selected"
+        color="negative"
+        class="q-ml-sm"
+        @click="deleteSelectedFiles"
+      />
+      <q-btn
+        flat
+        round
+        icon="close"
+        color="grey"
+        class="q-ml-sm"
+        @click="clearSelection"
+      />
+    </div>
+
+      <!-- hidden file input -->
+      <input
+        type="file"
+        ref="fileInput"
+        accept=".svg,.jpg,.jpeg,.png,.gif"
+        @change="handleFileChange"
+        style="display: none"
+      />
+
+      <!-- buttons -->
+      <div class="q-mt-lg row justify-end">
+        <q-btn flat label="Cancel" color="primary" class="q-mr-sm" />
+        <q-btn
+          label="Start Model Training"
+          color="dark"
+          @click="handleStartTraining"
+        />
+      </div>
+    </div>
+
+    <!-- Upload Logs area -->
+    <div v-else>
+    <div class="q-mt-md">
+    <div v-if="uploadLogs.length === 0" class="text-grey-6 text-center q-pa-lg">
+      No training records yet
+    </div>
+    
+    <div v-else class="file-list">
+      <q-item 
+        v-for="log in uploadLogs" 
+        :key="log.id" 
+        class="q-mb-sm preview-item"
+      >
+      <q-item-section>
+        <div class="row items-center">
+          <q-icon name="model_training" class="q-mr-sm text-primary" />
+          <div>
+            <div class="text-caption text-weight-bold">{{ log.modelVersion }}</div>
+            <div class="text-caption text-grey-6">
+              Site: {{ log.siteId }} • {{ log.dateUploaded }}
+              <q-badge :color="getTrainingStatusColor(log.status)" class="q-ml-sm">
+                {{ log.status }} ({{ log.progress.toFixed(0) }}%)
+              </q-badge>
+            </div>
+              
+            <!-- associated file form -->
+            <div class="q-mt-xs">
+              <q-chip 
+                v-for="(file, index) in log.files" 
+                :key="index"
+                dense
+                color="secondary"
+                text-color="white"
+                icon="insert_drive_file"
+                class="q-mr-xs"
+              >
+                {{ file }}
+              </q-chip>
             </div>
           </div>
         </div>
-  
+      </q-item-section>
 
-  
-        <!-- Start model training -->
-        <div class="q-mt-lg row justify-end">
-          <q-btn flat label="Cancel" color="primary" class="q-mr-sm" />
-          <q-btn
-            label="Start Model Training"
-            color="dark"
-            @click="handleStartTraining"
-          />
-        </div>
-      </div>
-  
-      <!-- Upload logs content when tabbed, -->
-      <div v-else>
-        <div class="q-mt-md">
-  
-  
-          <!-- Empty table (no data) -->
-          <q-table
-            title="All Uploads"
-            :data="[]"
-            :columns="columns"
-            row-key="modelVersion"
+      <q-item-section side>
+        <q-linear-progress
+          :value="log.progress / 100"
+          :color="getTrainingStatusColor(log.status)"
+          class="q-mt-xs"
+          style="width: 120px; height: 8px"
+        />
+        </q-item-section>
+      </q-item>
+    </div>
+  </div>
+</div>
+
+    <!-- Training simulator window -->
+    <q-dialog v-model="showModelDialog" persistent>
+      <q-card style="min-width: 400px;">
+        <q-card-section class="row items-center">
+          <q-icon name="lock" size="md" class="q-mr-sm" />
+          <div class="text-h6">Model Training</div>
+        </q-card-section>
+        <q-card-section>
+          Create a new site with all the required information.
+        </q-card-section>
+
+        <q-card-section>
+          <q-input
+            v-model="modelVersion"
+            label="Model version*"
+            filled
             dense
-            flat
-          >
+            class="q-mb-sm"
+          />
+          <q-select
+            v-model="siteId"
+            :options="siteOptions"
+            label="Site Id"
+            filled
+            dense
+          />
+        </q-card-section>
 
-          </q-table>
-        </div>
-      </div>
-  
-      <!-- Popup dialog for training -->
-      <q-dialog v-model="showModelDialog" persistent>
-        <q-card style="min-width: 400px;">
-          <q-card-section class="row items-center">
-            <q-icon name="lock" size="md" class="q-mr-sm" />
-            <div class="text-h6">Model Training</div>
-          </q-card-section>
-          <q-card-section>
-            Create a new site with all the required information.
-          </q-card-section>
-  
-          <q-card-section>
-            <q-input
-              v-model="modelVersion"
-              label="Model version*"
-              filled
-              dense
-              class="q-mb-sm"
-            />
-            <q-select
-              v-model="siteId"
-              :options="siteOptions"
-              label="Site Id"
-              filled
-              dense
-            />
-          </q-card-section>
-  
-          <q-card-actions align="right">
-            <q-btn flat label="Cancel" @click="showModelDialog = false" />
-            <q-btn label="Submit" color="dark" @click="submitModelTraining" />
-          </q-card-actions>
-        </q-card>
-      </q-dialog>
-  
-    </q-page>
-  </template>
-  
-  <script setup>
-  import { ref } from 'vue'
-  
-  // Tabs
-  const activeTab = ref('uploadData') // or 'uploadLogs'
-  
-  // Dialog control
-  const showModelDialog = ref(false)
-  
-  
-  // Table columns (empty data)
-  const columns = [
-    { name: 'modelVersion', label: 'Model version', field: 'modelVersion' },
-    { name: 'siteId', label: 'Site Id', field: 'siteId' },
-    { name: 'dateUploaded', label: 'Date uploaded', field: 'dateUploaded' },
-    { name: 'lastUpdated', label: 'Last updated', field: 'lastUpdated' },
-    { name: 'trainingStatus', label: 'Training Status', field: 'trainingStatus' },
-    { name: 'action', label: '', field: 'action' }
-  ]
-  
+        <q-card-actions align="right">
+          <q-btn flat label="Cancel" @click="showModelDialog = false" />
+          <q-btn label="Submit" color="dark" @click="submitModelTraining" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+  </q-page>
+</template>
 
-  
-  // Popup form fields
-  const modelVersion = ref('')
-  const siteId = ref('')
-  
-  // Demo logic
-  function handleStartTraining() {
+<script setup>
+import { ref, computed } from 'vue'
 
-  }
+//searching status 
+const searchQuery = ref('')
+
+// filtering files according to their tags
+const filteredFiles = computed(() => {
+  if (!searchQuery.value) return uploadedFiles.value
   
-  function submitModelTraining() {
-    console.log('Submitting model version:', modelVersion.value)
-    console.log('For site:', siteId.value)
-    // api call here ?
-    showModelDialog.value = false
+  const searchTerms = searchQuery.value.toLowerCase().split(' ')
+  return uploadedFiles.value.filter(file => 
+    { return file.tags.some(tag => 
+        searchTerms.some(term => tag.toLowerCase().includes(term))
+      )}
+  )
+})
+
+const uploadedFiles = ref([]);
+let fileIdCounter = 0;
+
+// tag related status
+const editingFileId = ref(null);
+const newTag = ref('');
+const selectedFiles = ref([]); // chosen-file ID arrary
+const batchTag = ref('');      // batch tag-input
+
+// status manage
+const activeTab = ref('uploadData')
+const showModelDialog = ref(false)
+const modelVersion = ref('')
+const siteId = ref('')
+const fileInfo = ref('')
+const fileInput = ref(null)
+
+// site options
+const siteOptions = ['Site A', 'Site B', 'Site C']
+
+const columns = [
+  { name: 'modelVersion', label: 'Model version', field: 'modelVersion' },
+  { name: 'siteId', label: 'Site Id', field: 'siteId' },
+  { name: 'dateUploaded', label: 'Date uploaded', field: 'dateUploaded' },
+  { name: 'lastUpdated', label: 'Last updated', field: 'lastUpdated' },
+  { name: 'trainingStatus', label: 'Training Status', field: 'trainingStatus' },
+  { name: 'action', label: '', field: 'action' }
+]
+
+// batch manipulation methods
+const addBatchTag = () => {
+  if (batchTag.value.trim()) {
+    uploadedFiles.value.forEach(file => {
+      if (selectedFiles.value.includes(file.id)) {
+        if (!file.tags.includes(batchTag.value.trim())) {
+          file.tags.push(batchTag.value.trim())
+        }
+      }
+    })
+    clearSelection()
   }
-  </script>
+}
+
+const clearSelection = () => {
+  selectedFiles.value = []
+  batchTag.value = ''
+}
+
+// single file tagging methods
+const startTagEdit = (fileId) => {
+  editingFileId.value = fileId
+  newTag.value = ''
+}
+
+const cancelTagEdit = () => {
+  editingFileId.value = null
+  newTag.value = ''
+}
+
+const addTag = (file) => {
+  if (newTag.value.trim()) {
+    if (!file.tags.includes(newTag.value.trim())) {
+      file.tags.push(newTag.value.trim())
+    }
+    cancelTagEdit()
+  }
+}
+
+const removeTag = (file, tagIndex) => {
+  file.tags.splice(tagIndex, 1)
+}
+
+// handle file-uploads
+const handleUploadClick = () => {
+  fileInput.value.click()
+}
+
+const handleFileChange = (event) => {
+  const files = event.target.files
+  if (!files.length) return
+
+  Array.from(files).forEach(file => {
+    const validTypes = ['image/svg+xml', 'image/jpeg', 'image/png', 'image/gif']
+    
+    if (validTypes.includes(file.type)) {
+      const newFile = {
+        id: fileIdCounter++,
+        name: file.name,
+        type: file.type.split('/')[1].toUpperCase(),
+        size: file.size,
+        progress: 0,
+        status: 'pending',
+        raw: file,
+        tags: []
+      }
+      uploadedFiles.value.push(newFile)
+      startUpload(newFile)
+    } else {
+      fileInfo.value = 'Invalid file type. Please upload SVG, JPG, PNG, or GIF files.'
+    }
+  })
+}
+
+// upload simulation
+const startUpload = (file) => {
+  file.status = 'uploading'
+  const interval = setInterval(() => {
+    file.progress = Math.min(file.progress + Math.random() * 20, 95)
+    if (file.progress >= 95) {
+      clearInterval(interval)
+      setTimeout(() => {
+        file.progress = 100
+        file.status = 'completed'
+      }, 500)
+    }
+  }, 300)
+}
+
+// delete the file
+const removeFile = (index) => {
+  if (confirm('Are you sure you want to remove this file?')) {
+    uploadedFiles.value.splice(index, 1)
+  }
+}
+
+// delete the file in batch
+const deleteSelectedFiles = () => {
+  if (selectedFiles.value.length === 0) return
   
-  <style scoped>
-  .upload-page {
-    margin: 0 auto;
+  if (confirm(`Are you sure you want to delete ${selectedFiles.value.length} files?`)) {
+    uploadedFiles.value = uploadedFiles.value.filter(
+      file => !selectedFiles.value.includes(file.id)
+    )
+    clearSelection()
   }
-  </style>
+}
+
+// status color
+const getStatusColor = (status) => {
+  const statusColors = {
+    pending: 'grey',
+    uploading: 'primary',
+    completed: 'positive',
+    error: 'negative'
+  }
+  return statusColors[status] || 'grey'
+}
+
+// formatting file size
+const formatFileSize = (bytes) => {
+  const units = ['B', 'KB', 'MB', 'GB']
+  let size = bytes
+  let unitIndex = 0
+  while (size >= 1024 && unitIndex < units.length - 1) {
+    size /= 1024
+    unitIndex++
+  }
+  return `${size.toFixed(1)} ${units[unitIndex]}`
+}
+
+// training modle submission
+const handleStartTraining = () => {
+  if (!uploadedFiles.value.length) {
+    alert('Please select files to upload')
+    return
+  }
+  showModelDialog.value = true
+}
+
+
+const uploadLogs = ref([])
+
+const submitModelTraining = () => {
+  if (!modelVersion.value || !siteId.value) {
+    alert('Please provide all required information')
+    return
+  }
+
+  // create a new training model
+  const newLog = {
+    id: Date.now(),
+    modelVersion: modelVersion.value,
+    siteId: siteId.value,
+    dateUploaded: new Date().toLocaleString(),
+    status: 'training', // initial status
+    progress: 0,
+    files: uploadedFiles.value.map(f => f.name) // save related file name
+  }
+
+  uploadLogs.value.unshift(newLog) // add to the log 
+  simulateModelTraining(newLog) // start training simulation
+  showModelDialog.value = false
+  modelVersion.value = '' // reset the form
+  siteId.value = ''
+}
+
+// simulate training process
+const simulateModelTraining = (log) => {
+  const interval = setInterval(() => {
+    log.progress = Math.min(log.progress + Math.random() * 20, 95)
+    if (log.progress >= 95) {
+      clearInterval(interval)
+      setTimeout(() => {
+        log.progress = 100
+        log.status = 'completed'
+      }, 500)
+    }
+  }, 300)
+}
+
+// training data status color
+const getTrainingStatusColor = (status) => {
+  const statusColors = {
+    training: 'primary',
+    completed: 'positive',
+    error: 'negative'
+  }
+  return statusColors[status] || 'grey'
+}
+
+</script>
+
+<style scoped>
+.search-input {
+  max-width: 400px;
+  margin-bottom: 20px;
+}
+
+.batch-toolbar {
+  background: #f8f9fa;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #eee;
+}
+
+.file-list {
+  width: 100%;
+  background: transparent;
+}
+
+.preview-item {
+  border-radius: 4px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+}
+
+.preview-item:hover {
+  background: #f8f9fa;
+  transform: translateX(2px);
+}
+
+.q-badge {
+  font-size: 0.7em;
+  padding: 2px 6px;
+  transition: opacity 0.2s;
+}
+
+.q-badge:hover {
+  opacity: 0.8;
+}
+
+.upload-page {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 24px;
+}
+
+.upload-area {
+  border: 2px dashed #d3d3d3;
+  border-radius: 8px;
+  height: 200px;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+  background: white;
+  width: 100%;
+}
+
+.q-linear-progress {
+  height: 6px;
+  border-radius: 3px;
+}
+
+.row.justify-end {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #eee;
+}
+
+.q-input {
+  width: 150px;
+  margin-top: 8px;
+}
+
+.q-checkbox {
+  margin-right: 12px;
+}
+
+.model-preview-item {
+  border-radius: 4px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  transition: all 0.2s ease;
+}
+
+.model-preview-item:hover {
+  background: #f8f9fa;
+  transform: translateX(2px);
+}
+</style>
   

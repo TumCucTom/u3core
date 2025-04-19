@@ -1,261 +1,154 @@
 <template>
   <q-layout view="lHh Lpr lFf">
     <q-drawer
-      v-model="leftDrawerOpen"
       show-if-above
+      v-model="leftDrawerOpen"
       side="left"
       width="260"
-      class="bg-white text-dark"
+      class="bg-dark text-white column"
     >
-      <!-- u3logo and name -->
-      <div class="q-pa-md row items-center" style="min-height: 60px">
-        <!-- space for logo -->
-        <q-avatar size="42px" class="bg-orange text-white">
-          U3
-        </q-avatar>
-        <div class="text-h6 q-ml-sm">U3Core</div>
-      </div>
-
-      <!-- search bar (not sure how this will work but going with client design) -->
-      <div class="q-pa-sm">
-        <q-input
-          outlined
-          dense
-          v-model="searchTerm"
-          placeholder="Search"
-          rounded
-        >
-          <template #prepend>
-            <q-icon name="search" class="text-grey" />
-          </template>
-        </q-input>
-      </div>
-
-      <!-- navigation items -->
-      <q-list padding>
-        <!-- Dashboard -->
-        <q-item
-          clickable
-          tag="router-link"
-          to="/app/dashboard"
-          v-ripple
-        >
-            <!-- just placeholder icons for the menu can easily replace later -->
-          <q-item-section avatar>
-            <q-icon name="bar_chart" class="text-grey" />
-          </q-item-section>
-          <q-item-section>Dashboard</q-item-section>
-        </q-item>
-
-        <!-- Upload Training Data -->
-        <q-item
-          clickable
-          tag="router-link"
-          to="/app/training-page"
-          v-ripple
-        >
-          <q-item-section avatar>
-            <q-icon name="file_upload" class="text-grey" />
-          </q-item-section>
-          <q-item-section>Upload Training Data</q-item-section>
-        </q-item>
-
-        <!-- Configuration -->
-        <q-item
-          clickable
-          v-ripple
-          @click="toggleConfiguration"
-          :active="configurationOpen"
-        >
-          <q-item-section avatar>
-            <q-icon name="settings" class="text-grey" />
-          </q-item-section>
-          <q-item-section>Configuration</q-item-section>
-          <q-item-section side>
-            <q-icon
-              :name="configurationOpen ? 'expand_more' : 'chevron_right'"
-              class="text-grey"
-            />
-          </q-item-section>
-        </q-item>
-
-
-        <transition name="fade">
-          <div v-if="configurationOpen" class="q-ml-lg">
-            
-        <!-- Manage Sites -->
-        <q-item
-          clickable
-          tag="router-link"
-          to="/app/manage-sites"
-          v-ripple
-        >
-          <q-item-section avatar>
-            <!-- pink bullet -->
-            <q-icon
-              name="fiber_manual_record"
-              color="pink"
-              size="12px"
-            />
-          </q-item-section>
-          <q-item-section>Manage Sites</q-item-section>
-        </q-item>
-
-        <!-- Camera and AI edge gateway -->
-        <div class="q-ml-lg">
-          <q-item clickable v-ripple tag="router-link" to="/app/camera">
-            <q-item-section avatar>
-              <q-icon
-                name="fiber_manual_record"
-                color="grey-5"
-                size="8px"
-              />
-            </q-item-section>
-            <q-item-section>Camera</q-item-section>
-          </q-item>
-          <q-item clickable v-ripple tag="router-link" to="/app/ai-edge-gateway">
-            <q-item-section avatar>
-              <q-icon
-                name="fiber_manual_record"
-                color="grey-5"
-                size="8px"
-              />
-            </q-item-section>
-            <q-item-section>Ai Edge Gateway</q-item-section>
-          </q-item>
+      <div class="col q-pt-md">
+        <div class="q-pa-md q-mb-md" style="height: 60px; display: flex; align-items: center; gap: 17px;">
+          <!-- Logo  -->
+          <q-img src="../assets/u3logo2.png" alt="U3 Core" style="width: 40px;" />
+          <!-- title -->
+          <div class="text-caption text-white" style="font-size: 20px;">U3Core</div>
         </div>
-          </div>
-        </transition>
 
-        <!-- Cloud settings-->
-        <q-item
-          clickable
-          tag="router-link"
-          to="/app/cloud-settings"
-          v-ripple
-        >
-          <q-item-section avatar>
-            <q-icon name="cloud_queue" class="text-grey" />
-          </q-item-section>
-          <q-item-section>Cloud Settings</q-item-section>
-        </q-item>
+        <!-- Search bar -->
+        <div class="q-pa-md" style="max-width: 100%;">
+          <q-input v-model="searchQuery" placeholder="Search..." outlined dense class="search-input">
+            <template v-slot:prepend>
+             <q-icon name="search"></q-icon>
+            </template>
+           </q-input>
+        </div>
 
-         <!-- Alerts console-->
-        <q-item
-          clickable
-          tag="router-link"
-          to="/app/alerts-page"
-          v-ripple
-        >
-          <q-item-section avatar>
-            <q-icon name="notifications" class="text-grey" />
-          </q-item-section>
-          <q-item-section>Alerts Console</q-item-section>
-        </q-item>
+        <!-- sidebar -->
+        <q-list dense>
+          <q-item
+            v-for="item in filteredItems"
+            :key="item.label"
+            clickable
+            v-ripple
+            tag="router-link"
+            :to="item.route"
+            class="q-mb-sm"
+          >
+            <q-item-section avatar>
+              <q-icon :name="item.icon" />
+            </q-item-section>
+            <q-item-section>{{ item.label }}</q-item-section>
+          </q-item>
+        </q-list>
+      </div>
 
-        <!-- alerts settings/action settings-->
-        <q-item
-          clickable
-          tag="router-link"
-          to="/app/action-settings"
-          v-ripple
-        >
+    <!-- footer -->
+    <div class="q-pa-md border-top-white" style="display: flex; align-items: center;">
+        <q-item clickable v-ripple class="q-pa-sm" style="flex: 1;">
           <q-item-section avatar>
-            <q-icon name="notifications_active" class="text-grey" />
-          </q-item-section>
-          <q-item-section>Alerts Settings</q-item-section>
-        </q-item>
-
-        <q-item
-          clickable
-          tag="router-link"
-          to="/app/manage-models"
-          v-ripple
-        >
-          <q-item-section avatar>
-            <q-icon name="developer_board" class="text-grey" />
-          </q-item-section>
-          <q-item-section>Manage Models</q-item-section>
-        </q-item>
-
-        <q-item
-          clickable
-          tag="router-link"
-          to="/app/settings"
-          v-ripple
-        >
-          <q-item-section avatar>
-            <q-icon name="tune" class="text-grey" />
-          </q-item-section>
-          <q-item-section>Settings</q-item-section>
-        </q-item>
-      </q-list>
-
-      <!-- User profile at the bottom -->
-      <div class="q-mt-auto q-pa-md">
-        <q-separator />
-        <q-item
-          clickable
-          tag="router-link"
-          to="/app/user-profile"
-          v-ripple
-          class="q-pt-md"
-        >
-          <q-item-section avatar>
-            <q-avatar size="42px">
-              <!-- user avatar can replace with image later -->
-              <img
-                src="https://placehold.co/60x60"
-                alt="User avatar"
-              />
+            <q-avatar color="primary" text-color="white">
+              <q-icon name="person" />
             </q-avatar>
           </q-item-section>
+
           <q-item-section>
-            <div>Olivia Rhye</div>
-            <div class="text-caption text-grey-7">olivia@untitledui.com</div>
-          </q-item-section>
-          <q-item-section side>
-            <q-icon name="open_in_new" class="text-grey" />
+            <div class="text-caption text-grey" id="retrievedEmail"></div>
           </q-item-section>
         </q-item>
+
+        <q-btn flat dense icon="exit_to_app" @click="showLogoutDialog = true" />
       </div>
     </q-drawer>
 
-    <!-- Page content -->
     <q-page-container>
       <router-view />
     </q-page-container>
+
+    <!-- Logout Confirmation Dialog -->
+    <q-dialog v-model="showLogoutDialog">
+      <q-card>
+        <q-card-section>
+          <div class="text-h6">confirm Logout</div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          Are you sure you want logout？
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn flat label="cancel" color="primary" v-close-popup />
+          <q-btn flat label="confirm" color="negative" @click="confirmLogout" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-layout>
 </template>
 
 <script>
-import { ref } from 'vue'
-
 export default {
-  setup() {
-    const leftDrawerOpen = ref(true)
-    const searchTerm = ref('')
-    const configurationOpen = ref(false)
-
-    function toggleConfiguration() {
-      configurationOpen.value = !configurationOpen.value
-    }
-
+  data() {
     return {
-      leftDrawerOpen,
-      searchTerm,
-      configurationOpen,
-      toggleConfiguration
-    }
-  }
-}
+      leftDrawerOpen: true, // drawer (sidebar) is open by default
+      searchQuery: '',
+      showLogoutDialog: false, //make sure it wont appear at anytime
+      menuItems: [
+        { label: 'Dashboard', icon: 'dashboard', route: '/app/dashboard' },
+        { label: 'Upload Training Data', icon: 'upload', route: '/app/training-page' },
+        { label: 'Cloud Settings', icon: 'filter_drama', route: '/app/cloud-settings' },
+        { label: 'Manage Sites', icon: 'place', route: '/app/manage-sites' },
+        { label: 'Alerts Console', icon: 'notifications', route: '/app/alerts-page' },
+        { label: 'Action Settings', icon: 'layers', route: '/app/action-settings' },
+        { label: 'Settings', icon: 'settings', route: '/app/settings' },
+      ],
+    };
+  },
+
+  mounted() {
+      this.sendEmail();
+    },
+
+  computed: {
+    filteredItems() {
+      return this.menuItems.filter((item) =>
+        item.label.toLowerCase().includes(this.searchQuery.toLowerCase())
+      );
+    },
+  },
+  methods: {
+    async sendEmail() {
+        try {
+          let retrievedEmail = sessionStorage.getItem("emailTransfer")
+          document.getElementById("retrievedEmail").innerHTML = retrievedEmail
+        }
+        catch (error) {
+        console.error("Error fetching alerts:", error);
+      }
+      },
+
+    confirmLogout() {
+      this.showLogoutDialog = false;
+      this.$router.push('/'); // skip to login page
+    },
+  },
+};
 </script>
 
-<style scoped>
-.text-dark {
-  color: #1e1e2f;
+<style>
+.bg-dark {
+  background-color: #1e1e2f;
 }
-.bg-orange {
-  background-color: #e86828;
+.text-white {
+  color: #ffffff;
+}
+.text-grey {
+  color: #a0a0b0;
+}
+.search-input .q-field__control {
+  background-color: white;
+  color: black;
+}
+.border-top-white {
+  border-top: 1px solid white;
 }
 </style>

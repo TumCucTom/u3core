@@ -6,11 +6,11 @@
         <div class="text-left">
           <q-img src="../assets/u3logo1.png" alt="Digital U3" style="width: 150px;" />
           <div class="q-mt-xl text-center">
-            <q-rating value="5" readonly size="lg" color="amber" />
+            <q-rating v-model="ratingModel" value="5" readonly size="lg" color="amber" />
             <p class="q-my-md text-h5">
               {{ isLogin
-                ? "We've been using Untitled to kick start every new project and can't imagine working without it."
-                : "Untitled has saved us thousands of hours of work. We’re able to spin up projects and features much faster."
+                ? "U3Core's safety compliance features helped us monitor workplace conditions more efficiently. We've not only reduced risks but also met the regulatory requirements with ease."
+                : "U3Core's safety compliance features helped us monitor workplace conditions more efficiently. We've not only reduced risks but also met the regulatory requirements with ease."
               }}
             </p>
             <q-avatar size="80px">
@@ -103,7 +103,7 @@
               :label="isLogin ? 'Sign in' : 'Continue'"
               color="primary"
               class="full-width q-my-md"
-              @click="proceedToOtp"
+              @click="isLogin ? onLogin() : onSubmit()"
             />
 
 
@@ -135,11 +135,16 @@
   import { useRouter } from 'vue-router';
   import bcrypt from 'bcryptjs';
   import {colors} from 'quasar';
+  import obamaImage from '@/assets/obama.jpg';
+  import anotherUserImage from '@/assets/Lori.png';
+
 
   export default {
     data() {
       return {
         isLogin: false, // sees if page is in login or register mode
+        obamaImage,
+        anotherUserImage,
       };
     },
     methods: {
@@ -147,6 +152,7 @@
         this.isLogin = !this.isLogin; // switches between login and register
       },
       proceedToOtp() {
+        sessionStorage.setItem("emailTransfer", this.email)
       this.$router.push("/otp");
     }
     },
@@ -174,7 +180,7 @@
 
   const onSubmit = () => {
 
-  axios.get('http://127.0.0.1:3002/api/emails')
+  axios.get('http://16.171.224.57:0080/api/emails')
   .then(response => {
   allEmails.value = response.data;
   if (allEmails.value.includes(email.value)) {
@@ -206,7 +212,7 @@
 };
 
 
-  axios.post('http://127.0.0.1:3002/api/addToCustomer', requestData)
+  axios.post('http://16.171.224.57:0080/api/addToCustomer', requestData)
   .then(response => {
   console.log(response.data);
 })
@@ -216,14 +222,13 @@
 };
 
   const onLogin = async () => {
-  const emailSend = String(emailLogin.value);
-
+  const emailSend = String(email.value);
+  sessionStorage.setItem("emailTransfer", emailSend)
   try {
-  const response = await axios.get('http://127.0.0.1:3002/api/login', { params: { emailVar: emailSend } });
+  const response = await axios.get('http://16.171.224.57:0080/api/login', { params: { emailVar: emailSend } });
   const fetchedHashedPassword = response.data;
 
-  const result = await bcrypt.compare(passwordLogin.value, fetchedHashedPassword);
-
+  const result = await bcrypt.compare(password.value, fetchedHashedPassword);
   if (result) {
   // Passwords match, allow the user to log in
   $q.notify({
@@ -234,7 +239,7 @@
 });
 
   // Redirect user
-  router.push('/OTPVerification');
+  router.push('/otp');
 } else {
   // Passwords don't match, notify the user
   $q.notify({
@@ -257,6 +262,7 @@
 };
 
   return {
+  ratingModel:ref(5),
   firstName,
   lastName,
   email,
@@ -276,6 +282,11 @@
 </script>
 
 <style scoped>
+
+.move-left {
+  position-try: relative;
+  left: -2000px;
+}
 
 .bg-light {
   background-color: #f9fafb;
