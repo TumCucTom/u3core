@@ -7,35 +7,38 @@ and sends alerts via AWS SNS (SMS) and Twilio (WhatsApp) when fire is detected.
 Configuration values are loaded from environment variables.
 """
 import os
-import time
-import datetime
-import cv2
-import boto3
-from twilio.rest import Client
 import requests
 from dotenv import load_dotenv
+import cv2
+import datetime
 from ultralytics import YOLO
+from twilio.rest import Client
+import time
 
 # Load environment variables
 dotenv_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../.env"))
 load_dotenv(dotenv_path)
 
-# AWS SNS setup
-AWS_REGION = os.getenv("AWS_REGION")
-AWS_ACCESS_KEY = os.getenv("AWS_ACCESS_KEY")
-AWS_SECRET_KEY = os.getenv("AWS_SECRET_KEY")
-
 # Twilio setup
 T_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
 T_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
-TWILO_NUMBER = os.getenv("TWILIO_WHATSAPP_NUMBER")
-
-# Recipient setup
-REC_NUMBER = os.getenv("RECIPIENT_PHONE_NUMBER")
-REC_WHATSAPP_NUMBER = os.getenv("RECIPIENT_WHATSAPP_NUMBER")
 
 # Alert message
 ALERT_MESSAGE = "Fire detected! Immediate action required!"
+
+def send_whatsapp_via_twilio(number, stream_address, datetime):
+    """Send WhatsApp message via Twilio."""
+    account_sid = T_ACCOUNT_SID
+    auth_token = T_AUTH_TOKEN
+    client = Client(account_sid, auth_token)
+
+    message = client.messages.create(
+        from_ ='whatsapp:+14155238886',
+        body =f'Fire Detected -  site: test123, rtsp: {stream_address}, time: {datetime}',
+        to=f'whatsapp:{number}'
+    )
+
+    print(message.sid)
 
 def send_hazard_log(rtsp_url, hazard):
     """
@@ -60,31 +63,6 @@ def send_hazard_log(rtsp_url, hazard):
         print(f"Error sending request: {e}")
         return {"error": "Failed to send request"}
 
-# Send SMS via AWS SNS
-def send_sms_via_sns(phone_number, message):
-    """Send message via SMS."""
-    sns_client = boto3.client(
-        "sns",
-        region_name=AWS_REGION,
-        aws_access_key_id=AWS_ACCESS_KEY,
-        aws_secret_access_key=AWS_SECRET_KEY
-    )
-    response = sns_client.publish(
-        PhoneNumber=phone_number,
-        Message=message
-    )
-    print(f"SMS sent! Message ID: {response['MessageId']}")
-
-# Send WhatsApp message via Twilio
-def send_whatsapp_via_twilio(to_number, message):
-    """Send WhatsApp message via Twilio."""
-    client = Client(T_ACCOUNT_SID, T_AUTH_TOKEN)
-    message = client.messages.create(
-        from_=TWILO_NUMBER,
-        body=message,
-        to=to_number
-    )
-    print(f"WhatsApp message sent! Message SID: {message.sid}")
 
 # Detect fire using YOLOv8
 def detect_fire_with_yolo(frame, model):
@@ -96,47 +74,67 @@ def detect_fire_with_yolo(frame, model):
         class_id = int(box.cls[0].item())  # Get class index
         confidence = box.conf[0].item()  # Get confidence score
 
-        if class_id == 0 and confidence >= 0.5:  # Assuming 'fire' is class 0
+        if class_id == 0 and confidence >= 0.6:  # Assuming 'fire' is class 0
             return True, "fire"
 
     return False, "none"
 
-# Process RTSP stream
-def process_rtsp_stream_with_url(rtsp_url,model_path = "models/default/default.pt" ):
-    """Process RTSP stream for fire detection."""
-    # Load trained YOLOv8 model
+
+def run_yolov8_inference(rtsp_url,
+                         number,
+                         conf=0.6,
+                         iou=0.5,
+                         alert_class="fire",
+                         alert_interval=10,
+                         model_path = "models/default/best.pt"
+                         ):
+    """
+    Run YOLOv8 inference on webcam or RTSP input, detect 'fire', and trigger alerts.
+
+    Args:
+        rtsp_url: the address of stream
+        number: phone number to whatsapp
+        conf: Confidence threshold.
+        iou: IOU threshold.
+        alert_class: Class name to trigger alert.
+        alert_interval: Seconds between repeated alerts.
+        model_path: path to the stored model
+    """
     model = YOLO(model_path)
 
     cap = cv2.VideoCapture(rtsp_url)
+
     if not cap.isOpened():
         print("Error: Unable to open RTSP stream.")
         return
 
     last_alert_time = 0
-    alert_interval = 30  # Minimum time between alerts (seconds)
 
-    while True:
-        ret, frame = cap.read()
-        if not ret:
-            print("Error: Unable to read frame from RTSP stream.")
+    while cap.isOpened():
+        success, frame = cap.read()
+        if not success:
             break
 
-        fire_detected, alert_type = detect_fire_with_yolo(frame, model)
+        # Run inference
+        results = model(frame, conf=conf, iou=iou, verbose=False)
+
+        # Fire alert logic
+        fire_detected = False
+        for box in results[0].boxes.data:
+            class_id = int(box[5].item())
+            class_name = model.names[class_id]
+            if class_name.lower() == alert_class.lower():
+                fire_detected = True
+                break
 
         if fire_detected:
             current_time = time.time()
+            date_time = datetime.datetime()
             if current_time - last_alert_time > alert_interval:
                 print("Fire detected! Sending alerts...")
-                send_sms_via_sns(REC_NUMBER, ALERT_MESSAGE)
-                send_whatsapp_via_twilio(REC_WHATSAPP_NUMBER, ALERT_MESSAGE)
-                send_hazard_log(rtsp_url, alert_type)
-
                 last_alert_time = current_time
-
-        # Display the stream with fire detection
-        cv2.imshow("Fire Detection Stream", frame)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
+                send_whatsapp_via_twilio(number,rtsp_url,date_time)
+                send_hazard_log(rtsp_url, "fire")
 
     cap.release()
     cv2.destroyAllWindows()
