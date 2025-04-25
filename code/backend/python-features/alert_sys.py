@@ -118,4 +118,3 @@ def process_webcam_stream():
 
 if __name__ == "__main__":
     process_webcam_stream()
-    

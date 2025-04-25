@@ -13,3 +13,4 @@ email-validator
 pycurl
 ffmpeg-python
 python-dotenv
+ultralytics

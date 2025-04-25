@@ -1,4 +1,6 @@
 """Training from a given dataset"""
+# pylint: disable=too-many-locals
+# pylint: disable=too-many-arguments
 import os
 import sys
 from ultralytics import YOLO
@@ -21,7 +23,7 @@ def train_yolo_model(
     model = YOLO(model_weights)
 
     # Train the model
-    results = model.train(data=dataset_yaml, epochs=epochs, imgsz=img_size)
+    _ = model.train(data=dataset_yaml, epochs=epochs, imgsz=img_size)
 
     # Save the trained model
     save_path = os.path.join(save_dir, save_name)

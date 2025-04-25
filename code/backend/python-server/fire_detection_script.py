@@ -6,14 +6,16 @@ and sends alerts via AWS SNS (SMS) and Twilio (WhatsApp) when fire is detected.
 
 Configuration values are loaded from environment variables.
 """
+# pylint: disable=too-many-locals
+# pylint: disable=too-many-arguments
 import os
+import datetime
+import time
 import requests
 from dotenv import load_dotenv
 import cv2
-import datetime
 from ultralytics import YOLO
 from twilio.rest import Client
-import time
 
 # Load environment variables
 dotenv_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../.env"))
@@ -129,7 +131,7 @@ def run_yolov8_inference(rtsp_url,
 
         if fire_detected:
             current_time = time.time()
-            date_time = datetime.datetime()
+            date_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             if current_time - last_alert_time > alert_interval:
                 print("Fire detected! Sending alerts...")
                 last_alert_time = current_time
