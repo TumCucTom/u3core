@@ -8,6 +8,8 @@ Configuration values are loaded from environment variables.
 """
 # pylint: disable=too-many-locals
 # pylint: disable=too-many-arguments
+# pylint: too-many-positional-arguments
+# pylint: redefined-outer-name
 import os
 import datetime
 import time

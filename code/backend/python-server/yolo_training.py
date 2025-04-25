@@ -1,6 +1,8 @@
 """Training from a given dataset"""
 # pylint: disable=too-many-locals
 # pylint: disable=too-many-arguments
+# pylint: too-many-positional-arguments
+
 import os
 import sys
 from ultralytics import YOLO
