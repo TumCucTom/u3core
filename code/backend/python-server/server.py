@@ -5,7 +5,6 @@
 # pylint: disable=c-extension-no-member
 # pylint: disable=too-many-locals
 # pylint: disable=too-many-arguments
-# pylint: disable=too-many-positional-arguments
 import os
 import random
 import string
