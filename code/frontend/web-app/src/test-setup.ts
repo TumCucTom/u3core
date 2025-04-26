@@ -3,9 +3,9 @@ import { installQuasarPlugin } from '@quasar/quasar-app-extension-testing-unit-v
 import { vi } from 'vitest'
 import { defineComponent } from 'vue'
 
-// ✅ Correct Quasar mocking — only ONE vi.mock('quasar')
-vi.mock('quasar', async (importOriginal) => {
-  const actual = await importOriginal()
+// Correct hoist-safe Quasar mocking
+vi.mock('quasar', () => {
+  const actual = vi.importActual<any>('quasar')
   return {
     ...actual,
     useQuasar: () => ({
@@ -25,9 +25,9 @@ vi.mock('quasar', async (importOriginal) => {
   }
 })
 
-// ✅ vue-router mock (still fine)
-vi.mock('vue-router', async (importOriginal) => {
-  const actual = await importOriginal()
+// Correct hoist-safe vue-router mocking
+vi.mock('vue-router', () => {
+  const actual = vi.importActual<any>('vue-router')
   return {
     ...actual,
     useRoute: () => ({
@@ -39,7 +39,7 @@ vi.mock('vue-router', async (importOriginal) => {
   }
 })
 
-// ✅ install quasar plugin
+// Install quasar plugin
 beforeAll(() => {
   installQuasarPlugin()
 })
