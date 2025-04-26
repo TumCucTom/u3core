@@ -1,5 +1,5 @@
 import Home from "src/pages/LoginPage.vue";
-import otp from "src/pages/otPage.vue";
+import otp from "src/pages/OtPage.vue";
 import DashboardPage from "src/pages/DashboardPage.vue";
 import ManageSitesPage from "src/pages/ManageSitesPage.vue";
 import ManageModelsPage from "src/pages/ManageModelsPage.vue";
@@ -22,12 +22,12 @@ const routes = [
         component: Home,
         meta: {title:"UserLogin"}
       },
-      { path: "otp", 
+      { path: "otp",
         component: otp,
         meta: {title:"OTP Authentication"}
       },
-      { path: "verified-email", 
-        component: Verified, 
+      { path: "verified-email",
+        component: Verified,
         meta: {title: 'Email verification' }
       }, // Action Settings page
     ],
@@ -38,35 +38,35 @@ const routes = [
     path: "/app",
     component: () => import("layouts/SidebarLayout.vue"),
     children: [
-      { path: "dashboard", 
+      { path: "dashboard",
         component: DashboardPage,
         meta: {title:"Dashboard"}
       }, // Dashboard page
-      { path: "manage-sites", 
+      { path: "manage-sites",
         component: ManageSitesPage,
         meta: {title:"ManageSites"}
       }, // Manage Sites page
-      { path: "manage-models", 
+      { path: "manage-models",
         component: ManageModelsPage,
         meta: {title:"ManageModels"}
       }, // Manage Models page
-      { path: "action-settings", 
+      { path: "action-settings",
         component: ActionSettingsPage,
         meta: {title:"ActionSettings"}
       }, // Action Settings page
-      { path : "alerts-page", 
+      { path : "alerts-page",
         component: AlertsPage,
         meta: {title:'AlertsPage'},
       },// Alerts page
-      { path : "training-page", 
+      { path : "training-page",
         component :TrainingPage,
         meta: {title:'TrainingPage'},
       },
-      { path : "cloud-settings", 
+      { path : "cloud-settings",
         component :CloudSettingsPage,
         meta: {title:'Cloud-settings'},
       },
-      { path : "settings", 
+      { path : "settings",
         component:SettingsPage,
         meta: {title:'settings'},
       },
