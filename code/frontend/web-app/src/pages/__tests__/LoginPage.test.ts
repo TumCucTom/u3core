@@ -4,148 +4,170 @@ import LoginPage from '../LoginPage.vue'
 import axios from 'axios'
 import bcrypt from 'bcryptjs'
 
+// Mock libraries
+vi.mock('axios')
+vi.mock('bcryptjs')
+
 const notifyMock = vi.fn()
 const pushMock = vi.fn()
 
 const $q = { notify: notifyMock }
 const $router = { push: pushMock }
 
+// Centralized factory for creating wrapper
+const factory = (options = {}) => {
+  return mount(LoginPage, {
+    global: {
+      mocks: { $q, $router },
+      stubs: ['q-page', 'q-btn', 'q-input', 'q-avatar', 'q-img', 'q-rating', 'q-checkbox', 'q-form'],
+      ...options.global,
+    },
+    ...options,
+  })
+}
+
 describe('LoginPage.vue', () => {
   beforeEach(() => {
     vi.resetAllMocks()
   })
 
-  it('renders correctly in signup mode by default', () => {
-    const wrapper = mount(LoginPage, {
-      global: {
-        stubs: ['q-page', 'q-btn', 'q-input', 'q-avatar', 'q-img', 'q-rating', 'q-checkbox', 'q-form'],
-      }
-    })
-
-    expect(wrapper.vm.isLogin).toBe(false)
-    expect(wrapper.text()).toContain('Sign up')
-    expect(wrapper.text()).toContain('First Name')
-    expect(wrapper.text()).toContain('Last Name')
+  afterEach(() => {
+    vi.restoreAllMocks()
   })
 
-  it('toggles to login mode', async () => {
-    const wrapper = mount(LoginPage, {
-      global: {
-        stubs: ['q-page', 'q-btn', 'q-input', 'q-avatar', 'q-img', 'q-rating', 'q-checkbox', 'q-form'],
-      }
+  describe('Rendering and Mode Toggle', () => {
+    it('renders correctly in signup mode by default', () => {
+      const wrapper = factory()
+
+      expect(wrapper.vm.isLogin).toBe(false)
+      expect(wrapper.text()).toContain('Sign up')
+      expect(wrapper.text()).toContain('First Name')
+      expect(wrapper.text()).toContain('Last Name')
     })
 
-    expect(wrapper.vm.isLogin).toBe(false)
-    await wrapper.vm.toggleMode()
-    expect(wrapper.vm.isLogin).toBe(true)
-    expect(wrapper.text()).toContain('Welcome back')
+    it('toggles to login mode', async () => {
+      const wrapper = factory()
+
+      expect(wrapper.vm.isLogin).toBe(false)
+      await wrapper.vm.toggleMode()
+      expect(wrapper.vm.isLogin).toBe(true)
+      expect(wrapper.text()).toContain('Welcome back')
+    })
   })
 
-  it('handles successful signup flow', async () => {
-    axios.get.mockResolvedValue({ data: ['existing@example.com'] }) // Emails from server
-    axios.post.mockResolvedValue({ data: 'success' })
+  describe('Signup Flow', () => {
+    it('handles successful signup flow', async () => {
+      axios.get.mockResolvedValueOnce({ data: ['someoneelse@example.com'] })
+      axios.post.mockResolvedValueOnce({ data: 'success' })
 
-    const wrapper = mount(LoginPage, {
-      global: {
-        mocks: { $q },
-        stubs: ['q-page', 'q-btn', 'q-input', 'q-avatar', 'q-img', 'q-rating', 'q-checkbox', 'q-form'],
-      }
+      const wrapper = factory()
+
+      wrapper.vm.email = 'newuser@example.com'
+      wrapper.vm.firstName = 'John'
+      wrapper.vm.lastName = 'Doe'
+      wrapper.vm.password = 'Password1!'
+
+      await wrapper.vm.onSubmit()
+
+      expect(axios.post).toHaveBeenCalledWith(
+        'http://16.171.224.57:80/api/addToCustomer', // ✅ Fixed port
+        { items: ['John', 'Doe', 'newuser@example.com', 'Password1!'] }
+      )
+      expect(notifyMock).toHaveBeenCalledWith(expect.objectContaining({
+        message: expect.stringContaining('Email registered')
+      }))
     })
 
-    // Fill form data
-    wrapper.vm.email = 'newuser@example.com'
-    wrapper.vm.firstName = 'John'
-    wrapper.vm.lastName = 'Doe'
-    wrapper.vm.password = 'Password1!'
+    it('handles duplicate email on signup', async () => {
+      axios.get.mockResolvedValueOnce({ data: ['test@example.com'] })
 
-    // Mock that the email does NOT already exist
-    axios.get.mockResolvedValueOnce({ data: ['someoneelse@example.com'] })
+      const wrapper = factory()
 
-    await wrapper.vm.onSubmit()
+      wrapper.vm.email = 'test@example.com'
+      await wrapper.vm.onSubmit()
 
-    expect(axios.post).toHaveBeenCalledWith(
-      'http://16.171.224.57:0080/api/addToCustomer',
-      { items: ['John', 'Doe', 'newuser@example.com', 'Password1!'] }
-    )
-    expect(notifyMock).toHaveBeenCalledWith(expect.objectContaining({
-      message: expect.stringContaining('Email registered')
-    }))
+      expect(notifyMock).toHaveBeenCalledWith(expect.objectContaining({
+        message: expect.stringContaining('already registered')
+      }))
+    })
+
+    it('handles signup server error', async () => {
+      axios.get.mockResolvedValueOnce({ data: [] })
+      axios.post.mockRejectedValueOnce(new Error('Server error'))
+
+      const wrapper = factory()
+
+      wrapper.vm.email = 'erroruser@example.com'
+      wrapper.vm.firstName = 'Error'
+      wrapper.vm.lastName = 'User'
+      wrapper.vm.password = 'Password1!'
+
+      await wrapper.vm.onSubmit()
+
+      expect(notifyMock).toHaveBeenCalledWith(expect.objectContaining({
+        message: expect.stringContaining('Failed to register')
+      }))
+    })
   })
 
-  it('handles duplicate email on signup', async () => {
-    axios.get.mockResolvedValue({ data: ['test@example.com'] })
+  describe('Login Flow', () => {
+    it('handles successful login flow', async () => {
+      axios.get.mockResolvedValueOnce({ data: '$2a$10$hashedpassword' })
+      bcrypt.compare.mockResolvedValueOnce(true)
 
-    const wrapper = mount(LoginPage, {
-      global: {
-        mocks: { $q },
-        stubs: ['q-page', 'q-btn', 'q-input', 'q-avatar', 'q-img', 'q-rating', 'q-checkbox', 'q-form'],
-      }
+      const wrapper = factory()
+
+      wrapper.vm.email = 'test@example.com'
+      wrapper.vm.password = 'Password1!'
+      await wrapper.vm.onLogin()
+
+      expect(notifyMock).toHaveBeenCalledWith(expect.objectContaining({
+        message: expect.stringContaining('Successfully logged in')
+      }))
+      expect(pushMock).toHaveBeenCalledWith('/otp')
     })
 
-    wrapper.vm.email = 'test@example.com'
-    await wrapper.vm.onSubmit()
+    it('handles invalid password login flow', async () => {
+      axios.get.mockResolvedValueOnce({ data: '$2a$10$hashedpassword' })
+      bcrypt.compare.mockResolvedValueOnce(false)
 
-    expect(notifyMock).toHaveBeenCalledWith(expect.objectContaining({
-      message: expect.stringContaining('already registered')
-    }))
-  })
+      const wrapper = factory()
 
-  it('handles successful login flow', async () => {
-    axios.get.mockResolvedValue({ data: '$2a$10$hashedpassword' })
-    bcrypt.compare.mockResolvedValue(true)
+      wrapper.vm.email = 'test@example.com'
+      wrapper.vm.password = 'wrongpassword'
+      await wrapper.vm.onLogin()
 
-    const wrapper = mount(LoginPage, {
-      global: {
-        mocks: { $q, $router },
-        stubs: ['q-page', 'q-btn', 'q-input', 'q-avatar', 'q-img', 'q-rating', 'q-checkbox', 'q-form'],
-      }
+      expect(notifyMock).toHaveBeenCalledWith(expect.objectContaining({
+        message: expect.stringContaining('Invalid username/password')
+      }))
     })
 
-    wrapper.vm.email = 'test@example.com'
-    wrapper.vm.password = 'Password1!'
-    await wrapper.vm.onLogin()
+    it('handles login error (email not found)', async () => {
+      axios.get.mockRejectedValueOnce(new Error('Not Found'))
 
-    expect(notifyMock).toHaveBeenCalledWith(expect.objectContaining({
-      message: expect.stringContaining('Successfully logged in')
-    }))
-    expect(pushMock).toHaveBeenCalledWith('/otp')
-  })
+      const wrapper = factory()
 
-  it('handles invalid password login flow', async () => {
-    axios.get.mockResolvedValue({ data: '$2a$10$hashedpassword' })
-    bcrypt.compare.mockResolvedValue(false)
+      wrapper.vm.email = 'missing@example.com'
+      await wrapper.vm.onLogin()
 
-    const wrapper = mount(LoginPage, {
-      global: {
-        mocks: { $q },
-        stubs: ['q-page', 'q-btn', 'q-input', 'q-avatar', 'q-img', 'q-rating', 'q-checkbox', 'q-form'],
-      }
+      expect(notifyMock).toHaveBeenCalledWith(expect.objectContaining({
+        message: expect.stringContaining('Email does not exist')
+      }))
     })
 
-    wrapper.vm.email = 'test@example.com'
-    wrapper.vm.password = 'wrongpassword'
-    await wrapper.vm.onLogin()
+    it('handles unexpected bcrypt error', async () => {
+      axios.get.mockResolvedValueOnce({ data: '$2a$10$hashedpassword' })
+      bcrypt.compare.mockRejectedValueOnce(new Error('bcrypt error'))
 
-    expect(notifyMock).toHaveBeenCalledWith(expect.objectContaining({
-      message: expect.stringContaining('Invalid username/password')
-    }))
-  })
+      const wrapper = factory()
 
-  it('handles login error (email not found)', async () => {
-    axios.get.mockRejectedValue(new Error('Not Found'))
+      wrapper.vm.email = 'bcryptfail@example.com'
+      wrapper.vm.password = 'Password1!'
+      await wrapper.vm.onLogin()
 
-    const wrapper = mount(LoginPage, {
-      global: {
-        mocks: { $q },
-        stubs: ['q-page', 'q-btn', 'q-input', 'q-avatar', 'q-img', 'q-rating', 'q-checkbox', 'q-form'],
-      }
+      expect(notifyMock).toHaveBeenCalledWith(expect.objectContaining({
+        message: expect.stringContaining('Login failed')
+      }))
     })
-
-    wrapper.vm.email = 'missing@example.com'
-    await wrapper.vm.onLogin()
-
-    expect(notifyMock).toHaveBeenCalledWith(expect.objectContaining({
-      message: expect.stringContaining('Email does not exist')
-    }))
   })
 })

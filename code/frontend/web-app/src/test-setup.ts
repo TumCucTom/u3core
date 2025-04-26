@@ -1,11 +1,24 @@
-// test-setup.ts
-import { beforeAll } from 'vitest'
-import { installQuasarPlugin } from '@quasar/quasar-app-extension-testing-unit-vitest'
+// src/tests/setup.ts
 
-// Mocks are auto-loaded now, you just need to import the file
-import './setupMocks'
+import { beforeEach } from 'vitest'
+import { config } from '@vue/test-utils'
 
-// Install Quasar plugin
-beforeAll(() => {
-  installQuasarPlugin()
+beforeEach(() => {
+  config.global.stubs = {
+    'q-btn': true,
+    'q-btn-group': true,
+    'q-card': true,
+    'q-card-section': true,
+    'q-card-actions': true,
+    'q-table': true,
+    'q-toolbar': true,
+    'q-toolbar-title': true,
+    'q-icon': true,
+    'q-input': true,
+    'q-select': true,
+    'q-dialog': true,
+    'q-page': true,
+    'router-link': true, // if needed
+    'router-view': true, // if needed
+  }
 })
