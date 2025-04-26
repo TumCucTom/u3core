@@ -1,6 +1,10 @@
 import { mount } from '@vue/test-utils';
 import { describe, it, expect } from 'vitest';
 import ManageModelsPage from '../ManageModelsPage.vue';
+import axios from 'axios'
+import { vi } from 'vitest'
+
+vi.mock('axios')
 
 describe('ManageModelsPage.vue', () => {
   const mountPage = () => mount(ManageModelsPage, {

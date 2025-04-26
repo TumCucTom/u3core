@@ -1,6 +1,9 @@
 import { mount } from '@vue/test-utils'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import TrainingPage from '../TrainingPage.vue'
+import axios from 'axios'
+
+vi.mock('axios')
 
 describe('TrainingPage.vue', () => {
   let wrapper: ReturnType<typeof mount>

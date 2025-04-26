@@ -1,6 +1,10 @@
 import { mount } from '@vue/test-utils';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import CloudSettings from '../CloudSettings.vue';
+import axios from 'axios'
+
+vi.mock('axios')
+
 
 describe('CloudSettings', () => {
   let wrapper: ReturnType<typeof mount>;

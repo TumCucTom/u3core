@@ -3,6 +3,11 @@
 import { mount } from '@vue/test-utils';
 import { describe, it, expect } from 'vitest';
 import ActionsSettingPage from '../ActionSettingsPage.vue';
+import axios from 'axios'
+import { vi } from 'vitest'
+
+vi.mock('axios')
+
 
 describe('ActionsSettingPage', () => {
   const mountPage = () =>

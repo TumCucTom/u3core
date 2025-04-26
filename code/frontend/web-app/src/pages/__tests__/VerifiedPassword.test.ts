@@ -2,6 +2,9 @@ import { mount } from '@vue/test-utils'
 import { describe, it, expect, vi } from 'vitest'
 import VerifiedPassword from '../VerifiedPassword.vue'
 import { useRouter, useRoute } from 'vue-router'
+import axios from 'axios'
+
+vi.mock('axios')
 
 describe('VerifiedPassword.vue', () => {
   it('redirects to dashboard if token and email are present', async () => {

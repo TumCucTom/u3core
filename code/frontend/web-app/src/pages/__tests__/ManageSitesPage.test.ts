@@ -3,6 +3,8 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import ManageSitesPage from '../ManageSitesPage.vue'
 import axios from 'axios'
 
+vi.mock('axios')
+
 // Mock WebSocket globally
 global.WebSocket = vi.fn(() => ({
   send: vi.fn(),

@@ -4,6 +4,8 @@ import DashboardPage from '../DashboardPage.vue'
 import { nextTick } from 'vue'
 import axios from 'axios'
 
+vi.mock('axios')
+
 describe('DashboardPage.vue', () => {
   const mockRoute = {
     query: {

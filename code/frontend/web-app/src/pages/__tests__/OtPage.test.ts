@@ -3,6 +3,8 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import OtPage from '../OtPage.vue'
 import axios from 'axios'
 
+vi.mock('axios')
+
 // Mock $q.notify
 const notifyMock = vi.fn()
 

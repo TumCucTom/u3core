@@ -3,9 +3,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import ResetPassword from '../ResetPassword.vue'
 import axios from 'axios'
 
-// Mock router and quasar
-const pushMock = vi.fn()
-const notifyMock = vi.fn()
+vi.mock('axios')
 
 describe('ResetPassword.vue', () => {
   let wrapper: ReturnType<typeof mount>
