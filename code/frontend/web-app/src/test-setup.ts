@@ -1,6 +1,7 @@
 import { beforeAll } from 'vitest'
 import { installQuasarPlugin } from '@quasar/quasar-app-extension-testing-unit-vitest'
 import { vi } from 'vitest'
+import { defineComponent } from 'vue'
 
 // Correct Quasar mocking
 vi.mock('quasar', async (importOriginal) => {
@@ -28,6 +29,19 @@ vi.mock('vue-router', async (importOriginal) => {
     }),
   }
 })
+
+vi.mock('quasar', () => ({
+  QBtn: defineComponent({ name: 'q-btn', template: '<button><slot /></button>' }),
+  QCard: defineComponent({ name: 'q-card', template: '<div><slot /></div>' }),
+  QToolbar: defineComponent({ name: 'q-toolbar', template: '<div><slot /></div>' }),
+  QToolbarTitle: defineComponent({ name: 'q-toolbar-title', template: '<div><slot /></div>' }),
+  QCardSection: defineComponent({ name: 'q-card-section', template: '<div><slot /></div>' }),
+  QCardActions: defineComponent({ name: 'q-card-actions', template: '<div><slot /></div>' }),
+  QIcon: defineComponent({ name: 'q-icon', template: '<i><slot /></i>' }),
+  QTable: defineComponent({ name: 'q-table', template: '<table><slot /></table>' }),
+  Ripple: {},  // Mock directives like ripple
+}))
+
 
 beforeAll(() => {
   installQuasarPlugin()
