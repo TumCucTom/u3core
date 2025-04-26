@@ -15,7 +15,7 @@ const routes = [
   //start off at the login page as the default route
   {
     path: "/",
-    component: () => import("layouts/MinimalLayout.vue"),
+    component: () => import("src/layouts/MinimalLayout.vue"),
     children: [
       {
         path: "",
@@ -36,7 +36,7 @@ const routes = [
   // sidebar layout for all the other pages
   {
     path: "/app",
-    component: () => import("layouts/SidebarLayout.vue"),
+    component: () => import("src/layouts/SidebarLayout.vue"),
     children: [
       { path: "dashboard",
         component: DashboardPage,
@@ -76,7 +76,7 @@ const routes = [
   // Catch-all for 404 errors
   {
     path: "/:catchAll(.*)*",
-    component: () => import("pages/ErrorNotFound.vue"),
+    component: () => import("src/pages/ErrorNotFound.vue"),
     meta: { title:"ErrorNotFound"}
   },
 ];
