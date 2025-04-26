@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils'
-import HomeLayout from '../layouts/HomeLayout.vue'
+import HomeLayout from '../HomeLayout.vue'
 import { describe, it, expect, vi } from 'vitest'
 import { createTestingPinia } from '@pinia/testing'
 import { createRouter, createMemoryHistory } from 'vue-router'

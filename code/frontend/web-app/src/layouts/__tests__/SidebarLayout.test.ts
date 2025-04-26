@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils'
-import SidebarLayout from '../layouts/SidebarLayout.vue'
+import SidebarLayout from '../SidebarLayout.vue'
 import { describe, it, expect, vi } from 'vitest'
 import { createRouter, createMemoryHistory } from 'vue-router'
 import { Quasar } from 'quasar'

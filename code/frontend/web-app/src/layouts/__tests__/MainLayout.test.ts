@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils'
-import MainLayout from '../layouts/MainLayout.vue'
-import EssentialLink from '../components/EssentialLink.vue'
+import MainLayout from '../MainLayout.vue'
+import EssentialLink from '../../components/EssentialLink.vue'
 import { describe, it, expect } from 'vitest'
 import { Quasar } from 'quasar'
 import { createRouter, createMemoryHistory } from 'vue-router'
