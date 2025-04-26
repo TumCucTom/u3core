@@ -1,9 +1,9 @@
+// test-setup.ts
 import { beforeAll } from 'vitest'
 import { installQuasarPlugin } from '@quasar/quasar-app-extension-testing-unit-vitest'
-import { setupMocks } from './setupMocks'
 
-// Important: call the function inside a beforeAll or immediately
-await setupMocks()
+// Mocks are auto-loaded now, you just need to import the file
+import './setupMocks'
 
 // Install Quasar plugin
 beforeAll(() => {
