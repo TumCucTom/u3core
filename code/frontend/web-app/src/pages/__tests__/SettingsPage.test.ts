@@ -2,26 +2,38 @@
 import { mount } from '@vue/test-utils'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import SettingsPage from '../SettingsPage.vue'
-import { routerKey } from 'vue-router'
+import { routerKey, routeLocationKey } from 'vue-router'
 
-// Mock axios
-import axios from 'axios'
+// mocks & stubs
 vi.mock('axios')
+vi.mock('bcryptjs')
 
-// Mocks for injection (if needed later)
+const notifyMock = vi.fn()
 const pushMock = vi.fn()
+const routeMock = {
+  query: {
+    token: '',
+    email: ''
+  }
+}
 
 // Centralized factory
 const factory = (options = {}) => {
   return mount(SettingsPage, {
     global: {
+      // PROVIDE what useQuasar() and useRouter() will inject:
       provide: {
-        // Provide router if SettingsPage internally uses useRouter() later
-        [routerKey]: { push: pushMock }
+        // useQuasar() looks up `_q_`
+        _q_: { notify: notifyMock },
+
+        // useRouter() looks up this Symbol key
+        [routerKey]: { push: pushMock },
+        [routeLocationKey]: routeMock,
       },
+      // stub out all <q-*> so Quasar never actually runs
       stubs: [
-        'q-page', 'q-tabs', 'q-tab', 'q-tab-panels', 'q-tab-panel',
-        'q-btn', 'q-card', 'q-toggle', 'q-icon', 'q-chip'
+        'q-page','q-btn','q-input','q-avatar',
+        'q-img','q-rating','q-checkbox','q-form'
       ],
       ...options.global,
     },

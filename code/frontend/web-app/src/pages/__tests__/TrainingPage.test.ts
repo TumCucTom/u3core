@@ -5,13 +5,39 @@ import axios from 'axios'
 import { Quasar } from 'quasar'
 
 
-const wrapper = mount(TrainingPage, {
-  global: {
-    plugins: [Quasar],
-  }
-})
-
+// mocks & stubs
 vi.mock('axios')
+vi.mock('bcryptjs')
+
+const notifyMock = vi.fn()
+const pushMock = vi.fn()
+const routeMock = {
+  query: {
+    token: '',
+    email: ''
+  }
+}
+
+// Centralized factory
+const factory = (options = {}) => {
+  return mount(TrainingPage, {
+    global: {
+      // PROVIDE what useQuasar() and useRouter() will inject:
+      provide: {
+        // useQuasar() looks up `_q_`
+        _q_: { notify: notifyMock },
+
+      },
+      // stub out all <q-*> so Quasar never actually runs
+      stubs: [
+        'q-page','q-btn','q-input','q-avatar',
+        'q-img','q-rating','q-checkbox','q-form'
+      ],
+      ...options.global,
+    },
+    ...options,
+  })
+}
 
 describe('TrainingPage.vue', () => {
   let wrapper: ReturnType<typeof mount>

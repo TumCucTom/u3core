@@ -3,23 +3,39 @@ import { mount } from '@vue/test-utils'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import OtPage from '../OtPage.vue'
 import axios from 'axios'
-import { routerKey } from 'vue-router'
+import { routerKey, routeLocationKey } from 'vue-router'
 
-// Mock libraries
+// mocks & stubs
 vi.mock('axios')
+vi.mock('bcryptjs')
 
 const notifyMock = vi.fn()
 const pushMock = vi.fn()
+const routeMock = {
+  query: {
+    token: '',
+    email: ''
+  }
+}
 
-// NEW factory
+// Centralized factory
 const factory = (options = {}) => {
   return mount(OtPage, {
     global: {
+      // PROVIDE what useQuasar() and useRouter() will inject:
       provide: {
+        // useQuasar() looks up `_q_`
         _q_: { notify: notifyMock },
-        [routerKey]: { push: pushMock }
+
+        // useRouter() looks up this Symbol key
+        [routerKey]: { push: pushMock },
+        [routeLocationKey]: routeMock,
       },
-      stubs: ['q-page', 'q-avatar', 'q-btn', 'q-icon'],
+      // stub out all <q-*> so Quasar never actually runs
+      stubs: [
+        'q-page','q-btn','q-input','q-avatar',
+        'q-img','q-rating','q-checkbox','q-form'
+      ],
       ...options.global,
     },
     ...options,

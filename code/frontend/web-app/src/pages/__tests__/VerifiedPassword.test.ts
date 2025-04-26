@@ -7,7 +7,12 @@ import { Quasar } from 'quasar'
 
 vi.mock('axios')
 
-// Create fresh mocks per test
+
+// mocks & stubs
+vi.mock('axios')
+vi.mock('bcryptjs')
+
+const notifyMock = vi.fn()
 const pushMock = vi.fn()
 const routeMock = {
   query: {
@@ -17,16 +22,26 @@ const routeMock = {
 }
 
 // Centralized factory
-const factory = () => {
+const factory = (options = {}) => {
   return mount(VerifiedPassword, {
     global: {
-      plugins: [Quasar],
+      // PROVIDE what useQuasar() and useRouter() will inject:
       provide: {
+        // useQuasar() looks up `_q_`
+        _q_: { notify: notifyMock },
+
+        // useRouter() looks up this Symbol key
         [routerKey]: { push: pushMock },
         [routeLocationKey]: routeMock,
       },
-      stubs: ['q-page', 'q-btn'] // or whatever Quasar components you use inside
-    }
+      // stub out all <q-*> so Quasar never actually runs
+      stubs: [
+        'q-page','q-btn','q-input','q-avatar',
+        'q-img','q-rating','q-checkbox','q-form'
+      ],
+      ...options.global,
+    },
+    ...options,
   })
 }
 
