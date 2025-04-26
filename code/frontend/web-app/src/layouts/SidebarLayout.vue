@@ -53,8 +53,7 @@
           </q-item-section>
 
           <q-item-section>
-            <div>user name</div>
-            <div class="text-caption text-grey">username@email.com</div>
+            <div class="text-caption text-grey" id="retrievedEmail"></div>
           </q-item-section>
         </q-item>
 
@@ -96,7 +95,6 @@ export default {
       menuItems: [
         { label: 'Dashboard', icon: 'dashboard', route: '/app/dashboard' },
         { label: 'Upload Training Data', icon: 'upload', route: '/app/training-page' },
-        { label: 'Configuration', icon: 'menu_open', route: '/pages/ErrorNotFound.vue' },
         { label: 'Cloud Settings', icon: 'filter_drama', route: '/app/cloud-settings' },
         { label: 'Manage Sites', icon: 'place', route: '/app/manage-sites' },
         { label: 'Alerts Console', icon: 'notifications', route: '/app/alerts-page' },
@@ -105,6 +103,11 @@ export default {
       ],
     };
   },
+
+  mounted() {
+      this.sendEmail();
+    },
+
   computed: {
     filteredItems() {
       return this.menuItems.filter((item) =>
@@ -113,6 +116,16 @@ export default {
     },
   },
   methods: {
+    async sendEmail() {
+        try {
+          let retrievedEmail = sessionStorage.getItem("emailTransfer")
+          document.getElementById("retrievedEmail").innerHTML = retrievedEmail
+        }
+        catch (error) {
+        console.error("Error fetching alerts:", error);
+      }
+      },
+
     confirmLogout() {
       this.showLogoutDialog = false;
       this.$router.push('/'); // skip to login page

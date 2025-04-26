@@ -9,6 +9,7 @@ Configuration values are loaded from environment variables.
 # pylint: disable=too-many-locals
 # pylint: disable=too-many-arguments
 # pylint: disable=redefined-outer-name
+# pylint: disable=no-member
 import os
 import datetime
 import time

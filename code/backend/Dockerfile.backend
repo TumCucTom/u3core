@@ -27,5 +27,5 @@ COPY python-server .
 EXPOSE 3000
 
 # Run the Python backend server
-CMD ["python", "server.py"]
+CMD ["python", "app.py"]
 

@@ -14,7 +14,7 @@
       <div class="row">
         <!-- sidebar section -->
         <div class="col-12 col-md-3">
-          <q-list bordered>
+          <q-list>
             <!-- dropdown for each site -->
             <q-expansion-item
               v-for="site in sites"

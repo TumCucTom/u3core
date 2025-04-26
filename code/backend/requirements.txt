@@ -14,3 +14,6 @@ pycurl
 ffmpeg-python
 python-dotenv
 ultralytics
+torch
+torchvision
+torchaudio

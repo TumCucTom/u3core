@@ -6,7 +6,7 @@
         <div class="text-left">
           <q-img src="../assets/u3logo1.png" alt="Digital U3" style="width: 150px;" />
           <div class="q-mt-xl text-center">
-            <q-rating value="5" readonly size="lg" color="amber" />
+            <q-rating v-model="ratingModel" value="5" readonly size="lg" color="amber" />
             <p class="q-my-md text-h5">
               {{ isLogin
                 ? "U3Core's safety compliance features helped us monitor workplace conditions more efficiently. We've not only reduced risks but also met the regulatory requirements with ease."
@@ -103,7 +103,7 @@
               :label="isLogin ? 'Sign in' : 'Continue'"
               color="primary"
               class="full-width q-my-md"
-              @click="proceedToOtp"
+              @click="isLogin ? onLogin() : onSubmit()"
             />
 
 
@@ -152,6 +152,7 @@
         this.isLogin = !this.isLogin; // switches between login and register
       },
       proceedToOtp() {
+        sessionStorage.setItem("emailTransfer", this.email)
       this.$router.push("/otp");
     }
     },
@@ -221,14 +222,13 @@
 };
 
   const onLogin = async () => {
-  const emailSend = String(emailLogin.value);
-
+  const emailSend = String(email.value);
+  sessionStorage.setItem("emailTransfer", emailSend)
   try {
   const response = await axios.get('http://16.171.224.57:0080/api/login', { params: { emailVar: emailSend } });
   const fetchedHashedPassword = response.data;
 
-  const result = await bcrypt.compare(passwordLogin.value, fetchedHashedPassword);
-
+  const result = await bcrypt.compare(password.value, fetchedHashedPassword);
   if (result) {
   // Passwords match, allow the user to log in
   $q.notify({
@@ -239,7 +239,7 @@
 });
 
   // Redirect user
-  router.push('/OTPVerification');
+  router.push('/otp');
 } else {
   // Passwords don't match, notify the user
   $q.notify({
@@ -262,6 +262,7 @@
 };
 
   return {
+  ratingModel:ref(5),
   firstName,
   lastName,
   email,
