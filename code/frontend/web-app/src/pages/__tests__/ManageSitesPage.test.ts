@@ -2,26 +2,39 @@ import { mount } from '@vue/test-utils'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import ManageSitesPage from '../ManageSitesPage.vue'
 import axios from 'axios'
-import { Quasar } from 'quasar'
+import { routerKey } from 'vue-router'
 
-const wrapper = mount(ManageSitesPage, {
-  global: {
-    plugins: [Quasar],
-  }
-})
-
+// mocks
 vi.mock('axios')
+
+const notifyMock = vi.fn()
+const pushMock = vi.fn()
+
+// centralized factory
+const factory = (options = {}) => {
+  return mount(ManageSitesPage, {
+    global: {
+      provide: {
+        _q_: { notify: notifyMock },
+        [routerKey]: { push: pushMock },
+      },
+      stubs: [
+        'q-page', 'q-btn', 'q-list', 'q-expansion-item', 'q-item',
+        'q-item-section', 'q-input', 'q-dialog', 'q-card', 'q-card-section',
+        'q-card-actions', 'q-form', 'q-img'
+      ],
+      ...options.global,
+    },
+    ...options,
+  })
+}
 
 describe('ManageSitesPage.vue', () => {
   let wrapper: any
 
   beforeEach(() => {
     vi.resetAllMocks()
-    wrapper = mount(ManageSitesPage, {
-      global: {
-        stubs: ['q-page', 'q-btn', 'q-list', 'q-expansion-item', 'q-item', 'q-item-section', 'q-input', 'q-dialog', 'q-card', 'q-card-section', 'q-card-actions', 'q-form', 'q-img'],
-      }
-    })
+    wrapper = factory()
   })
 
   afterEach(() => {

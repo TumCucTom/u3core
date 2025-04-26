@@ -1,37 +1,41 @@
-import { mount } from '@vue/test-utils'
+// ─ src/pages/__tests__/LoginPage.test.ts ─
+import { mount }                   from '@vue/test-utils'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import LoginPage from '../LoginPage.vue'
-import axios from 'axios'
-import bcrypt from 'bcryptjs'
-import { Quasar } from 'quasar'
+import LoginPage                   from '../LoginPage.vue'
+import axios                       from 'axios'
+import bcrypt                      from 'bcryptjs'
+import { routerKey }               from 'vue-router'
 
-const wrapper = mount(LoginPage, {
-  global: {
-    plugins: [Quasar],
-  }
-})
-
-// Mock libraries
+// mocks & stubs
 vi.mock('axios')
 vi.mock('bcryptjs')
 
 const notifyMock = vi.fn()
-const pushMock = vi.fn()
+const pushMock   = vi.fn()
 
-const $q = { notify: notifyMock }
-const $router = { push: pushMock }
-
-// Centralized factory for creating wrapper
+// NEW factory
 const factory = (options = {}) => {
   return mount(LoginPage, {
     global: {
-      mocks: { $q, $router },
-      stubs: ['q-page', 'q-btn', 'q-input', 'q-avatar', 'q-img', 'q-rating', 'q-checkbox', 'q-form'],
+      // PROVIDE what useQuasar() and useRouter() will inject:
+      provide: {
+        // useQuasar() looks up `_q_`
+        _q_: { notify: notifyMock },
+
+        // useRouter() looks up this Symbol key
+        [routerKey]: { push: pushMock }
+      },
+      // stub out all <q-*> so Quasar never actually runs
+      stubs: [
+        'q-page','q-btn','q-input','q-avatar',
+        'q-img','q-rating','q-checkbox','q-form'
+      ],
       ...options.global,
     },
     ...options,
   })
 }
+
 
 describe('LoginPage.vue', () => {
   beforeEach(() => {
@@ -77,7 +81,7 @@ describe('LoginPage.vue', () => {
       await wrapper.vm.onSubmit()
 
       expect(axios.post).toHaveBeenCalledWith(
-        'http://16.171.224.57:80/api/addToCustomer', // ✅ Fixed port
+        'http://16.171.224.57:80/api/addToCustomer',
         { items: ['John', 'Doe', 'newuser@example.com', 'Password1!'] }
       )
       expect(notifyMock).toHaveBeenCalledWith(expect.objectContaining({

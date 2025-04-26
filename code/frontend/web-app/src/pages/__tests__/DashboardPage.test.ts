@@ -3,41 +3,40 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import DashboardPage from '../DashboardPage.vue'
 import { nextTick } from 'vue'
 import axios from 'axios'
-import { Quasar } from 'quasar'
-
-const wrapper = mount(DashboardPage, {
-  global: {
-    plugins: [Quasar],
-  }
-})
+import { routerKey } from 'vue-router'
 
 vi.mock('axios')
 
-describe('DashboardPage.vue', () => {
+// Centralized factory
+const factory = (options = {}) => {
   const mockRoute = {
     query: {
       email: encodeURIComponent('test@example.com'),
     },
   }
 
+  return mount(DashboardPage, {
+    global: {
+      stubs: ['q-page', 'q-btn', 'q-icon', 'q-img', 'q-card', 'q-spinner'],
+      provide: {
+        [routerKey]: {
+          currentRoute: { value: mockRoute }
+        }
+      },
+      ...options.global,
+    },
+    ...options,
+  })
+}
+
+describe('DashboardPage.vue', () => {
   beforeEach(() => {
-    // Reset all axios mocks
     vi.resetAllMocks()
     axios.get.mockResolvedValue({ data: 0 })
   })
 
   it('renders with welcome text and name placeholder', async () => {
-    const wrapper = mount(DashboardPage, {
-      global: {
-        stubs: ['q-page', 'q-btn', 'q-icon', 'q-img', 'q-card', 'q-spinner'],
-        mocks: {
-          $route: mockRoute,
-        },
-        provide: {
-          route: mockRoute, // needed because the component uses useRoute()
-        },
-      },
-    })
+    const wrapper = factory()
 
     await nextTick()
 
@@ -53,15 +52,10 @@ describe('DashboardPage.vue', () => {
       return Promise.resolve({ data: 0 })
     })
 
-    const wrapper = mount(DashboardPage, {
-      global: {
-        stubs: ['q-page', 'q-btn', 'q-icon', 'q-img', 'q-card', 'q-spinner'],
-        provide: { route: mockRoute },
-      },
-    })
+    const wrapper = factory()
 
     await nextTick()
-    await new Promise(resolve => setTimeout(resolve, 0)) // resolve async fetch
+    await new Promise(resolve => setTimeout(resolve, 0)) // flush pending promises
 
     expect(wrapper.vm.name).toBe('Alice')
   })
@@ -74,12 +68,7 @@ describe('DashboardPage.vue', () => {
       return Promise.resolve({ data: 0 })
     })
 
-    const wrapper = mount(DashboardPage, {
-      global: {
-        stubs: ['q-page', 'q-btn', 'q-icon', 'q-img', 'q-card', 'q-spinner'],
-        provide: { route: mockRoute },
-      },
-    })
+    const wrapper = factory()
 
     await new Promise(resolve => setTimeout(resolve, 0))
 
@@ -90,12 +79,7 @@ describe('DashboardPage.vue', () => {
 
   it('logs on settings button click', async () => {
     const logSpy = vi.spyOn(console, 'log')
-    const wrapper = mount(DashboardPage, {
-      global: {
-        stubs: ['q-page', 'q-btn', 'q-icon', 'q-img', 'q-card', 'q-spinner'],
-        provide: { route: mockRoute },
-      },
-    })
+    const wrapper = factory()
 
     const button = wrapper.findComponent({ name: 'q-btn' })
     expect(button.exists()).toBe(true)

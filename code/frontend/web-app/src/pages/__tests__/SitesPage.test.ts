@@ -1,26 +1,37 @@
 import { mount } from '@vue/test-utils'
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import SitesPage from '../SitesPage.vue'
-import axios from 'axios'
-import { Quasar } from 'quasar'
+import { routerKey } from 'vue-router'
 
-const wrapper = mount(SitesPage, {
-  global: {
-    plugins: [Quasar],
-  }
-})
-
+// Mock axios (before anything else uses it)
 vi.mock('axios')
+
+const pushMock = vi.fn()
+
+// centralized wrapper factory
+const factory = (options = {}) => {
+  return mount(SitesPage, {
+    global: {
+      provide: {
+        [routerKey]: { push: pushMock }
+      },
+      stubs: ['q-page', 'q-btn', 'q-card', 'q-table', 'q-checkbox'],
+      ...options.global,
+    },
+    ...options,
+  })
+}
 
 describe('SitesPage.vue', () => {
   let wrapper: ReturnType<typeof mount>
 
   beforeEach(() => {
-    wrapper = mount(SitesPage, {
-      global: {
-        stubs: ['q-page', 'q-btn', 'q-card', 'q-table', 'q-checkbox'],
-      }
-    })
+    vi.resetAllMocks()
+    wrapper = factory()
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
   })
 
   it('renders page title and subtitle', () => {
@@ -53,7 +64,7 @@ describe('SitesPage.vue', () => {
 
   it('renders all mock table rows', () => {
     const rows = wrapper.vm.tableEntries
-    rows.forEach(row => {
+    rows.forEach((row: any) => {
       expect(wrapper.text()).toContain(row.site)
       expect(wrapper.text()).toContain(row.location)
       expect(wrapper.text()).toContain(row.camera)

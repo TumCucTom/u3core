@@ -1,26 +1,44 @@
+// src/pages/__tests__/SettingsPage.test.ts
 import { mount } from '@vue/test-utils'
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import SettingsPage from '../SettingsPage.vue'
+import { routerKey } from 'vue-router'
+
+// Mock axios
 import axios from 'axios'
-import { Quasar } from 'quasar'
-
-const wrapper = mount(SettingsPage, {
-  global: {
-    plugins: [Quasar],
-  }
-})
-
 vi.mock('axios')
+
+// Mocks for injection (if needed later)
+const pushMock = vi.fn()
+
+// Centralized factory
+const factory = (options = {}) => {
+  return mount(SettingsPage, {
+    global: {
+      provide: {
+        // Provide router if SettingsPage internally uses useRouter() later
+        [routerKey]: { push: pushMock }
+      },
+      stubs: [
+        'q-page', 'q-tabs', 'q-tab', 'q-tab-panels', 'q-tab-panel',
+        'q-btn', 'q-card', 'q-toggle', 'q-icon', 'q-chip'
+      ],
+      ...options.global,
+    },
+    ...options,
+  })
+}
 
 describe('SettingsPage.vue', () => {
   let wrapper: ReturnType<typeof mount>
 
   beforeEach(() => {
-    wrapper = mount(SettingsPage, {
-      global: {
-        stubs: ['q-page', 'q-tabs', 'q-tab', 'q-tab-panels', 'q-tab-panel', 'q-btn', 'q-card', 'q-toggle', 'q-icon', 'q-chip'],
-      }
-    })
+    vi.resetAllMocks()
+    wrapper = factory()
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
   })
 
   it('renders main Settings title', () => {

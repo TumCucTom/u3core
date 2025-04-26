@@ -5,7 +5,7 @@ export default defineConfig({
   plugins: [vue()],
   test: {
     environment: 'happy-dom',
-    setupFiles: 'src/test-setup.ts',
+    // setupFiles: 'src/test-setup.ts',
     globals: true,
     alias: {
       '@/': new URL('./src/', import.meta.url).pathname,

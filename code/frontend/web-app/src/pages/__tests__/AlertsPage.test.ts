@@ -1,93 +1,101 @@
-import { mount } from '@vue/test-utils';
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import AlertsPage from '../AlertsPage.vue';
+import { mount } from '@vue/test-utils'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import AlertsPage from '../AlertsPage.vue'
 import { Quasar } from 'quasar'
 
-const wrapper = mount(AlertsPage, {
-  global: {
-    plugins: [Quasar],
-  }
-})
-
+// Mock axios (if AlertsPage uses it somewhere)
 vi.mock('axios')
 
-
 // Mock global fetch
-global.fetch = vi.fn();
+global.fetch = vi.fn()
 
-describe('AlertsPage', () => {
-  let wrapper: any;
+// Test wrapper
+let wrapper: any
 
-  beforeEach(() => {
-    wrapper = mount(AlertsPage, {
-      global: {
-        stubs: ['q-page', 'q-table', 'q-td', 'q-chip'], // Stub Quasar components
+const factory = (options = {}) => {
+  return mount(AlertsPage, {
+    global: {
+      plugins: [Quasar],
+      provide: {
+        _q_: {}, // Prevent missing injection for $q
       },
-    });
-  });
+      stubs: [
+        'q-page',
+        'q-table',
+        'q-td',
+        'q-chip'
+      ],
+      ...options.global,
+    },
+    ...options,
+  })
+}
+
+describe('AlertsPage.vue', () => {
+  beforeEach(() => {
+    wrapper = factory()
+  })
 
   afterEach(() => {
-    vi.clearAllMocks();
-    wrapper.unmount();
-  });
+    vi.clearAllMocks()
+    wrapper.unmount()
+  })
 
   it('renders the page title and subtitle', () => {
-    expect(wrapper.text()).toContain('Alerts');
-    expect(wrapper.text()).toContain('Track and manage your alerts');
-  });
+    expect(wrapper.text()).toContain('Alerts')
+    expect(wrapper.text()).toContain('Track and manage your alerts')
+  })
 
   it('renders the table component', () => {
-    const table = wrapper.findComponent({ name: 'q-table' });
-    expect(table.exists()).toBe(true);
-  });
+    const table = wrapper.findComponent({ name: 'q-table' })
+    expect(table.exists()).toBe(true)
+  })
 
   it('calls fetchAlerts on mount', async () => {
     const mockData = [
-      {
-        id: 1,
-        cameraName: 'Cam 1',
-        cameraAddress: '123 Street',
-        timestamp: '2023-01-01 10:00:00',
-        faultType: 'Motion',
-        numberOfHazards: 5,
-        falsePositives: 1,
-      },
-    ];
+        {
+          id: 1,
+          cameraName: 'Cam 1',
+          cameraAddress: '123 Street',
+          timestamp: '2023-01-01 10:00:00',
+          faultType: 'Motion',
+          numberOfHazards: 5,
+          falsePositives: 1,
+        },
+      ]
 
-    (fetch as unknown as vi.Mock).mockResolvedValue({
+    ;(fetch as unknown as vi.Mock).mockResolvedValue({
       json: () => Promise.resolve(mockData),
-    });
+    })
 
-    // Manually trigger fetchAlerts
-    await wrapper.vm.fetchAlerts();
-    await wrapper.vm.$nextTick();
+    await wrapper.vm.fetchAlerts()
+    await wrapper.vm.$nextTick()
 
-    expect(wrapper.vm.alertsData).toEqual(mockData);
-    expect(fetch).toHaveBeenCalledTimes(1);
-  });
+    expect(wrapper.vm.alertsData).toEqual(mockData)
+    expect(fetch).toHaveBeenCalledTimes(1)
+  })
 
   it('sets up polling on mount and clears on unmount', async () => {
-    const clearIntervalSpy = vi.spyOn(window, 'clearInterval');
+    const clearIntervalSpy = vi.spyOn(window, 'clearInterval')
 
-    const intervalId = wrapper.vm.pollInterval;
-    expect(intervalId).toBeTruthy();
+    const intervalId = wrapper.vm.pollInterval
+    expect(intervalId).toBeTruthy()
 
-    wrapper.unmount();
-    expect(clearIntervalSpy).toHaveBeenCalledWith(intervalId);
+    wrapper.unmount()
+    expect(clearIntervalSpy).toHaveBeenCalledWith(intervalId)
 
-    clearIntervalSpy.mockRestore();
-  });
+    clearIntervalSpy.mockRestore()
+  })
 
   it('handles fetch error gracefully', async () => {
-    (fetch as unknown as vi.Mock).mockRejectedValue(new Error('Network Error'));
+    (fetch as unknown as vi.Mock).mockRejectedValue(new Error('Network Error'))
 
-    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
 
-    await wrapper.vm.fetchAlerts();
+    await wrapper.vm.fetchAlerts()
 
-    expect(consoleErrorSpy).toHaveBeenCalledWith('Error fetching alerts:', expect.any(Error));
+    expect(consoleErrorSpy).toHaveBeenCalledWith('Error fetching alerts:', expect.any(Error))
 
-    consoleErrorSpy.mockRestore();
-  });
-
-});
+    consoleErrorSpy.mockRestore()
+  })
+})

@@ -2,30 +2,42 @@ import { mount } from '@vue/test-utils'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import ResetPassword from '../ResetPassword.vue'
 import axios from 'axios'
-import { Quasar } from 'quasar'
+import { routerKey } from 'vue-router'
 
-const wrapper = mount(ResetPassword, {
-  global: {
-    plugins: [Quasar],
-  }
-})
-
+// Mocks
 vi.mock('axios')
+
+const notifyMock = vi.fn()
+const pushMock = vi.fn()
+
+// Centralized factory
+const factory = (options = {}) => {
+  return mount(ResetPassword, {
+    global: {
+      provide: {
+        _q_: { notify: notifyMock },
+        [routerKey]: { push: pushMock },
+      },
+      stubs: [
+        'q-page', 'q-card', 'q-btn', 'q-input',
+        'q-icon', 'q-toolbar', 'q-toolbar-title'
+      ],
+      ...options.global,
+    },
+    ...options,
+  })
+}
 
 describe('ResetPassword.vue', () => {
   let wrapper: ReturnType<typeof mount>
 
   beforeEach(() => {
     vi.resetAllMocks()
-
-    wrapper = mount(ResetPassword, {
+    wrapper = factory({
       global: {
         mocks: {
-          $router: { push: pushMock },
-          $route: { query: { token: 'abc123', email: encodeURIComponent('test@example.com') } },
-          $q: { notify: notifyMock }
-        },
-        stubs: ['q-page', 'q-card', 'q-btn', 'q-input', 'q-icon', 'q-toolbar', 'q-toolbar-title'],
+          $route: { query: { token: 'abc123', email: encodeURIComponent('test@example.com') } }
+        }
       }
     })
   })
@@ -51,7 +63,7 @@ describe('ResetPassword.vue', () => {
   })
 
   it('handles successful password reset flow', async () => {
-    axios.get.mockResolvedValueOnce({ data: ['test@example.com'] }) // Email exists
+    axios.get.mockResolvedValueOnce({ data: ['test@example.com'] })
     axios.post.mockResolvedValueOnce({ data: { message: 'Password updated successfully' } })
 
     wrapper.vm.newPassword = 'Password1!'
@@ -72,7 +84,7 @@ describe('ResetPassword.vue', () => {
   })
 
   it('shows error if email is not registered', async () => {
-    axios.get.mockResolvedValueOnce({ data: ['someoneelse@example.com'] }) // Email missing
+    axios.get.mockResolvedValueOnce({ data: ['someoneelse@example.com'] })
 
     wrapper.vm.newPassword = 'Password1!'
     wrapper.vm.confirmPassword = 'Password1!'

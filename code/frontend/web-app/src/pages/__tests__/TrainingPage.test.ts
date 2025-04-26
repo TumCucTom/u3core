@@ -4,6 +4,7 @@ import TrainingPage from '../TrainingPage.vue'
 import axios from 'axios'
 import { Quasar } from 'quasar'
 
+
 const wrapper = mount(TrainingPage, {
   global: {
     plugins: [Quasar],
@@ -33,23 +34,23 @@ describe('TrainingPage.vue', () => {
   })
 
   it('defaults to "Upload Data" tab', () => {
-    expect(wrapper.vm.activeTab).toBe('uploadData')
+    expect((wrapper.vm as any).activeTab).toBe('uploadData')
   })
 
   it('switches to "Upload Logs" tab', async () => {
-    wrapper.vm.activeTab = 'uploadLogs'
-    await wrapper.vm.$nextTick()
-    expect(wrapper.vm.activeTab).toBe('uploadLogs')
+    (wrapper.vm as any).activeTab = 'uploadLogs'
+    await (wrapper.vm as any).$nextTick()
+    expect((wrapper.vm as any).activeTab).toBe('uploadLogs')
   })
 
   it('handles file upload simulation', async () => {
     const fakeFile = new File(['dummy content'], 'test-image.png', { type: 'image/png' })
 
-    await wrapper.vm.handleFileChange({ target: { files: [fakeFile] } })
+    await (wrapper.vm as any).handleFileChange({ target: { files: [fakeFile] } })
 
-    expect(wrapper.vm.uploadedFiles.length).toBe(1)
-    expect(wrapper.vm.uploadedFiles[0].name).toBe('test-image.png')
-    expect(wrapper.vm.uploadedFiles[0].status).toBe('uploading' || 'pending')
+    expect((wrapper.vm as any).uploadedFiles.length).toBe(1)
+    expect((wrapper.vm as any).uploadedFiles[0].name).toBe('test-image.png')
+    expect((wrapper.vm as any).uploadedFiles[0].status).toBe('uploading' || 'pending')
   })
 
   it('adds a tag to an uploaded file', async () => {
@@ -63,60 +64,60 @@ describe('TrainingPage.vue', () => {
       raw: {},
       tags: []
     }
-    wrapper.vm.uploadedFiles = [file]
-    wrapper.vm.startTagEdit(file.id)
-    wrapper.vm.newTag = 'animal'
-    await wrapper.vm.addTag(file)
+    (wrapper.vm as any).uploadedFiles = [file]
+    (wrapper.vm as any).startTagEdit(file.id)
+    (wrapper.vm as any).newTag = 'animal'
+    await (wrapper.vm as any).addTag(file)
 
     expect(file.tags).toContain('animal')
-    expect(wrapper.vm.editingFileId).toBe(null)
+    expect((wrapper.vm as any).editingFileId).toBe(null)
   })
 
   it('batch adds a tag to selected files', async () => {
-    wrapper.vm.uploadedFiles = [
+    (wrapper.vm as any).uploadedFiles = [
       { id: 1, tags: [] },
       { id: 2, tags: [] }
     ]
-    wrapper.vm.selectedFiles = [1, 2]
-    wrapper.vm.batchTag = 'wildlife'
+    (wrapper.vm as any).selectedFiles = [1, 2]
+    ((wrapper.vm as any) as any).batchTag = 'wildlife'
 
-    await wrapper.vm.addBatchTag()
+    await (wrapper.vm as any).addBatchTag()
 
-    expect(wrapper.vm.uploadedFiles[0].tags).toContain('wildlife')
-    expect(wrapper.vm.uploadedFiles[1].tags).toContain('wildlife')
-    expect(wrapper.vm.selectedFiles.length).toBe(0)
+    expect(((wrapper.vm as any) as any).uploadedFiles[0].tags).toContain('wildlife')
+    expect((wrapper.vm as any).uploadedFiles[1].tags).toContain('wildlife')
+    expect((wrapper.vm as any).selectedFiles.length).toBe(0)
   })
 
   it('deletes selected files in batch', async () => {
-    wrapper.vm.uploadedFiles = [
+    (wrapper.vm as any).uploadedFiles = [
       { id: 1, tags: [] },
       { id: 2, tags: [] }
     ]
-    wrapper.vm.selectedFiles = [1]
+    (wrapper.vm as any).selectedFiles = [1]
 
     vi.stubGlobal('confirm', vi.fn(() => true)) // Auto-confirm dialog
 
-    await wrapper.vm.deleteSelectedFiles()
+    await (wrapper.vm as any).deleteSelectedFiles()
 
-    expect(wrapper.vm.uploadedFiles.length).toBe(1)
-    expect(wrapper.vm.uploadedFiles[0].id).toBe(2)
+    expect((wrapper.vm as any).uploadedFiles.length).toBe(1)
+    expect((wrapper.vm as any).uploadedFiles[0].id).toBe(2)
   })
 
   it('opens training modal and submits new model log', async () => {
-    wrapper.vm.uploadedFiles = [{ id: 1, name: 'file1.png' }]
-    wrapper.vm.modelVersion = 'v1.0'
-    wrapper.vm.siteId = 'Site A'
+    (wrapper.vm as any).uploadedFiles = [{ id: 1, name: 'file1.png' }]
+    (wrapper.vm as any).modelVersion = 'v1.0'
+    (wrapper.vm as any).siteId = 'Site A'
 
-    await wrapper.vm.submitModelTraining()
+    await (wrapper.vm as any).submitModelTraining()
 
-    expect(wrapper.vm.uploadLogs.length).toBe(1)
-    expect(wrapper.vm.uploadLogs[0].modelVersion).toBe('v1.0')
-    expect(wrapper.vm.uploadLogs[0].siteId).toBe('Site A')
-    expect(wrapper.vm.uploadLogs[0].files).toContain('file1.png')
+    expect((wrapper.vm as any).uploadLogs.length).toBe(1)
+    expect((wrapper.vm as any).uploadLogs[0].modelVersion).toBe('v1.0')
+    expect((wrapper.vm as any).uploadLogs[0].siteId).toBe('Site A')
+    expect((wrapper.vm as any).uploadLogs[0].files).toContain('file1.png')
   })
 
   it('shows "No training records yet" when no logs', () => {
-    wrapper.vm.activeTab = 'uploadLogs'
+    (wrapper.vm as any).activeTab = 'uploadLogs'
     expect(wrapper.text()).toContain('No training records yet')
   })
 })

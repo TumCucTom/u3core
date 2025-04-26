@@ -1,24 +1,32 @@
+// ─ src/pages/__tests__/OtPage.test.ts ─
 import { mount } from '@vue/test-utils'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import OtPage from '../OtPage.vue'
 import axios from 'axios'
-import { Quasar } from 'quasar'
+import { routerKey } from 'vue-router'
 
-const wrapper = mount(OtPage, {
-  global: {
-    plugins: [Quasar],
-  }
-})
-
+// Mock libraries
 vi.mock('axios')
 
-// Mock $q.notify
 const notifyMock = vi.fn()
-
-// Mock router push
 const pushMock = vi.fn()
 
-// Set up sessionStorage mock
+// NEW factory
+const factory = (options = {}) => {
+  return mount(OtPage, {
+    global: {
+      provide: {
+        _q_: { notify: notifyMock },
+        [routerKey]: { push: pushMock }
+      },
+      stubs: ['q-page', 'q-avatar', 'q-btn', 'q-icon'],
+      ...options.global,
+    },
+    ...options,
+  })
+}
+
+// Set up sessionStorage mock globally
 beforeEach(() => {
   vi.stubGlobal('sessionStorage', {
     getItem: vi.fn((key) => key === 'emailTransfer' ? 'test@example.com' : null),
@@ -32,15 +40,7 @@ describe('OtPage.vue', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    wrapper = mount(OtPage, {
-      global: {
-        mocks: {
-          $q: { notify: notifyMock },
-          $router: { push: pushMock }
-        },
-        stubs: ['q-page', 'q-avatar', 'q-btn', 'q-icon'],
-      }
-    })
+    wrapper = factory()
   })
 
   afterEach(() => {
@@ -56,7 +56,7 @@ describe('OtPage.vue', () => {
   it('calls sendEmail on mount and updates email text', async () => {
     axios.post.mockResolvedValueOnce({ data: {} })
 
-    // Manually trigger sendEmail because mount already called it
+    // Manually trigger sendEmail again if needed
     await wrapper.vm.sendEmail()
     const emailSpan = document.getElementById('retrievedEmail')
 
