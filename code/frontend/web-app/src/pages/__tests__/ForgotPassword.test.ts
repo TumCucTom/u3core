@@ -3,9 +3,6 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import ForgotPassword from '../ForgotPassword.vue'
 import axios from 'axios'
 
-// Mocks
-vi.mock('axios')
-
 const notifyMock = vi.fn()
 const $q = {
   notify: notifyMock

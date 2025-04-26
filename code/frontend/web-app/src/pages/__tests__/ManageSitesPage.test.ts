@@ -11,9 +11,6 @@ global.WebSocket = vi.fn(() => ({
   removeEventListener: vi.fn(),
 }));
 
-// Mock axios
-vi.mock('axios')
-
 describe('ManageSitesPage.vue', () => {
   let wrapper: any
 

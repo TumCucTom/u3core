@@ -4,16 +4,6 @@ import LoginPage from '../LoginPage.vue'
 import axios from 'axios'
 import bcrypt from 'bcryptjs'
 
-// Mocks
-vi.mock('axios')
-vi.mock('bcryptjs', async () => {
-  const actual = await vi.importActual<typeof import('bcryptjs')>('bcryptjs')
-  return {
-    ...actual,
-    compare: vi.fn(),
-  }
-})
-
 const notifyMock = vi.fn()
 const pushMock = vi.fn()
 

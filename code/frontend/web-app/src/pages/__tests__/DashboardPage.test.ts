@@ -4,11 +4,6 @@ import DashboardPage from '../DashboardPage.vue'
 import { nextTick } from 'vue'
 import axios from 'axios'
 
-vi.mock('axios')
-vi.mock('chart.js/auto', () => ({
-  default: vi.fn(), // Stub Chart constructor
-}))
-
 describe('DashboardPage.vue', () => {
   const mockRoute = {
     query: {

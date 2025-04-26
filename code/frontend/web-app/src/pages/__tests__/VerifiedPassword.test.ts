@@ -1,50 +1,30 @@
 import { mount } from '@vue/test-utils'
 import { describe, it, expect, vi } from 'vitest'
 import VerifiedPassword from '../VerifiedPassword.vue'
-import { createRouter, createMemoryHistory } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 
 describe('VerifiedPassword.vue', () => {
   it('redirects to dashboard if token and email are present', async () => {
-    const push = vi.fn()
+    const router = useRouter()
+    const route = useRoute()
 
-    vi.mock('vue-router', async () => {
-      const actual = await vi.importActual('vue-router')
-      return {
-        ...actual,
-        useRouter: () => ({ push }),
-        useRoute: () => ({
-          query: {
-            token: 'test-token',
-            email: encodeURIComponent('test@example.com')
-          }
-        })
-      }
-    })
+    route.query.token = 'test-token'
+    route.query.email = encodeURIComponent('test@example.com')
 
     mount(VerifiedPassword)
 
-    expect(push).toHaveBeenCalledWith('/app/dashboard?email=test@example.com')
+    expect(router.push).toHaveBeenCalledWith('/app/dashboard?email=test@example.com')
   })
 
   it('redirects to home if token or email are missing', async () => {
-    const push = vi.fn()
+    const router = useRouter()
+    const route = useRoute()
 
-    vi.mock('vue-router', async () => {
-      const actual = await vi.importActual('vue-router')
-      return {
-        ...actual,
-        useRouter: () => ({ push }),
-        useRoute: () => ({
-          query: {
-            token: '', // missing
-            email: ''
-          }
-        })
-      }
-    })
+    route.query.token = ''
+    route.query.email = ''
 
     mount(VerifiedPassword)
 
-    expect(push).toHaveBeenCalledWith('/')
+    expect(router.push).toHaveBeenCalledWith('/')
   })
 })
