@@ -1,8 +1,9 @@
-import { beforeEach } from 'vitest';
-import { Quasar, Dialog, Notify } from 'quasar';
+import { beforeAll } from 'vitest';
+import { Quasar } from 'quasar';
 import { config } from '@vue/test-utils';
-import { vi } from 'vitest'
+import { vi } from 'vitest';
 
+// Mock vue-router
 vi.mock('vue-router', () => ({
   useRoute: () => ({
     query: { email: 'test@example.com', token: '12345' }
@@ -10,20 +11,21 @@ vi.mock('vue-router', () => ({
   useRouter: () => ({
     push: vi.fn()
   })
-}))
+}));
 
+// Mock useQuasar
 vi.mock('quasar', async (importOriginal) => {
-  const actual = await importOriginal()
+  const actual = await importOriginal();
   return {
     ...actual,
     useQuasar: () => ({
       dark: { isActive: false, toggle: vi.fn() },
       notify: vi.fn(),
     }),
-  }
-})
+  };
+});
 
-
-beforeEach(() => {
-  config.global.plugins = [Quasar, Dialog, Notify];
+// Install Quasar before all tests
+beforeAll(() => {
+  config.global.plugins = [Quasar];
 });
