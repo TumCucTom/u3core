@@ -1,12 +1,12 @@
 import { mount } from '@vue/test-utils';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import CloudSettingsPage from '../CloudSettingsPage.vue';
+import CloudSettings from '../CloudSettings.vue';
 
-describe('CloudSettingsPage', () => {
+describe('CloudSettings', () => {
   let wrapper: ReturnType<typeof mount>;
 
   beforeEach(() => {
-    wrapper = mount(CloudSettingsPage, {
+    wrapper = mount(CloudSettings, {
       global: {
         stubs: ['q-page', 'q-card', 'q-form', 'q-btn', 'q-btn-group', 'q-select', 'q-input', 'q-option-group', 'q-chip', 'q-card-section', 'q-separator'],
       },

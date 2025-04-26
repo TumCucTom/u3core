@@ -1,6 +1,5 @@
-import { config } from '@vue/test-utils'
-import { Quasar } from 'quasar'
 import { beforeAll } from 'vitest'
+import { installQuasarPlugin } from '@quasar/quasar-app-extension-testing-unit-vitest'
 import { vi } from 'vitest'
 
 // Correct Quasar mocking
@@ -30,7 +29,6 @@ vi.mock('vue-router', async (importOriginal) => {
   }
 })
 
-// install Quasar properly
 beforeAll(() => {
-  config.global.plugins = [[Quasar, {}]]; // with empty options
-});
+  installQuasarPlugin()
+})
