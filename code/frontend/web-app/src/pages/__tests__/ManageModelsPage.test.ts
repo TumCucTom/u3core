@@ -3,6 +3,13 @@ import { describe, it, expect } from 'vitest';
 import ManageModelsPage from '../ManageModelsPage.vue';
 import axios from 'axios'
 import { vi } from 'vitest'
+import { Quasar } from 'quasar'
+
+const wrapper = mount(ManageModelsPage, {
+  global: {
+    plugins: [Quasar],
+  }
+})
 
 vi.mock('axios')
 

@@ -4,6 +4,14 @@ import VerifiedPassword from '../VerifiedPassword.vue'
 import { useRouter, useRoute } from 'vue-router'
 import axios from 'axios'
 
+import { Quasar } from 'quasar'
+
+const wrapper = mount(VerifiedPassword, {
+  global: {
+    plugins: [Quasar],
+  }
+})
+
 vi.mock('axios')
 
 describe('VerifiedPassword.vue', () => {

@@ -3,6 +3,13 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import LoginPage from '../LoginPage.vue'
 import axios from 'axios'
 import bcrypt from 'bcryptjs'
+import { Quasar } from 'quasar'
+
+const wrapper = mount(LoginPage, {
+  global: {
+    plugins: [Quasar],
+  }
+})
 
 // Mock libraries
 vi.mock('axios')

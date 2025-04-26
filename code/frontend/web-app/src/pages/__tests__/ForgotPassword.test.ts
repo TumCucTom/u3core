@@ -3,6 +3,14 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import ForgotPassword from '../ForgotPassword.vue'
 import axios from 'axios'
 
+import { Quasar } from 'quasar'
+
+const wrapper = mount(ForgotPassword, {
+  global: {
+    plugins: [Quasar],
+  }
+})
+
 vi.mock('axios')
 
 const notifyMock = vi.fn()

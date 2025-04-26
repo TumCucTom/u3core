@@ -1,6 +1,13 @@
 import { mount } from '@vue/test-utils';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import AlertsPage from '../AlertsPage.vue';
+import { Quasar } from 'quasar'
+
+const wrapper = mount(AlertsPage, {
+  global: {
+    plugins: [Quasar],
+  }
+})
 
 vi.mock('axios')
 

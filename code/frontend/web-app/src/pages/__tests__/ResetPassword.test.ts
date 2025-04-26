@@ -2,6 +2,13 @@ import { mount } from '@vue/test-utils'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import ResetPassword from '../ResetPassword.vue'
 import axios from 'axios'
+import { Quasar } from 'quasar'
+
+const wrapper = mount(ResetPassword, {
+  global: {
+    plugins: [Quasar],
+  }
+})
 
 vi.mock('axios')
 

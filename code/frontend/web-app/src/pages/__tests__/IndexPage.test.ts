@@ -3,6 +3,13 @@ import { describe, it, expect } from 'vitest';
 import IndexPage from '../IndexPage.vue';
 import axios from 'axios'
 import { vi } from 'vitest'
+import { Quasar } from 'quasar'
+
+const wrapper = mount(IndexPage, {
+  global: {
+    plugins: [Quasar],
+  }
+})
 
 vi.mock('axios')
 

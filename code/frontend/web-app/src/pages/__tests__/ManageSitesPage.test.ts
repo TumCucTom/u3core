@@ -2,16 +2,15 @@ import { mount } from '@vue/test-utils'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import ManageSitesPage from '../ManageSitesPage.vue'
 import axios from 'axios'
+import { Quasar } from 'quasar'
+
+const wrapper = mount(ManageSitesPage, {
+  global: {
+    plugins: [Quasar],
+  }
+})
 
 vi.mock('axios')
-
-// Mock WebSocket globally
-global.WebSocket = vi.fn(() => ({
-  send: vi.fn(),
-  close: vi.fn(),
-  addEventListener: vi.fn(),
-  removeEventListener: vi.fn(),
-}));
 
 describe('ManageSitesPage.vue', () => {
   let wrapper: any

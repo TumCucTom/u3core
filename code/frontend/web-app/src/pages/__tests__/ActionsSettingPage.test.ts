@@ -5,6 +5,13 @@ import { describe, it, expect } from 'vitest';
 import ActionsSettingPage from '../ActionSettingsPage.vue';
 import axios from 'axios'
 import { vi } from 'vitest'
+import { Quasar } from 'quasar'
+
+const wrapper = mount(ActionsSettingPage, {
+  global: {
+    plugins: [Quasar],
+  }
+})
 
 vi.mock('axios')
 

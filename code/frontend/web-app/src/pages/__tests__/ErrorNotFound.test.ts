@@ -1,6 +1,13 @@
 import { mount } from '@vue/test-utils';
 import { describe, it, expect } from 'vitest';
 import ErrorNotFound from '../ErrorNotFound.vue';
+import { Quasar } from 'quasar'
+
+const wrapper = mount(ErrorNotFound, {
+  global: {
+    plugins: [Quasar],
+  }
+})
 
 describe('ErrorNotFound.vue', () => {
   it('renders 404 and a home button', () => {

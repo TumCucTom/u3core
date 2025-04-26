@@ -2,6 +2,13 @@ import { mount } from '@vue/test-utils';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import CloudSettings from '../CloudSettings.vue';
 import axios from 'axios'
+import { Quasar } from 'quasar'
+
+const wrapper = mount(CloudSettings, {
+  global: {
+    plugins: [Quasar],
+  }
+})
 
 vi.mock('axios')
 

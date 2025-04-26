@@ -3,6 +3,13 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import DashboardPage from '../DashboardPage.vue'
 import { nextTick } from 'vue'
 import axios from 'axios'
+import { Quasar } from 'quasar'
+
+const wrapper = mount(DashboardPage, {
+  global: {
+    plugins: [Quasar],
+  }
+})
 
 vi.mock('axios')
 
