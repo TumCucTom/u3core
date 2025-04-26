@@ -238,7 +238,7 @@ export default {
     },
     async saveNewRTSP() {
       try {
-        const response = await axios.post('http://16.171.224.57:0080/api/add-camera', {
+        const response = await axios.post('http://16.171.224.57:80/api/add-camera', {
           name: this.newCamera.name,
           rtsp_url: this.newCamera.RTSPURL,
         });
@@ -255,7 +255,7 @@ export default {
     },
     async saveNewSite() {
       try {
-        const response = await axios.post('http://16.171.224.57:0080/add-site', {
+        const response = await axios.post('http://16.171.224.57:80/add-site', {
           name: this.newSite.name,
           latitude: this.newSite.latitude,
           longitude: this.newSite.longitude,
@@ -268,7 +268,7 @@ export default {
     },
     async fetchSites() {
       try {
-        const response = await axios.get('http://16.171.224.57:0080/sites');
+        const response = await axios.get('http://16.171.224.57:80/sites');
         this.sites = response.data.sites;
       } catch (error) {
         console.error('Error fetching sites:', error);

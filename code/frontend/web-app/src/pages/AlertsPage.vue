@@ -83,7 +83,7 @@ export default {
     // Fetch existing logs from the server
     async fetchAlerts() {
       try {
-        const response = await fetch("http://16.171.224.57:0080/api/get-logs");
+        const response = await fetch("http://16.171.224.57:80/api/get-logs");
         const data = await response.json();
         this.alertsData = data;
       } catch (error) {

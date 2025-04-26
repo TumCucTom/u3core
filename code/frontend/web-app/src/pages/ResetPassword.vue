@@ -108,11 +108,11 @@ export default {
 
     const resetPassword = async () => {
       try {
-        const emailCheckResponse = await axios.get('http://16.171.224.57:0080/api/emails');
+        const emailCheckResponse = await axios.get('http://16.171.224.57:80/api/emails');
         if (emailCheckResponse.data.includes(email.value)) {
 
           if (newPassword.value === confirmPassword.value && passwordRules.every(rule => rule(newPassword.value))) {
-            const updateResponse = await axios.post('http://16.171.224.57:0080/api/updatePassword', {
+            const updateResponse = await axios.post('http://16.171.224.57:80/api/updatePassword', {
               email: email.value,
               password: newPassword.value,
               token: token.value
