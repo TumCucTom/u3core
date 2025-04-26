@@ -4,8 +4,20 @@ import vue from '@vitejs/plugin-vue';
 export default defineConfig({
   plugins: [vue()],
   test: {
-    setupFiles: ['./test-setup.ts'],
     environment: 'happy-dom',
-    globals: true,             // optional: allows "describe", "it" globally
+    setupFiles: './test-setup.ts',
+    globals: true,
+    alias: {
+      '@/': new URL('./src/', import.meta.url).pathname,
+      'assets/': new URL('./src/assets/', import.meta.url).pathname,
+      'components/': new URL('./src/components/', import.meta.url).pathname,
+    },
+  },
+  resolve: {
+    alias: {
+      '@/': new URL('./src/', import.meta.url).pathname,
+      'assets/': new URL('./src/assets/', import.meta.url).pathname,
+      'components/': new URL('./src/components/', import.meta.url).pathname,
+    },
   },
 });
