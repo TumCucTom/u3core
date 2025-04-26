@@ -1,26 +1,44 @@
 // ─ src/pages/__tests__/ForgotPassword.test.ts ─
-import { mount } from '@vue/test-utils'
+import { mount, MountingOptions } from '@vue/test-utils'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import ForgotPassword from '../ForgotPassword.vue'
 import axios from 'axios'
-import { Quasar } from 'quasar'
+import { routerKey, routeLocationKey } from 'vue-router'
 
-// mocks
+// mocks & stubs
 vi.mock('axios')
+vi.mock('bcryptjs')
 
+const axiosMock = axios as unknown as {
+  get: ReturnType<typeof vi.fn>,
+  post: ReturnType<typeof vi.fn>
+}
 const notifyMock = vi.fn()
+const pushMock = vi.fn()
+const routeMock = {
+  query: {
+    token: '',
+    email: ''
+  }
+}
 
-// factory function for mounting with correct global config
-const factory = (options = {}) => {
+// Centralized factory
+const factory = (options:MountingOptions<any> = {}) => {
   return mount(ForgotPassword, {
     global: {
-      plugins: [Quasar],
+      // PROVIDE what useQuasar() and useRouter() will inject:
       provide: {
+        // useQuasar() looks up `_q_`
         _q_: { notify: notifyMock },
+
+        // useRouter() looks up this Symbol key
+        [routerKey]: { push: pushMock },
+        [routeLocationKey]: routeMock,
       },
+      // stub out all <q-*> so Quasar never actually runs
       stubs: [
-        'q-toolbar', 'q-toolbar-title', 'q-card', 'q-card-section',
-        'q-btn', 'q-icon', 'q-input'
+        'q-page','q-btn','q-input','q-avatar',
+        'q-img','q-rating','q-checkbox','q-form'
       ],
       ...options.global,
     },
@@ -54,7 +72,7 @@ describe('ForgotPassword.vue', () => {
   })
 
   it('calls API and shows success notification on button click', async () => {
-    axios.post.mockResolvedValue({ data: { success: true } })
+    axiosMock.post.mockResolvedValue({ data: { success: true } })
 
     const wrapper = factory()
 
@@ -71,7 +89,7 @@ describe('ForgotPassword.vue', () => {
   })
 
   it('handles API error and shows error notification', async () => {
-    axios.post.mockRejectedValue(new Error('API Error'))
+    axiosMock.post.mockRejectedValue(new Error('API Error'))
 
     const wrapper = factory()
 

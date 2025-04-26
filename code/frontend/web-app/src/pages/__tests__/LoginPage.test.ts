@@ -1,8 +1,8 @@
 // ─ src/pages/__tests__/LoginPage.test.ts ─
-import { mount }                   from '@vue/test-utils'
+import { mount, MountingOptions}                   from '@vue/test-utils'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import LoginPage                   from '../LoginPage.vue'
-import axios                       from 'axios'
+import axios                    from 'axios'
 import bcrypt                      from 'bcryptjs'
 import { routerKey }               from 'vue-router'
 
@@ -10,11 +10,15 @@ import { routerKey }               from 'vue-router'
 vi.mock('axios')
 vi.mock('bcryptjs')
 
+const axiosMock = axios as unknown as {
+  get: ReturnType<typeof vi.fn>,
+  post: ReturnType<typeof vi.fn>
+}
 const notifyMock = vi.fn()
 const pushMock   = vi.fn()
 
 // NEW factory
-const factory = (options = {}) => {
+const factory = (options:MountingOptions<any> = {}) => {
   return mount(LoginPage, {
     global: {
       // PROVIDE what useQuasar() and useRouter() will inject:
@@ -68,8 +72,8 @@ describe('LoginPage.vue', () => {
 
   describe('Signup Flow', () => {
     it('handles successful signup flow', async () => {
-      axios.get.mockResolvedValueOnce({ data: ['someoneelse@example.com'] })
-      axios.post.mockResolvedValueOnce({ data: 'success' })
+      axiosMock.get.mockResolvedValueOnce({ data: ['someoneelse@example.com'] })
+      axiosMock.post.mockResolvedValueOnce({ data: 'success' })
 
       const wrapper = factory()
 
@@ -80,7 +84,7 @@ describe('LoginPage.vue', () => {
 
       await wrapper.vm.onSubmit()
 
-      expect(axios.post).toHaveBeenCalledWith(
+      expect(axiosMock.post).toHaveBeenCalledWith(
         'http://16.171.224.57:80/api/addToCustomer',
         { items: ['John', 'Doe', 'newuser@example.com', 'Password1!'] }
       )
@@ -90,7 +94,7 @@ describe('LoginPage.vue', () => {
     })
 
     it('handles duplicate email on signup', async () => {
-      axios.get.mockResolvedValueOnce({ data: ['test@example.com'] })
+      axiosMock.get.mockResolvedValueOnce({ data: ['test@example.com'] })
 
       const wrapper = factory()
 
@@ -103,8 +107,8 @@ describe('LoginPage.vue', () => {
     })
 
     it('handles signup server error', async () => {
-      axios.get.mockResolvedValueOnce({ data: [] })
-      axios.post.mockRejectedValueOnce(new Error('Server error'))
+      axiosMock.get.mockResolvedValueOnce({ data: [] })
+      axiosMock.post.mockRejectedValueOnce(new Error('Server error'))
 
       const wrapper = factory()
 
@@ -123,7 +127,7 @@ describe('LoginPage.vue', () => {
 
   describe('Login Flow', () => {
     it('handles successful login flow', async () => {
-      axios.get.mockResolvedValueOnce({ data: '$2a$10$hashedpassword' })
+      axiosMock.get.mockResolvedValueOnce({ data: '$2a$10$hashedpassword' })
       bcrypt.compare.mockResolvedValueOnce(true)
 
       const wrapper = factory()
@@ -139,7 +143,7 @@ describe('LoginPage.vue', () => {
     })
 
     it('handles invalid password login flow', async () => {
-      axios.get.mockResolvedValueOnce({ data: '$2a$10$hashedpassword' })
+      axiosMock.get.mockResolvedValueOnce({ data: '$2a$10$hashedpassword' })
       bcrypt.compare.mockResolvedValueOnce(false)
 
       const wrapper = factory()
@@ -154,7 +158,7 @@ describe('LoginPage.vue', () => {
     })
 
     it('handles login error (email not found)', async () => {
-      axios.get.mockRejectedValueOnce(new Error('Not Found'))
+      axiosMock.get.mockRejectedValueOnce(new Error('Not Found'))
 
       const wrapper = factory()
 
@@ -167,7 +171,7 @@ describe('LoginPage.vue', () => {
     })
 
     it('handles unexpected bcrypt error', async () => {
-      axios.get.mockResolvedValueOnce({ data: '$2a$10$hashedpassword' })
+      axiosMock.get.mockResolvedValueOnce({ data: '$2a$10$hashedpassword' })
       bcrypt.compare.mockRejectedValueOnce(new Error('bcrypt error'))
 
       const wrapper = factory()

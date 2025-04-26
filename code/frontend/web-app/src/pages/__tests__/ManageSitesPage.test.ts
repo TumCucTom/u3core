@@ -1,27 +1,43 @@
-import { mount } from '@vue/test-utils'
+import { mount, MountingOptions } from '@vue/test-utils'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import ManageSitesPage from '../ManageSitesPage.vue'
 import axios from 'axios'
-import { routerKey } from 'vue-router'
+import { routerKey, routeLocationKey } from 'vue-router'
 
-// mocks
+// mocks & stubs
 vi.mock('axios')
+vi.mock('bcryptjs')
 
+const axiosMock = axios as unknown as {
+  get: ReturnType<typeof vi.fn>,
+  post: ReturnType<typeof vi.fn>
+}
 const notifyMock = vi.fn()
 const pushMock = vi.fn()
+const routeMock = {
+  query: {
+    token: '',
+    email: ''
+  }
+}
 
-// centralized factory
-const factory = (options = {}) => {
+// Centralized factory
+const factory = (options:MountingOptions<any> = {}) => {
   return mount(ManageSitesPage, {
     global: {
+      // PROVIDE what useQuasar() and useRouter() will inject:
       provide: {
+        // useQuasar() looks up `_q_`
         _q_: { notify: notifyMock },
+
+        // useRouter() looks up this Symbol key
         [routerKey]: { push: pushMock },
+        [routeLocationKey]: routeMock,
       },
+      // stub out all <q-*> so Quasar never actually runs
       stubs: [
-        'q-page', 'q-btn', 'q-list', 'q-expansion-item', 'q-item',
-        'q-item-section', 'q-input', 'q-dialog', 'q-card', 'q-card-section',
-        'q-card-actions', 'q-form', 'q-img'
+        'q-page','q-btn','q-input','q-avatar',
+        'q-img','q-rating','q-checkbox','q-form'
       ],
       ...options.global,
     },
@@ -60,7 +76,7 @@ describe('ManageSitesPage.vue', () => {
 
   it('fetches sites on created', async () => {
     const mockSites = { sites: [{ id: 1, name: 'Test Site', cameras: [{ id: 101, name: 'Cam 01' }] }] }
-    axios.get.mockResolvedValueOnce({ data: mockSites })
+    axiosMock.get.mockResolvedValueOnce({ data: mockSites })
 
     await wrapper.vm.fetchSites()
     expect(axios.get).toHaveBeenCalledWith('http://16.171.224.57:0080/sites')
@@ -68,7 +84,7 @@ describe('ManageSitesPage.vue', () => {
   })
 
   it('saves new site and closes dialog', async () => {
-    axios.post.mockResolvedValueOnce({ data: {} })
+    axiosMock.post.mockResolvedValueOnce({ data: {} })
 
     wrapper.vm.newSite = {
       name: 'Test Site',
@@ -87,7 +103,7 @@ describe('ManageSitesPage.vue', () => {
   })
 
   it('saves new RTSP camera and starts live stream', async () => {
-    axios.post.mockResolvedValueOnce({ data: {} })
+    axiosMock.post.mockResolvedValueOnce({ data: {} })
 
     wrapper.vm.newCamera = {
       name: 'New Cam',

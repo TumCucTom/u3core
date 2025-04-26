@@ -1,44 +1,28 @@
-import { mount } from '@vue/test-utils'
+import { mount, MountingOptions } from '@vue/test-utils'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import SitesPage from '../SitesPage.vue'
-import { routerKey, routeLocationKey } from 'vue-router'
 
 // mocks & stubs
 vi.mock('axios')
 vi.mock('bcryptjs')
 
-const notifyMock = vi.fn()
-const pushMock = vi.fn()
-const routeMock = {
-  query: {
-    token: '',
-    email: ''
-  }
-}
-
 // Centralized factory
-const factory = (options = {}) => {
+const factory = (options: MountingOptions<any> = {}) => {
   return mount(SitesPage, {
     global: {
-      // PROVIDE what useQuasar() and useRouter() will inject:
-      provide: {
-        // useQuasar() looks up `_q_`
-        _q_: { notify: notifyMock },
-
-        // useRouter() looks up this Symbol key
-        [routerKey]: { push: pushMock },
-        [routeLocationKey]: routeMock,
+      stubs: {
+        'q-page': { template: '<div><slot /></div>' },
+        'q-btn': { template: '<button><slot /></button>' },
+        'q-card': { template: '<div><slot /></div>' },
+        'q-checkbox': { template: '<input type="checkbox" />' },
+        'q-table': { template: '<table><slot /></table>' },
       },
-      // stub out all <q-*> so Quasar never actually runs
-      stubs: [
-        'q-page','q-btn','q-input','q-avatar',
-        'q-img','q-rating','q-checkbox','q-form'
-      ],
       ...options.global,
     },
     ...options,
   })
 }
+
 
 describe('SitesPage.vue', () => {
   let wrapper: ReturnType<typeof mount>
@@ -81,7 +65,7 @@ describe('SitesPage.vue', () => {
   })
 
   it('renders all mock table rows', () => {
-    const rows = wrapper.vm.tableEntries
+    const rows = (wrapper.vm as any).tableEntries
     rows.forEach((row: any) => {
       expect(wrapper.text()).toContain(row.site)
       expect(wrapper.text()).toContain(row.location)

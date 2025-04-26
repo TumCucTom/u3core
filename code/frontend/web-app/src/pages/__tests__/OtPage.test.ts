@@ -1,5 +1,5 @@
 // ─ src/pages/__tests__/OtPage.test.ts ─
-import { mount } from '@vue/test-utils'
+import { mount, MountingOptions } from '@vue/test-utils'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import OtPage from '../OtPage.vue'
 import axios from 'axios'
@@ -9,6 +9,10 @@ import { routerKey, routeLocationKey } from 'vue-router'
 vi.mock('axios')
 vi.mock('bcryptjs')
 
+const axiosMock = axios as unknown as {
+  get: ReturnType<typeof vi.fn>,
+  post: ReturnType<typeof vi.fn>
+}
 const notifyMock = vi.fn()
 const pushMock = vi.fn()
 const routeMock = {
@@ -19,7 +23,7 @@ const routeMock = {
 }
 
 // Centralized factory
-const factory = (options = {}) => {
+const factory = (options: MountingOptions<any> = {}) => {
   return mount(OtPage, {
     global: {
       // PROVIDE what useQuasar() and useRouter() will inject:
@@ -70,10 +74,10 @@ describe('OtPage.vue', () => {
   })
 
   it('calls sendEmail on mount and updates email text', async () => {
-    axios.post.mockResolvedValueOnce({ data: {} })
+    axiosMock.post.mockResolvedValueOnce({ data: {} })
 
     // Manually trigger sendEmail again if needed
-    await wrapper.vm.sendEmail()
+    await (wrapper.vm as any).sendEmail()
     const emailSpan = document.getElementById('retrievedEmail')
 
     expect(emailSpan?.innerHTML).toBe('test@example.com')
@@ -84,9 +88,9 @@ describe('OtPage.vue', () => {
   })
 
   it('resends email and shows success notification', async () => {
-    axios.post.mockResolvedValueOnce({ data: {} })
+    axiosMock.post.mockResolvedValueOnce({ data: {} })
 
-    await wrapper.vm.resendEmail()
+    await (wrapper.vm as any).resendEmail()
 
     expect(axios.post).toHaveBeenCalledWith(
       'http://16.171.224.57:0080/api/sendVerifyEmail',
@@ -100,9 +104,9 @@ describe('OtPage.vue', () => {
   })
 
   it('shows error notification on resend failure', async () => {
-    axios.post.mockRejectedValueOnce(new Error('Network Error'))
+    axiosMock.post.mockRejectedValueOnce(new Error('Network Error'))
 
-    await wrapper.vm.resendEmail()
+    await (wrapper.vm as any).resendEmail()
 
     expect(notifyMock).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -112,7 +116,7 @@ describe('OtPage.vue', () => {
   })
 
   it('navigates back to login page', async () => {
-    await wrapper.vm.backtologin()
+    await (wrapper.vm as any).backtologin()
     expect(pushMock).toHaveBeenCalledWith('/')
   })
 })

@@ -1,28 +1,40 @@
 // ─ src/pages/__tests__/CloudSettings.test.ts ─
-import { mount } from '@vue/test-utils'
+import { mount, MountingOptions } from '@vue/test-utils'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import CloudSettings from '../CloudSettings.vue'
 import axios from 'axios'
-import { routerKey } from 'vue-router'
+import { routerKey, routeLocationKey } from 'vue-router'
 
-// mocks
+// mocks & stubs
 vi.mock('axios')
+vi.mock('bcryptjs')
 
 const notifyMock = vi.fn()
 const pushMock = vi.fn()
+const routeMock = {
+  query: {
+    token: '',
+    email: ''
+  }
+}
 
-// correct factory
-const factory = (options = {}) => {
+// Centralized factory
+const factory = (options:MountingOptions<any> = {}) => {
   return mount(CloudSettings, {
     global: {
+      // PROVIDE what useQuasar() and useRouter() will inject:
       provide: {
+        // useQuasar() looks up `_q_`
         _q_: { notify: notifyMock },
+
+        // useRouter() looks up this Symbol key
         [routerKey]: { push: pushMock },
+        [routeLocationKey]: routeMock,
       },
+      // stub out all <q-*> so Quasar never actually runs
       stubs: [
-        'q-page', 'q-card', 'q-form', 'q-btn', 'q-btn-group',
-        'q-select', 'q-input', 'q-option-group', 'q-chip',
-        'q-card-section', 'q-separator'
+        'q-page','q-btn','q-input','q-avatar',
+        'q-img','q-rating','q-checkbox','q-form'
       ],
       ...options.global,
     },
@@ -48,26 +60,26 @@ describe('CloudSettings.vue', () => {
   })
 
   it('renders EC2 instance select input with correct default', () => {
-    expect(wrapper.vm.ec2Instance).toBe('t2.micro')
+    expect((wrapper.vm as any).ec2Instance).toBe('t2.micro')
   })
 
   it('renders cloud endpoint input with correct default', () => {
-    expect(wrapper.vm.cloudEndpointUrl).toBe('https://api.cloudprovider.com/v1/upload')
+    expect((wrapper.vm as any).cloudEndpointUrl).toBe('https://api.cloudprovider.com/v1/upload')
   })
 
   it('renders timing options with "shift-based" selected', () => {
-    expect(wrapper.vm.timingsType).toBe('shift-based')
+    expect((wrapper.vm as any).timingsType).toBe('shift-based')
   })
 
   it('shows start and end time inputs when "shift-based" is selected', () => {
     expect(wrapper.text()).toContain('Start time')
     expect(wrapper.text()).toContain('End time')
-    expect(wrapper.vm.startTime).toBe('09:00')
-    expect(wrapper.vm.endTime).toBe('17:00')
+    expect((wrapper.vm as any).startTime).toBe('09:00')
+    expect((wrapper.vm as any).endTime).toBe('17:00')
   })
 
   it('renders API key input with correct default', () => {
-    expect(wrapper.vm.apiKey).toBe('ABCD1234XYZ5678')
+    expect((wrapper.vm as any).apiKey).toBe('ABCD1234XYZ5678')
   })
 
   it('renders data usage value', () => {
@@ -78,7 +90,7 @@ describe('CloudSettings.vue', () => {
     expect(wrapper.text()).toContain('7 days')
     expect(wrapper.text()).toContain('30 days')
     expect(wrapper.text()).toContain('90 days')
-    expect(wrapper.vm.retentionPolicy).toBe('7days')
+    expect((wrapper.vm as any).retentionPolicy).toBe('7days')
   })
 
   it('handles form submission and logs correct values', async () => {

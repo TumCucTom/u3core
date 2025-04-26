@@ -1,24 +1,41 @@
-import { mount } from '@vue/test-utils'
+import { mount, MountingOptions} from '@vue/test-utils'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import IndexPage from '../IndexPage.vue'
 import axios from 'axios'
 import { Quasar } from 'quasar'
-import { routerKey } from 'vue-router'
+import { routerKey, routeLocationKey } from 'vue-router'
 
-// Mock axios
+// mocks & stubs
 vi.mock('axios')
+vi.mock('bcryptjs')
 
-// Create centralized factory
-const factory = (options = {}) => {
+const notifyMock = vi.fn()
+const pushMock = vi.fn()
+const routeMock = {
+  query: {
+    token: '',
+    email: ''
+  }
+}
+
+// Centralized factory
+const factory = (options: MountingOptions<any> = {}) => {
   return mount(IndexPage, {
     global: {
-      plugins: [Quasar],
+      // PROVIDE what useQuasar() and useRouter() will inject:
       provide: {
-        // Provide dummy Quasar and Router context if needed
-        _q_: { notify: vi.fn() },
-        [routerKey]: { push: vi.fn() }
+        // useQuasar() looks up `_q_`
+        _q_: { notify: notifyMock },
+
+        // useRouter() looks up this Symbol key
+        [routerKey]: { push: pushMock },
+        [routeLocationKey]: routeMock,
       },
-      stubs: ['q-page', 'q-btn', 'q-img'],
+      // stub out all <q-*> so Quasar never actually runs
+      stubs: [
+        'q-page','q-btn','q-input','q-avatar',
+        'q-img','q-rating','q-checkbox','q-form'
+      ],
       ...options.global,
     },
     ...options,
@@ -26,8 +43,10 @@ const factory = (options = {}) => {
 }
 
 describe('IndexPage.vue', () => {
+  let wrapper: ReturnType<typeof mount>
+
   beforeEach(() => {
-    vi.resetAllMocks()
+    wrapper = factory()
   })
   afterEach(() => {
     vi.restoreAllMocks()

@@ -1,5 +1,5 @@
 // src/pages/__tests__/SettingsPage.test.ts
-import { mount } from '@vue/test-utils'
+import { mount, MountingOptions } from '@vue/test-utils'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import SettingsPage from '../SettingsPage.vue'
 import { routerKey, routeLocationKey } from 'vue-router'
@@ -18,7 +18,7 @@ const routeMock = {
 }
 
 // Centralized factory
-const factory = (options = {}) => {
+const factory = (options: MountingOptions<any> = {}) => {
   return mount(SettingsPage, {
     global: {
       // PROVIDE what useQuasar() and useRouter() will inject:
@@ -67,50 +67,50 @@ describe('SettingsPage.vue', () => {
   })
 
   it('switches tabs correctly', async () => {
-    expect(wrapper.vm.currentTab).toBe('application')
+    expect((wrapper.vm as any).currentTab).toBe('application');
 
-    wrapper.vm.currentTab = 'privacy'
-    await wrapper.vm.$nextTick()
+    (wrapper.vm as any).currentTab = 'privacy'
+    await (wrapper.vm as any).$nextTick()
 
-    expect(wrapper.vm.currentTab).toBe('privacy')
+    expect((wrapper.vm as any).currentTab).toBe('privacy')
   })
 
   it('toggles notification settings', async () => {
-    expect(wrapper.vm.allEventsPush).toBe(true)
+    expect((wrapper.vm as any).allEventsPush).toBe(true);
 
-    wrapper.vm.allEventsPush = false
-    wrapper.vm.allEventsEmail = false
-    wrapper.vm.allEventsSMS = true
+    (wrapper.vm as any).allEventsPush = false;
+    (wrapper.vm as any).allEventsEmail = false;
+    (wrapper.vm as any).allEventsSMS = true
 
-    await wrapper.vm.$nextTick()
+    await (wrapper.vm as any).$nextTick()
 
-    expect(wrapper.vm.allEventsPush).toBe(false)
-    expect(wrapper.vm.allEventsEmail).toBe(false)
-    expect(wrapper.vm.allEventsSMS).toBe(true)
+    expect((wrapper.vm as any).allEventsPush).toBe(false)
+    expect((wrapper.vm as any).allEventsEmail).toBe(false)
+    expect((wrapper.vm as any).allEventsSMS).toBe(true)
   })
 
   it('selects different data retention plans', async () => {
-    expect(wrapper.vm.dataRetention).toBe('basic')
+    expect((wrapper.vm as any).dataRetention).toBe('basic');
 
-    wrapper.vm.dataRetention = 'enterprise'
-    await wrapper.vm.$nextTick()
+    (wrapper.vm as any).dataRetention = 'enterprise'
+    await (wrapper.vm as any).$nextTick()
 
-    expect(wrapper.vm.dataRetention).toBe('enterprise')
+    expect((wrapper.vm as any).dataRetention).toBe('enterprise')
   })
 
   it('toggles Data Privacy options (At Rest, In Transit, Anonymised Data)', async () => {
-    expect(wrapper.vm.dataRest).toBe(false)
-    expect(wrapper.vm.dataTransit).toBe(false)
-    expect(wrapper.vm.anonymisedData).toBe(false)
+    expect((wrapper.vm as any).dataRest).toBe(false)
+    expect((wrapper.vm as any).dataTransit).toBe(false)
+    expect((wrapper.vm as any).anonymisedData).toBe(false);
 
-    wrapper.vm.dataRest = true
-    wrapper.vm.dataTransit = true
-    wrapper.vm.anonymisedData = true
+    (wrapper.vm as any).dataRest = true;
+    (wrapper.vm as any).dataTransit = true;
+    (wrapper.vm as any).anonymisedData = true
 
-    await wrapper.vm.$nextTick()
+    await (wrapper.vm as any).$nextTick()
 
-    expect(wrapper.vm.dataRest).toBe(true)
-    expect(wrapper.vm.dataTransit).toBe(true)
-    expect(wrapper.vm.anonymisedData).toBe(true)
+    expect((wrapper.vm as any).dataRest).toBe(true)
+    expect((wrapper.vm as any).dataTransit).toBe(true)
+    expect((wrapper.vm as any).anonymisedData).toBe(true)
   })
 })

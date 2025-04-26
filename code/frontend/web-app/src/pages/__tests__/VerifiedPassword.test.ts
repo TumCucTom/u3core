@@ -1,4 +1,4 @@
-import { mount } from '@vue/test-utils'
+import { mount, MountingOptions } from '@vue/test-utils'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import VerifiedPassword from '../VerifiedPassword.vue'
 import { routerKey, routeLocationKey } from 'vue-router'
@@ -22,7 +22,7 @@ const routeMock = {
 }
 
 // Centralized factory
-const factory = (options = {}) => {
+const factory = (options: MountingOptions<any> = {}) => {
   return mount(VerifiedPassword, {
     global: {
       // PROVIDE what useQuasar() and useRouter() will inject:

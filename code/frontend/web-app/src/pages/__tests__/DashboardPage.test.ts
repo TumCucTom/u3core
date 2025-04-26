@@ -1,28 +1,45 @@
-import { mount } from '@vue/test-utils'
+import { mount, MountingOptions} from '@vue/test-utils'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import DashboardPage from '../DashboardPage.vue'
 import { nextTick } from 'vue'
 import axios from 'axios'
-import { routerKey } from 'vue-router'
+import { routerKey, routeLocationKey } from 'vue-router'
 
+// mocks & stubs
 vi.mock('axios')
+vi.mock('bcryptjs')
+
+const axiosMock = axios as unknown as {
+  get: ReturnType<typeof vi.fn>,
+  post: ReturnType<typeof vi.fn>
+}
+const notifyMock = vi.fn()
+const pushMock = vi.fn()
+const routeMock = {
+  query: {
+    token: '',
+    email: ''
+  }
+}
 
 // Centralized factory
-const factory = (options = {}) => {
-  const mockRoute = {
-    query: {
-      email: encodeURIComponent('test@example.com'),
-    },
-  }
-
+const factory = (options:MountingOptions<any> = {}) => {
   return mount(DashboardPage, {
     global: {
-      stubs: ['q-page', 'q-btn', 'q-icon', 'q-img', 'q-card', 'q-spinner'],
+      // PROVIDE what useQuasar() and useRouter() will inject:
       provide: {
-        [routerKey]: {
-          currentRoute: { value: mockRoute }
-        }
+        // useQuasar() looks up `_q_`
+        _q_: { notify: notifyMock },
+
+        // useRouter() looks up this Symbol key
+        [routerKey]: { push: pushMock },
+        [routeLocationKey]: routeMock,
       },
+      // stub out all <q-*> so Quasar never actually runs
+      stubs: [
+        'q-page','q-btn','q-input','q-avatar',
+        'q-img','q-rating','q-checkbox','q-form'
+      ],
       ...options.global,
     },
     ...options,
@@ -32,7 +49,7 @@ const factory = (options = {}) => {
 describe('DashboardPage.vue', () => {
   beforeEach(() => {
     vi.resetAllMocks()
-    axios.get.mockResolvedValue({ data: 0 })
+    axiosMock.get.mockResolvedValue({ data: 0 })
   })
 
   it('renders with welcome text and name placeholder', async () => {
@@ -45,7 +62,7 @@ describe('DashboardPage.vue', () => {
   })
 
   it('fetches user name from email in query', async () => {
-    axios.get.mockImplementation((url) => {
+    axiosMock.get.mockImplementation((url) => {
       if (url.includes('/api/getName')) {
         return Promise.resolve({ data: 'Alice' })
       }
@@ -61,7 +78,7 @@ describe('DashboardPage.vue', () => {
   })
 
   it('fetches site, camera, and alert counts', async () => {
-    axios.get.mockImplementation((url) => {
+    axiosMock.get.mockImplementation((url) => {
       if (url.includes('get-site-count')) return Promise.resolve({ data: 5 })
       if (url.includes('get-camera-count')) return Promise.resolve({ data: 10 })
       if (url.includes('get-hazard-count')) return Promise.resolve({ data: 3 })

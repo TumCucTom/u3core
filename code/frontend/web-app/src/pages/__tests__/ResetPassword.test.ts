@@ -1,4 +1,4 @@
-import { mount } from '@vue/test-utils'
+import { mount, MountingOptions } from '@vue/test-utils'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import ResetPassword from '../ResetPassword.vue'
 import axios from 'axios'
@@ -7,6 +7,11 @@ import { routerKey, routeLocationKey } from 'vue-router'
 // mocks & stubs
 vi.mock('axios')
 vi.mock('bcryptjs')
+
+const axiosMock = axios as unknown as {
+  get: ReturnType<typeof vi.fn>,
+  post: ReturnType<typeof vi.fn>
+}
 
 const notifyMock = vi.fn()
 const pushMock = vi.fn()
@@ -18,28 +23,32 @@ const routeMock = {
 }
 
 // Centralized factory
-const factory = (options = {}) => {
+const factory = (options: MountingOptions<any> = {}) => {
   return mount(ResetPassword, {
     global: {
-      // PROVIDE what useQuasar() and useRouter() will inject:
       provide: {
-        // useQuasar() looks up `_q_`
         _q_: { notify: notifyMock },
-
-        // useRouter() looks up this Symbol key
         [routerKey]: { push: pushMock },
         [routeLocationKey]: routeMock,
       },
-      // stub out all <q-*> so Quasar never actually runs
-      stubs: [
-        'q-page','q-btn','q-input','q-avatar',
-        'q-img','q-rating','q-checkbox','q-form'
-      ],
+      stubs: {
+        'q-page': { template: '<div><slot /></div>' },
+        'q-toolbar': { template: '<div><slot /></div>' },
+        'q-toolbar-title': { template: '<div><slot /></div>' },
+        'q-icon': { template: '<span><slot /></span>' },
+        'q-card': { template: '<div><slot /></div>' },
+        'q-card-section': { template: '<div><slot /></div>' },
+        'q-input': { template: '<input />' },
+        'q-btn': { template: '<button><slot /></button>' },
+        'router-link': true,
+        'router-view': true,
+      },
       ...options.global,
     },
     ...options,
   })
 }
+
 
 describe('ResetPassword.vue', () => {
   let wrapper: ReturnType<typeof mount>
@@ -56,7 +65,9 @@ describe('ResetPassword.vue', () => {
   })
 
   afterEach(() => {
-    wrapper.unmount()
+    if (wrapper) {
+      wrapper.unmount()
+    }
   })
 
   it('renders main headings and password inputs', () => {
@@ -66,25 +77,25 @@ describe('ResetPassword.vue', () => {
   })
 
   it('toggles password visibility', async () => {
-    expect(wrapper.vm.showPassword).toBe(false)
-    wrapper.vm.togglePassword()
-    expect(wrapper.vm.showPassword).toBe(true)
+    expect((wrapper.vm as any).showPassword).toBe(false);
+    (wrapper.vm as any).togglePassword()
+    expect((wrapper.vm as any).showPassword).toBe(true)
 
-    expect(wrapper.vm.showConfirmPassword).toBe(false)
-    wrapper.vm.toggleConfirmPassword()
-    expect(wrapper.vm.showConfirmPassword).toBe(true)
+    expect((wrapper.vm as any).showConfirmPassword).toBe(false);
+    (wrapper.vm as any).toggleConfirmPassword()
+    expect((wrapper.vm as any).showConfirmPassword).toBe(true)
   })
 
   it('handles successful password reset flow', async () => {
-    axios.get.mockResolvedValueOnce({ data: ['test@example.com'] })
-    axios.post.mockResolvedValueOnce({ data: { message: 'Password updated successfully' } })
+    axiosMock.get.mockResolvedValueOnce({ data: ['test@example.com'] })
+    axiosMock.post.mockResolvedValueOnce({ data: { message: 'Password updated successfully' } })
 
-    wrapper.vm.newPassword = 'Password1!'
-    wrapper.vm.confirmPassword = 'Password1!'
+    (wrapper.vm as any).newPassword = 'Password1!';
+    (wrapper.vm as any).confirmPassword = 'Password1!'
 
-    await wrapper.vm.resetPassword()
+    await (wrapper.vm as any).resetPassword()
 
-    expect(axios.post).toHaveBeenCalledWith('http://16.171.224.57:0080/api/updatePassword', {
+    expect(axios.post).toHaveBeenCalledWith('http://16.171.224.57:80/api/updatePassword', {
       email: 'test@example.com',
       password: 'Password1!',
       token: 'abc123'
@@ -97,12 +108,12 @@ describe('ResetPassword.vue', () => {
   })
 
   it('shows error if email is not registered', async () => {
-    axios.get.mockResolvedValueOnce({ data: ['someoneelse@example.com'] })
+    axiosMock.get.mockResolvedValueOnce({ data: ['someoneelse@example.com'] })
 
-    wrapper.vm.newPassword = 'Password1!'
-    wrapper.vm.confirmPassword = 'Password1!'
+    (wrapper.vm as any).newPassword = 'Password1!';
+    (wrapper.vm as any).confirmPassword = 'Password1!'
 
-    await wrapper.vm.resetPassword()
+    await (wrapper.vm as any).resetPassword()
 
     expect(notifyMock).toHaveBeenCalledWith(expect.objectContaining({
       message: 'Email is not registered'
@@ -110,12 +121,12 @@ describe('ResetPassword.vue', () => {
   })
 
   it('shows error if passwords do not match', async () => {
-    axios.get.mockResolvedValueOnce({ data: ['test@example.com'] })
+    axiosMock.get.mockResolvedValueOnce({ data: ['test@example.com'] })
 
-    wrapper.vm.newPassword = 'Password1!'
-    wrapper.vm.confirmPassword = 'WrongPassword'
+    (wrapper.vm as any).newPassword = 'Password1!';
+    (wrapper.vm as any).confirmPassword = 'WrongPassword'
 
-    await wrapper.vm.resetPassword()
+    await (wrapper.vm as any).resetPassword()
 
     expect(notifyMock).toHaveBeenCalledWith(expect.objectContaining({
       message: 'Passwords do not match or do not meet the requirements'
@@ -123,13 +134,13 @@ describe('ResetPassword.vue', () => {
   })
 
   it('shows error if server fails during password reset', async () => {
-    axios.get.mockResolvedValueOnce({ data: ['test@example.com'] })
-    axios.post.mockRejectedValueOnce(new Error('Server Error'))
+    axiosMock.get.mockResolvedValueOnce({ data: ['test@example.com'] })
+    axiosMock.post.mockRejectedValueOnce(new Error('Server Error'))
 
-    wrapper.vm.newPassword = 'Password1!'
-    wrapper.vm.confirmPassword = 'Password1!'
+    (wrapper.vm as any).newPassword = 'Password1!';
+    (wrapper.vm as any).confirmPassword = 'Password1!'
 
-    await wrapper.vm.resetPassword()
+    await (wrapper.vm as any).resetPassword()
 
     expect(notifyMock).toHaveBeenCalledWith(expect.objectContaining({
       message: 'Error resetting password'

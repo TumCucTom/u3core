@@ -1,15 +1,39 @@
-import { mount } from '@vue/test-utils'
-import { describe, it, expect } from 'vitest'
+import { mount, MountingOptions} from '@vue/test-utils'
+import { describe, it, expect, vi } from 'vitest'
 import ErrorNotFound from '../ErrorNotFound.vue'
+import { routerKey, routeLocationKey } from 'vue-router'
+
+// mocks & stubs
+vi.mock('axios')
+vi.mock('bcryptjs')
+
+const notifyMock = vi.fn()
+const pushMock = vi.fn()
+const routeMock = {
+  query: {
+    token: '',
+    email: ''
+  }
+}
 
 // Centralized factory
-const factory = (options = {}) => {
+const factory = (options:MountingOptions<any> = {}) => {
   return mount(ErrorNotFound, {
     global: {
+      // PROVIDE what useQuasar() and useRouter() will inject:
       provide: {
-        _q_: {}, // mock useQuasar() if needed (safe even if ErrorNotFound doesn't use it)
+        // useQuasar() looks up `_q_`
+        _q_: { notify: notifyMock },
+
+        // useRouter() looks up this Symbol key
+        [routerKey]: { push: pushMock },
+        [routeLocationKey]: routeMock,
       },
-      stubs: ['q-btn'], // stub all Quasar components used inside
+      // stub out all <q-*> so Quasar never actually runs
+      stubs: [
+        'q-page','q-btn','q-input','q-avatar',
+        'q-img','q-rating','q-checkbox','q-form'
+      ],
       ...options.global,
     },
     ...options,

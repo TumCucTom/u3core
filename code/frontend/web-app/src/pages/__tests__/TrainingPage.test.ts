@@ -1,4 +1,4 @@
-import { mount } from '@vue/test-utils'
+import { mount, MountingOptions } from '@vue/test-utils'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import TrainingPage from '../TrainingPage.vue'
 import axios from 'axios'
@@ -19,7 +19,8 @@ const routeMock = {
 }
 
 // Centralized factory
-const factory = (options = {}) => {
+const factory = (options: MountingOptions<any> = {}) => {
+  // @ts-ignore
   return mount(TrainingPage, {
     global: {
       // PROVIDE what useQuasar() and useRouter() will inject:
@@ -30,8 +31,9 @@ const factory = (options = {}) => {
       },
       // stub out all <q-*> so Quasar never actually runs
       stubs: [
-        'q-page','q-btn','q-input','q-avatar',
-        'q-img','q-rating','q-checkbox','q-form'
+        'q-page', 'q-btn', 'q-card', 'q-dialog', 'q-input', 'q-icon',
+        'q-checkbox', 'q-item', 'q-item-section', 'q-badge', 'q-chip',
+        'q-linear-progress', 'q-tooltip', 'q-select', 'q-table', 'q-space'
       ],
       ...options.global,
     },
@@ -43,14 +45,7 @@ describe('TrainingPage.vue', () => {
   let wrapper: ReturnType<typeof mount>
 
   beforeEach(() => {
-    wrapper = mount(TrainingPage, {
-      global: {
-        stubs: [
-          'q-page', 'q-btn', 'q-card', 'q-dialog', 'q-input', 'q-icon',
-          'q-checkbox', 'q-item', 'q-item-section', 'q-badge', 'q-chip', 'q-linear-progress', 'q-tooltip', 'q-select'
-        ]
-      }
-    })
+    wrapper = factory()
   })
 
   it('renders main title and upload button', () => {
@@ -89,9 +84,9 @@ describe('TrainingPage.vue', () => {
       status: 'completed',
       raw: {},
       tags: []
-    }
-    (wrapper.vm as any).uploadedFiles = [file]
-    (wrapper.vm as any).startTagEdit(file.id)
+    };
+    (wrapper.vm as any).uploadedFiles = [file];
+    (wrapper.vm as any).startTagEdit(file.id);
     (wrapper.vm as any).newTag = 'animal'
     await (wrapper.vm as any).addTag(file)
 
@@ -103,8 +98,8 @@ describe('TrainingPage.vue', () => {
     (wrapper.vm as any).uploadedFiles = [
       { id: 1, tags: [] },
       { id: 2, tags: [] }
-    ]
-    (wrapper.vm as any).selectedFiles = [1, 2]
+    ];
+    (wrapper.vm as any).selectedFiles = [1, 2];
     ((wrapper.vm as any) as any).batchTag = 'wildlife'
 
     await (wrapper.vm as any).addBatchTag()
@@ -118,7 +113,7 @@ describe('TrainingPage.vue', () => {
     (wrapper.vm as any).uploadedFiles = [
       { id: 1, tags: [] },
       { id: 2, tags: [] }
-    ]
+    ];
     (wrapper.vm as any).selectedFiles = [1]
 
     vi.stubGlobal('confirm', vi.fn(() => true)) // Auto-confirm dialog
@@ -130,8 +125,8 @@ describe('TrainingPage.vue', () => {
   })
 
   it('opens training modal and submits new model log', async () => {
-    (wrapper.vm as any).uploadedFiles = [{ id: 1, name: 'file1.png' }]
-    (wrapper.vm as any).modelVersion = 'v1.0'
+    (wrapper.vm as any).uploadedFiles = [{ id: 1, name: 'file1.png' }];
+    (wrapper.vm as any).modelVersion = 'v1.0';
     (wrapper.vm as any).siteId = 'Site A'
 
     await (wrapper.vm as any).submitModelTraining()
