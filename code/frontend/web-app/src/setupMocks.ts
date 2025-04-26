@@ -1,0 +1,41 @@
+// DO NOT import vi from vitest at the top!
+
+export async function setupMocks() {
+  const { vi } = await import('vitest')
+  const { defineComponent } = await import('vue')
+
+  // Mocks must be at top level (for hoisting), but vi must be lazy imported
+  vi.mock('quasar', async () => {
+    const actual = await import('quasar')
+    return {
+      ...actual,
+      useQuasar: () => ({
+        dark: { isActive: false, toggle: vi.fn() },
+        notify: vi.fn(),
+        dialog: { create: vi.fn() },
+      }),
+      QBtn: defineComponent({ name: 'q-btn', template: '<button><slot /></button>' }),
+      QCard: defineComponent({ name: 'q-card', template: '<div><slot /></div>' }),
+      QToolbar: defineComponent({ name: 'q-toolbar', template: '<div><slot /></div>' }),
+      QToolbarTitle: defineComponent({ name: 'q-toolbar-title', template: '<div><slot /></div>' }),
+      QCardSection: defineComponent({ name: 'q-card-section', template: '<div><slot /></div>' }),
+      QCardActions: defineComponent({ name: 'q-card-actions', template: '<div><slot /></div>' }),
+      QIcon: defineComponent({ name: 'q-icon', template: '<i><slot /></i>' }),
+      QTable: defineComponent({ name: 'q-table', template: '<table><slot /></table>' }),
+      Ripple: {},
+    }
+  })
+
+  vi.mock('vue-router', async () => {
+    const actual = await import('vue-router')
+    return {
+      ...actual,
+      useRoute: () => ({
+        query: { email: 'test@example.com', token: '12345' },
+      }),
+      useRouter: () => ({
+        push: vi.fn(),
+      }),
+    }
+  })
+}
