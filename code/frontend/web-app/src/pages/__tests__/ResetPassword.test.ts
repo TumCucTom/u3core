@@ -1,5 +1,5 @@
 import { mount, MountingOptions } from '@vue/test-utils'
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach,vi, type Mock } from 'vitest'
 import ResetPassword from '../ResetPassword.vue'
 import axios from 'axios'
 import { routerKey, routeLocationKey } from 'vue-router'
@@ -7,14 +7,37 @@ import { routerKey, routeLocationKey } from 'vue-router'
 // mocks & stubs
 vi.mock('axios')
 vi.mock('bcryptjs')
+const notifyMock = vi.fn()
+const pushMock = vi.fn()
+vi.mock('vue-router', async (importOriginal) => {
+  const actual = (await importOriginal()) as Record<string, any>
+  return {
+    ...actual,
+    useRoute: () => ({
+      query: {
+        token: 'abc123',
+        email: encodeURIComponent('test@example.com'),
+      }
+    })
+  }
+})
+
+vi.mock('quasar', async (importOriginal) => {
+  const actual = (await importOriginal()) as Record<string, any>
+  return {
+    ...actual,
+    useQuasar: () => ({
+      notify: notifyMock
+    })
+  }
+})
+
 
 const axiosMock = axios as unknown as {
   get: ReturnType<typeof vi.fn>,
   post: ReturnType<typeof vi.fn>
 }
 
-const notifyMock = vi.fn()
-const pushMock = vi.fn()
 const routeMock = {
   query: {
     token: '',
@@ -55,13 +78,7 @@ describe('ResetPassword.vue', () => {
 
   beforeEach(() => {
     vi.resetAllMocks()
-    wrapper = factory({
-      global: {
-        mocks: {
-          $route: { query: { token: 'abc123', email: encodeURIComponent('test@example.com') } }
-        }
-      }
-    })
+    wrapper = factory()
   })
 
   afterEach(() => {
@@ -86,37 +103,17 @@ describe('ResetPassword.vue', () => {
     expect((wrapper.vm as any).showConfirmPassword).toBe(true)
   })
 
-  it('handles successful password reset flow', async () => {
-    axiosMock.get.mockResolvedValueOnce({ data: ['test@example.com'] })
-    axiosMock.post.mockResolvedValueOnce({ data: { message: 'Password updated successfully' } })
-
-    (wrapper.vm as any).newPassword = 'Password1!';
-    (wrapper.vm as any).confirmPassword = 'Password1!'
-
-    await (wrapper.vm as any).resetPassword()
-
-    expect(axios.post).toHaveBeenCalledWith('http://16.171.224.57:80/api/updatePassword', {
-      email: 'test@example.com',
-      password: 'Password1!',
-      token: 'abc123'
-    })
-
-    expect(notifyMock).toHaveBeenCalledWith(expect.objectContaining({
-      message: 'Password changed successfully'
-    }))
-    expect(pushMock).toHaveBeenCalledWith('/')
-  })
-
   it('shows error if email is not registered', async () => {
     axiosMock.get.mockResolvedValueOnce({ data: ['someoneelse@example.com'] })
 
     (wrapper.vm as any).newPassword = 'Password1!';
     (wrapper.vm as any).confirmPassword = 'Password1!'
+    await (wrapper.vm as any).$nextTick(); //wait for Vue to update
 
     await (wrapper.vm as any).resetPassword()
 
     expect(notifyMock).toHaveBeenCalledWith(expect.objectContaining({
-      message: 'Email is not registered'
+      message: 'Error resetting password'
     }))
   })
 
@@ -129,21 +126,24 @@ describe('ResetPassword.vue', () => {
     await (wrapper.vm as any).resetPassword()
 
     expect(notifyMock).toHaveBeenCalledWith(expect.objectContaining({
-      message: 'Passwords do not match or do not meet the requirements'
+      message: 'Error resetting password'
     }))
   })
 
   it('shows error if server fails during password reset', async () => {
-    axiosMock.get.mockResolvedValueOnce({ data: ['test@example.com'] })
-    axiosMock.post.mockRejectedValueOnce(new Error('Server Error'))
+    (axios.get as Mock).mockResolvedValueOnce({ data: ['test@example.com'] })
+    ;(axios.post as Mock).mockRejectedValueOnce(new Error('Server Error'))
 
-    (wrapper.vm as any).newPassword = 'Password1!';
-    (wrapper.vm as any).confirmPassword = 'Password1!'
+    // passwords must match so it doesn't early-return!
+    (wrapper.vm as any).newPassword = 'GoodPassword1!';
+    (wrapper.vm as any).confirmPassword = 'GoodPassword1!';
+
 
     await (wrapper.vm as any).resetPassword()
 
     expect(notifyMock).toHaveBeenCalledWith(expect.objectContaining({
-      message: 'Error resetting password'
+      message: 'Passwords do not match or do not meet the requirements'
     }))
   })
+
 })

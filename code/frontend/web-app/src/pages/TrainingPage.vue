@@ -4,7 +4,7 @@
       <h1 class="text-h4 text-bold">Upload Training Data</h1>
       <p class="text-subtitle2">Track, manage and forecast your customers and orders</p>
     </div>
-    
+
     <!-- searching bar -->
     <div class="q-mb-md">
       <q-input
@@ -15,7 +15,7 @@
         class="search-input"
       >
         <template v-slot:prepend>
-          <q-icon name="search" />              
+          <q-icon name="search" />
         </template>
       </q-input>
     </div>
@@ -59,15 +59,15 @@
 
       <!-- preview area -->
       <div v-if="uploadedFiles.length > 0" class="file-list q-mt-md">
-        <q-item 
-          v-for="(file, index) in filteredFiles" 
-          :key="file.id" 
+        <q-item
+          v-for="(file, index) in filteredFiles"
+          :key="file.id"
           class="q-mb-sm preview-item"
         >
           <q-item-section side>
-            <q-checkbox 
-              v-model="selectedFiles" 
-              :val="file.id" 
+            <q-checkbox
+              v-model="selectedFiles"
+              :val="file.id"
               color="primary"
             />
           </q-item-section>
@@ -86,10 +86,10 @@
 
                 <!-- Tag-display area -->
                 <div v-if="file.tags?.length" class="q-mt-xs">
-                  <q-badge 
-                    v-for="(tag, tagIndex) in file.tags" 
+                  <q-badge
+                    v-for="(tag, tagIndex) in file.tags"
                     :key="tagIndex"
-                    color="secondary" 
+                    color="secondary"
                     class="q-mr-xs cursor-pointer"
                     @click="removeTag(file, tagIndex)"
                   >
@@ -107,11 +107,11 @@
                     class="col"
                     @keyup.enter="addTag(file)"
                   />
-                  <q-btn 
-                    flat 
-                    dense 
-                    icon="check" 
-                    color="positive" 
+                  <q-btn
+                    flat
+                    dense
+                    icon="check"
+                    color="positive"
                     class="q-ml-sm"
                     @click="addTag(file)"
                   />
@@ -130,20 +130,20 @@
 
           <q-item-section side>
             <div class="row items-center">
-              <q-btn 
-                round 
-                flat 
-                icon="local_offer" 
-                size="sm" 
+              <q-btn
+                round
+                flat
+                icon="local_offer"
+                size="sm"
                 color="grey-6"
                 class="q-mr-xs"
                 @click="startTagEdit(file.id)"
               />
-              <q-btn 
-                round 
-                flat 
-                icon="delete" 
-                size="sm" 
+              <q-btn
+                round
+                flat
+                icon="delete"
+                size="sm"
                 color="grey-6"
                 @click="removeFile(index)"
               />
@@ -166,11 +166,11 @@
       />
       <q-btn
         label="Apply Tag"
-        color="primary"   
+        color="primary"
         class="q-ml-sm"
         @click="addBatchTag"
       />
-      <q-btn 
+      <q-btn
         label="Delete Selected"
         color="negative"
         class="q-ml-sm"
@@ -212,11 +212,11 @@
     <div v-if="uploadLogs.length === 0" class="text-grey-6 text-center q-pa-lg">
       No training records yet
     </div>
-    
+
     <div v-else class="file-list">
-      <q-item 
-        v-for="log in uploadLogs" 
-        :key="log.id" 
+      <q-item
+        v-for="log in uploadLogs"
+        :key="log.id"
         class="q-mb-sm preview-item"
       >
       <q-item-section>
@@ -230,11 +230,11 @@
                 {{ log.status }} ({{ log.progress.toFixed(0) }}%)
               </q-badge>
             </div>
-              
+
             <!-- associated file form -->
             <div class="q-mt-xs">
-              <q-chip 
-                v-for="(file, index) in log.files" 
+              <q-chip
+                v-for="(file, index) in log.files"
                 :key="index"
                 dense
                 color="secondary"
@@ -302,16 +302,16 @@
 <script setup>
 import { ref, computed } from 'vue'
 
-//searching status 
+//searching status
 const searchQuery = ref('')
 
 // filtering files according to their tags
 const filteredFiles = computed(() => {
   if (!searchQuery.value) return uploadedFiles.value
-  
+
   const searchTerms = searchQuery.value.toLowerCase().split(' ')
-  return uploadedFiles.value.filter(file => 
-    { return file.tags.some(tag => 
+  return uploadedFiles.value.filter(file =>
+    { return file.tags.some(tag =>
         searchTerms.some(term => tag.toLowerCase().includes(term))
       )}
   )
@@ -400,7 +400,7 @@ const handleFileChange = (event) => {
 
   Array.from(files).forEach(file => {
     const validTypes = ['image/svg+xml', 'image/jpeg', 'image/png', 'image/gif']
-    
+
     if (validTypes.includes(file.type)) {
       const newFile = {
         id: fileIdCounter++,
@@ -445,7 +445,7 @@ const removeFile = (index) => {
 // delete the file in batch
 const deleteSelectedFiles = () => {
   if (selectedFiles.value.length === 0) return
-  
+
   if (confirm(`Are you sure you want to delete ${selectedFiles.value.length} files?`)) {
     uploadedFiles.value = uploadedFiles.value.filter(
       file => !selectedFiles.value.includes(file.id)
@@ -466,7 +466,7 @@ const getStatusColor = (status) => {
 }
 
 // formatting file size
-const formatFileSize = (bytes) => {
+const formatFileSize = (bytes = 0) => {
   const units = ['B', 'KB', 'MB', 'GB']
   let size = bytes
   let unitIndex = 0
@@ -506,7 +506,7 @@ const submitModelTraining = () => {
     files: uploadedFiles.value.map(f => f.name) // save related file name
   }
 
-  uploadLogs.value.unshift(newLog) // add to the log 
+  uploadLogs.value.unshift(newLog) // add to the log
   simulateModelTraining(newLog) // start training simulation
   showModelDialog.value = false
   modelVersion.value = '' // reset the form
@@ -632,4 +632,3 @@ const getTrainingStatusColor = (status) => {
   transform: translateX(2px);
 }
 </style>
-  

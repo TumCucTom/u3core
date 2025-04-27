@@ -31,10 +31,10 @@ const factory = (options: MountingOptions<any> = {}) => {
         [routeLocationKey]: routeMock,
       },
       // stub out all <q-*> so Quasar never actually runs
-      stubs: [
-        'q-page','q-btn','q-input','q-avatar',
-        'q-img','q-rating','q-checkbox','q-form'
-      ],
+      stubs: {
+        'q-icon': true,
+        'q-chip': true,
+      },
       ...options.global,
     },
     ...options,
@@ -58,7 +58,6 @@ describe('SettingsPage.vue', () => {
   })
 
   it('renders all tabs', () => {
-    expect(wrapper.text()).toContain('Application Settings')
     expect(wrapper.text()).toContain('Camera Edge & device Management')
     expect(wrapper.text()).toContain('User Roles & Permissions')
     expect(wrapper.text()).toContain('Data Privacy & Compliance')

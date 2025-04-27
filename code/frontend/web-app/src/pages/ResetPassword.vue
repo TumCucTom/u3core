@@ -109,14 +109,20 @@ export default {
     const resetPassword = async () => {
       try {
         const emailCheckResponse = await axios.get('http://16.171.224.57:80/api/emails');
-        if (emailCheckResponse.data.includes(email.value)) {
 
-          if (newPassword.value === confirmPassword.value && passwordRules.every(rule => rule(newPassword.value))) {
-            const updateResponse = await axios.post('http://16.171.224.57:80/api/updatePassword', {
+        if (emailCheckResponse.data.includes(email.value)) {
+          const isPasswordValid = passwordRules.every(rule => rule(newPassword.value) === true);
+          const isConfirmPasswordMatching = newPassword.value === confirmPassword.value;
+
+          if (isPasswordValid && isConfirmPasswordMatching) {
+            const payload = {
               email: email.value,
               password: newPassword.value,
-              token: token.value
-            });
+              token: token.value,
+            };
+
+            const updateResponse = await axios.post('http://16.171.224.57:80/api/updatePassword', payload);
+
             if (updateResponse.data.message === 'Password updated successfully') {
               $q.notify({
                 color: 'green-4',
@@ -160,6 +166,7 @@ export default {
       }
     };
 
+
     const togglePassword = () => {
       showPassword.value = !showPassword.value;
     };
@@ -169,7 +176,8 @@ export default {
     };
 
     return {
-      //email,
+      email,
+      token,
       newPassword,
       confirmPassword,
       showPassword,
