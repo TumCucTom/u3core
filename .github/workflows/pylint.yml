@@ -4,7 +4,7 @@ on:
   push:
     paths:
       - 'code/backend/python-features/**'
-      - 'code/backend/python-server/**'
+      - 'code/backend/python_server/**'
       - '.github/workflows/pylint.yml'
       - 'code/backend/python-server/**'
 
