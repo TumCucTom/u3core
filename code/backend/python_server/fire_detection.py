@@ -2,7 +2,7 @@
 import logging
 import multiprocessing
 import pymysql
-from fire_detection_script import process_rtsp_stream_with_url
+from python_server.fire_detection_script import process_rtsp_stream_with_url
 
 # Dictionary to track running fire detection processes
 fire_detection_processes = {}

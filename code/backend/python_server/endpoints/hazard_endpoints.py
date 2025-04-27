@@ -2,8 +2,8 @@
 import logging
 from datetime import datetime
 from flask import jsonify, request
-from database import get_db_connection
-from endpoints.endpoint_utils import get_count_from_table
+from python_server.database import get_db_connection
+from python_server.endpoints.endpoint_utils import get_count_from_table
 
 def register_hazard_endpoints(app, db_config):
     """

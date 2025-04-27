@@ -4,8 +4,8 @@ import string
 import secrets
 import bcrypt
 from flask import jsonify, request
-from database import get_db_connection
-from email_utils import send_email
+from python_server.database import get_db_connection
+from python_server.email_utils import send_email
 
 def register_user_endpoints(app, db_config, postmark_api):
     """

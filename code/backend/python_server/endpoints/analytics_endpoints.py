@@ -1,6 +1,6 @@
 """Analytics endpoint handlers"""
 from flask import jsonify
-from database import get_db_connection
+from python_server.database import get_db_connection
 
 def register_analytics_endpoints(app, db_config):
     """

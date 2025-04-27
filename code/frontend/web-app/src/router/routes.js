@@ -1,7 +1,7 @@
 import Home from "src/pages/LoginPage.vue";
 import otp from "src/pages/OtPage.vue";
 import DashboardPage from "src/pages/DashboardPage.vue";
-import ManageSitesPage from "src/pages/ManageSitesPage.vue";
+import ManageCamerasPage from "src/pages/ManageCamerasPage.vue";
 import ManageModelsPage from "src/pages/ManageModelsPage.vue";
 import ActionSettingsPage from "src/pages/ActionSettingsPage.vue";
 import Verified from "src/pages/VerifiedPassword.vue";
@@ -10,6 +10,10 @@ import AlertsPage from "src/pages/AlertsPage.vue"
 import TrainingPage from "src/pages/TrainingPage.vue"
 import CloudSettingsPage from "src/pages/CloudSettings.vue"
 import SettingsPage from "src/pages/SettingsPage.vue"
+import energyPage from "src/pages/EnergyManagement.vue"
+import qualityPage from "src/pages/QualityMangement.vue"
+import ManageSitesPage from "src/pages/ManageSitesPage.vue"
+import AiEdge from "src/pages/AIEdgeGatewayPage.vue"
 
 const routes = [
   //start off at the login page as the default route
@@ -42,7 +46,12 @@ const routes = [
         component: DashboardPage,
         meta: {title:"Dashboard"}
       }, // Dashboard page
-      { path: "manage-sites",
+      { path: "manage-cameras",
+        component: ManageCamerasPage,
+        meta: {title:"ManageCameras"}
+      }, // Manage Cameras page
+      {
+        path: "manage-sites",
         component: ManageSitesPage,
         meta: {title:"ManageSites"}
       }, // Manage Sites page
@@ -70,7 +79,22 @@ const routes = [
         component:SettingsPage,
         meta: {title:'settings'},
       },
-    ],
+      {
+        path : "energy-management",
+        component :energyPage,
+        meta: {title:'energy-management'},
+      },
+      {
+        path:"quality-management",
+        component:qualityPage,
+        meta: {title:'QualityManagement'},
+      },
+      {
+        path: "ai-edge-gateway",
+        component: AiEdge,
+        meta: {title:'AiEdgeGateway'},
+      }
+    ]
   },
 
   // Catch-all for 404 errors
