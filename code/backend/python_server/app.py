@@ -9,19 +9,18 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 
 # Import modules
-from config import load_config
-from database import initialise_database
-from fire_detection import (
+from python_server.database import initialise_database
+from python_server.fire_detection import (
     fire_detection_processes,
     run_fire_detection,
     start_fire_detection_for_all_cameras
 )
-from endpoints.camera_endpoints import register_camera_endpoints
-from endpoints.site_endpoints import register_site_endpoints
-from endpoints.hazard_endpoints import register_hazard_endpoints
-from endpoints.analytics_endpoints import register_analytics_endpoints
-from endpoints.user_endpoints import register_user_endpoints
-from endpoints.health_endpoints import register_health_endpoints
+from python_server.endpoints.camera_endpoints import register_camera_endpoints
+from python_server.endpoints.site_endpoints import register_site_endpoints
+from python_server.endpoints.hazard_endpoints import register_hazard_endpoints
+from python_server.endpoints.analytics_endpoints import register_analytics_endpoints
+from python_server.endpoints.user_endpoints import register_user_endpoints
+from python_server.endpoints.health_endpoints import register_health_endpoints
 
 def create_app():
     """Create and configure the Flask app"""
@@ -39,9 +38,6 @@ def create_app():
         format="%(asctime)s [%(levelname)s] %(message)s",
         handlers=[logging.StreamHandler(sys.stdout)]
     )
-
-    # Load configuration from JSON
-    _ = load_config()  # Config loaded but not used directly here
 
     flask_app = Flask(__name__)
     CORS(flask_app)  # Enable CORS for all routes

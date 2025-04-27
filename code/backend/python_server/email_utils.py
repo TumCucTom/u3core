@@ -2,13 +2,13 @@
 import json
 import logging
 from io import BytesIO
-import pycurl
 import requests
 
 def send_email(to_email, subject, link, code=None, postmark_api=None):
     """
     Send an email using the Postmark API
     """
+    import pycurl # lazy for testing
     sender_email = "info@digitalU3.com"  # Client's Sender email
 
     # Build email content
