@@ -13,7 +13,7 @@ import SettingsPage from "src/pages/SettingsPage.vue"
 import energyPage from "src/pages/EnergyManagement.vue"
 import qualityPage from "src/pages/QualityMangement.vue"
 import ManageSitesPage from "src/pages/ManageSitesPage.vue"
-import AiEdge from "src/pages/AiEdgeGatewayPage.vue"
+import AiEdge from "src/pages/AIEdgeGatewayPage.vue"
 
 const routes = [
   //start off at the login page as the default route
