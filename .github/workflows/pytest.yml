@@ -1,0 +1,53 @@
+name: Python application
+
+on:
+  pull_request:
+    paths:
+      - 'code/backend/python-features/**'
+      - 'code/backend/python-server/**'
+      - '.github/workflows/pybuild.yml'
+    branches: [ "dev", "main", "cd/ci improve" ]
+  push:
+    paths:
+      - '.github/workflows/pytest.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  install-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache pip dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev
+          python -m pip install --upgrade pip
+          pip install -r code/backend/requirements.txt
+          pip install pytest pytest-cov pytest-html
+
+      - name: Set PYTHONPATH
+        run: echo "PYTHONPATH=$GITHUB_WORKSPACE/code/backend" >> $GITHUB_ENV
+
+      - name: Run tests with coverage and generate reports
+        run: |
+          pytest test/ --doctest-modules --cov=python_server --cov-report=xml --cov-report=html --maxfail=5 --disable-warnings
+
+      - name: Upload coverage report to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          file: coverage.xml

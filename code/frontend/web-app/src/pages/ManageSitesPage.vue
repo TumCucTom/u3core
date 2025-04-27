@@ -1,313 +1,240 @@
 <template>
-  <q-page class="q-px-lg q-py-md">
-    <div>
-      <div class="row justify-between items-center q-mb-lg">
-        <div>
-          <h1 class="text-h4 text-bold">Manage Sites</h1>
-          <p class="text-subtitle2">
-            Track, manage and forecast your customers and orders.
-          </p>
+    <q-page class="q-px-lg q-py-md">
+      <div>
+        <div class="row justify-between items-center q-mb-lg">
+          <div>
+            <h1 class="text-h4 text-weight-bold">Manage Sites</h1>
+            <p class="text-subtitle2">
+              Track, manage and forecast your customers and orders.
+            </p>
+          </div>
+          <q-btn
+            label="+ Add Site"
+            color="dark"
+            text-color="white"
+            unelevated
+            class="q-px-md q-py-sm"
+            @click="showAddSite = true"
+          />
         </div>
-        <q-btn label="+ Add Camera" color="primary" text-color="white" @click="openAddRTSP"/>
+
+        <div class="row q-col-gutter-md q-mb-xl">
+          <div class="col-12 col-sm-4">
+            <q-card flat bordered class="q-pa-lg">
+              <div class="text-caption text-grey-7">Total Sites</div>
+              <div class="text-h4 text-weight-bold">{{ metrics.totalSites.toLocaleString() }}</div>
+            </q-card>
+          </div>
+          <div class="col-12 col-sm-4">
+            <q-card flat bordered class="q-pa-lg">
+              <div class="text-caption text-grey-7">Operational Cameras</div>
+              <div class="text-h4 text-weight-bold">{{ metrics.operationalCams.toLocaleString() }}</div>
+            </q-card>
+          </div>
+          <div class="col-12 col-sm-4">
+            <q-card flat bordered class="q-pa-lg">
+              <div class="text-caption text-grey-7">All Alerts</div>
+              <div class="text-h4 text-weight-bold">{{ metrics.allAlerts.toLocaleString() }}</div>
+            </q-card>
+          </div>
+        </div>
+
+        <div class="q-mb-md">
+          <div class="row justify-between items-center q-mb-sm">
+            <div class="text-subtitle1 text-weight-medium">Recent alerts</div>
+            <div class="row items-center">
+              <q-btn outline dense icon="event" label="Select dates" class="q-mr-sm" />
+              <q-btn outline dense icon="filter_list" label="Apply filter" />
+            </div>
+          </div>
+
+          <q-table
+            flat
+            bordered
+            :rows="rows"
+            :columns="columns"
+            row-key="id"
+            selection="multiple"
+            hide-pagination
+          />
+        </div>
+
+        <div class="row justify-between items-center q-mt-md">
+          <q-btn flat label="Previous" />
+          <q-btn flat label="Next" />
+          <div class="text-caption text-grey-7">Page 1 of 10</div>
+        </div>
       </div>
 
-      <div class="row">
-        <!-- sidebar section -->
-        <div class="col-12 col-md-3">
-          <q-list>
-            <!-- dropdown for each site -->
-            <q-expansion-item
-              v-for="site in sites"
-              :key="site.id"
-              :label="site.name"
-              dense
-            >
-              <q-item v-for="camera in site.cameras" :key="camera.id" clickable v-ripple>
-                <q-item-section>{{ camera.name }}</q-item-section>
-              </q-item>
-            </q-expansion-item>
-
-            <q-btn
-              label="+ Add New Site"
-              flat
-              class="bg-dark text-white q-mt-md"
-              @click="openAddSiteDialog"
-            />
-          </q-list>
-        </div>
-
-        <div class="col-12 col-md-9">
-          <q-card bordered class="q-pa-md">
-            <div class="row justify-between items-center">
-              <h2 class="text-h6">CAM 01 View</h2>
-              <q-btn label="Live View" color="amber" flat @click="startLiveStream"/>
+      <q-dialog v-model="showAddSite" persistent>
+        <q-card style="width: 500px; max-width: 90vw;">
+          <q-card-section class="row justify-between items-start">
+            <div class="row items-center">
+              <q-avatar icon="apartment" color="grey-2" text-color="dark" class="q-mr-md" />
+              <div>
+                <div class="text-h6 text-weight-bold">Add site</div>
+                <div class="text-caption">
+                  Create a new site with all the required information.
+                </div>
+              </div>
             </div>
+            <q-btn dense flat round icon="close" v-close-popup />
+          </q-card-section>
 
-            <div class="bg-grey-8 q-mt-md" style="height: 250px; position: relative;">
-              <img
-                v-if="streaming"
-                ref="imagePlayer"
-                style="width: 100%; height: 100%; object-fit: cover;"
-                :src="currentFrame"
-                alt="Live Stream"
-              />
-              <div
-                v-else
-                style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: black; color: white; font-size: 2rem;">
-                Loading stream...
+          <q-separator />
+
+          <q-card-section class="q-gutter-md">
+            <q-input
+              outlined
+              dense
+              rounded
+              v-model="siteName"
+              label="Site name*"
+              placeholder="What is your title?"
+            />
+
+            <div class="row q-col-gutter-md">
+              <div class="col">
+                <q-input
+                  outlined
+                  dense
+                  rounded
+                  v-model="longitude"
+                  label="Longitude"
+                  placeholder="What is your Longitude?"
+                />
+              </div>
+              <div class="col">
+                <q-input
+                  outlined
+                  dense
+                  rounded
+                  v-model="latitude"
+                  label="Latitude"
+                  placeholder="What is your Latitude?"
+                />
               </div>
             </div>
 
+            <q-input
+              outlined
+              dense
+              rounded
+              v-model="locationZone"
+              label="Location Zone"
+              placeholder="Zone A"
+            />
 
-            <div class="row q-mt-md">
-              <q-card flat bordered class="col-6 q-pa-md">
-                <div class="text-caption text-grey-7">Latitude</div>
-                <div class="text-h5 text-bold">48.8584° N</div>
-              </q-card>
-              <q-card flat bordered class="col-6 q-pa-md">
-                <div class="text-caption text-grey-7">Longitude</div>
-                <div class="text-h5 text-bold">48.8584° E</div>
-              </q-card>
-            </div>
-          </q-card>
-        </div>
-      </div>
+            <q-input
+              type="textarea"
+              outlined
+              dense
+              v-model="description"
+              label="Description*"
+              placeholder="e.g. I joined Stripe’s Customer Success team to help them scale their checkout product..."
+              style="min-height: 120px;"
+            />
+          </q-card-section>
 
-      <!-- Dialogs for adding site and RTSP camera -->
-      <q-dialog v-model="addSiteDialog">
-        <q-card style="min-width: 400px">
-          <q-card-section>
-            <div class="text-h6">Add New Site</div>
-          </q-card-section>
-          <q-card-section>
-            <q-form>
-              <q-input
-                v-model="newSite.name"
-                outlined
-                label="Site Name"
-                class="q-mb-md"
-                placeholder="Enter site name"
-              />
-              <q-input
-                v-model="newSite.latitude"
-                outlined
-                label="Latitude"
-                class="q-mb-md"
-                placeholder="Enter latitude"
-              />
-              <q-input
-                v-model="newSite.longitude"
-                outlined
-                label="Longitude"
-                class="q-mb-md"
-                placeholder="Enter longitude"
-              />
-            </q-form>
-          </q-card-section>
-          <q-card-actions align="right">
-            <q-btn flat label="Cancel" color="primary" @click="closeAddSiteDialog" />
-            <q-btn flat label="Save" color="primary" @click="saveNewSite" />
+          <q-card-actions class="row justify-between q-px-md q-pb-md">
+            <q-btn flat label="Cancel" v-close-popup class="q-px-lg" />
+            <q-btn
+              label="Save"
+              color="dark"
+              text-color="white"
+              class="q-px-xl"
+              @click="saveSite"
+            />
           </q-card-actions>
         </q-card>
       </q-dialog>
+    </q-page>
+  </template>
 
-      <q-dialog v-model="addRTSP">
-        <q-card style="min-width: 400px">
-          <q-card-section>
-            <div class="text-h6">Add RTSP Camera</div>
-          </q-card-section>
-          <q-card-section>
-            <q-form>
-              <q-input
-                v-model="newCamera.name"
-                outlined
-                label="Camera Name"
-                class="q-mb-md"
-                placeholder="Enter camera name"
-              />
-              <q-input
-                v-model="newCamera.RTSPURL"
-                outlined
-                label="URL"
-                class="q-mb-md"
-                placeholder="Enter RTSP URL"
-              />
-            </q-form>
-          </q-card-section>
-          <q-card-actions align="right">
-            <q-btn flat label="Cancel" color="primary" @click="closeAddRTSP" />
-            <q-btn flat label="Save" color="primary" @click="saveNewRTSP" />
-          </q-card-actions>
-        </q-card>
-      </q-dialog>
-    </div>
-  </q-page>
-</template>
-
-<script>
-import axios from 'axios';
-
-export default {
-  data() {
-    return {
-      addSiteDialog: false,
-      addRTSP: false,
-      newSite: {
-        name: '',
-        latitude: '',
-        longitude: '',
-      },
-      newCamera: {
-        name: '',
-        RTSPURL: '',
-      },
-      streaming: false,
-      videoSrc: '', // RTSP URL
-      sites: [], // List of sites fetched from the server
-      socket: null, // WebSocket instance
-      currentFrame: '', // Current frame as blob URL
-    };
-  },
-  created() {
-    this.fetchSites();
-  },
-  methods: {
-    async startLiveStream() {
-      // Set up WebSocket for live stream
-      if (this.socket) {
-        this.socket.close(); // Close any existing socket
+  <script>
+  export default {
+    data() {
+      return {
+        showAddSite: false,
+        metrics: {
+          totalSites: 2420,
+          operationalCams: 1210,
+          allAlerts: 316
+        },
+        columns: [
+          { name: "name", label: "Site name", field: "name", align: "left", sortable: true },
+          { name: "location", label: "Site Location", field: "location", align: "left" },
+          { name: "camera", label: "Associated Camera", field: "camera", align: "left" },
+          { name: "gateway", label: "Gateway", field: "gateway", align: "left" }
+        ],
+        rows: [
+          {
+            id: 1,
+            name: "Road and Highway Construction",
+            location: "Building Perimeter and Fence Lines",
+            camera: "CAM-001A",
+            gateway: "CAM-001A"
+          },
+          {
+            id: 2,
+            name: "Los Angeles Distribution Center",
+            location: "Common Rooms and Lounges",
+            camera: "CAM-002B",
+            gateway: "CAM-001A"
+          },
+          {
+            id: 3,
+            name: "Road and Highway Construction",
+            location: "Loading Docks and Delivery Areas",
+            camera: "CAM-003C",
+            gateway: "CAM-001A"
+          },
+          {
+            id: 4,
+            name: "Los Angeles Distribution Center",
+            location: "Elevator Entrances",
+            camera: "CAM-004D",
+            gateway: "CAM-001A"
+          },
+          {
+            id: 5,
+            name: "Road and Highway Construction",
+            location: "Building Entrances and Exits",
+            camera: "CAM-005E",
+            gateway: "CAM-001A"
+          },
+          {
+            id: 6,
+            name: "Los Angeles Distribution Center",
+            location: "Reception Area",
+            camera: "CAM-006F",
+            gateway: "CAM-001A"
+          },
+          {
+            id: 7,
+            name: "Site 01",
+            location: "Parking Lots and Garages",
+            camera: "CAM-007G",
+            gateway: "CAM-001A"
+          }
+        ],
+        siteName: "",
+        longitude: "",
+        latitude: "",
+        locationZone: "",
+        description: ""
+      };
+    },
+    methods: {
+      saveSite() {
+        this.showAddSite = false;
       }
+    }
+  };
+  </script>
 
-      this.socket = new WebSocket('ws://localhost:8080'); // Adjust to your WebSocket server
-      this.socket.binaryType = 'blob'; // Handle binary data
-
-      this.socket.onopen = () => {
-        console.log('WebSocket connection established');
-        this.streaming = true;
-
-        // Send RTSP URL to the WebSocket server
-        if (this.videoSrc) {
-          this.socket.send(this.videoSrc);
-          console.log('RTSP URL sent to WebSocket server:', this.videoSrc);
-        }
-      };
-
-      this.socket.onmessage = (event) => {
-        console.log('Received video frame from WebSocket server:', event.data);
-        // Handle received video frames
-        const blob = event.data;
-        const newBlobUrl = URL.createObjectURL(blob);
-
-        // Clean up old frame memory
-        if (this.currentFrame) {
-          URL.revokeObjectURL(this.currentFrame);
-        }
-
-        // Set the new frame
-        this.currentFrame = newBlobUrl;
-      };
-
-      this.socket.onerror = (error) => {
-        console.error('WebSocket error:', error);
-      };
-
-      this.socket.onclose = () => {
-        console.log('WebSocket connection closed');
-        this.streaming = false;
-
-        // Clean up current frame memory
-        if (this.currentFrame) {
-          URL.revokeObjectURL(this.currentFrame);
-          this.currentFrame = '';
-        }
-      };
-    },
-    openAddSiteDialog() {
-      this.addSiteDialog = true;
-    },
-    closeAddSiteDialog() {
-      this.addSiteDialog = false;
-      this.resetForm();
-    },
-    openAddRTSP() {
-      this.addRTSP = true;
-      this.resetForm();
-    },
-    closeAddRTSP() {
-      this.addRTSP = false;
-    },
-    async saveNewRTSP() {
-      try {
-        const response = await axios.post('http://16.171.224.57:0080/api/add-camera', {
-          name: this.newCamera.name,
-          rtsp_url: this.newCamera.RTSPURL,
-        });
-        console.log('Server Response:', response.data);
-        this.closeAddRTSP();
-
-        // Update video source and start live streaming
-        this.videoSrc = this.newCamera.RTSPURL;
-        console.log('Video Source:', this.videoSrc)
-        await this.startLiveStream();
-      } catch (error) {
-        console.error('Error saving new RTSP:', error);
-      }
-    },
-    async saveNewSite() {
-      try {
-        const response = await axios.post('http://16.171.224.57:0080/add-site', {
-          name: this.newSite.name,
-          latitude: this.newSite.latitude,
-          longitude: this.newSite.longitude,
-        });
-        console.log('Server Response:', response.data);
-        this.closeAddSiteDialog();
-      } catch (error) {
-        console.error('Error saving new site:', error);
-      }
-    },
-    async fetchSites() {
-      try {
-        const response = await axios.get('http://16.171.224.57:0080/sites');
-        this.sites = response.data.sites;
-      } catch (error) {
-        console.error('Error fetching sites:', error);
-      }
-    },
-    resetForm() {
-      this.newSite = {
-        name: '',
-        latitude: '',
-        longitude: '',
-      };
-      this.newCamera = {
-        name: '',
-        RTSPURL: '',
-      };
-    },
+  <style>
+  .q-page {
+    background: #ffffff;
   }
-};
-</script>
-
-<style>
-.q-page {
-  background: #f9f9f9;
-}
-
-.bg-dark {
-  background-color: #1e1e2f;
-}
-
-.text-white {
-  color: white;
-}
-
-.loading-text {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 2rem; /* Make the text large */
-  color: white;
-}
-</style>
+  </style>
