@@ -9,7 +9,7 @@ on:
     branches: [ "dev", "main","cd/ci improve"]
   push:
     paths:
-     - '.github/workflows/test.yml'
+     - '.github/workflows/pytest.yml'
 
 permissions:
   contents: read
