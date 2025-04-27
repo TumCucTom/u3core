@@ -2,7 +2,7 @@
 import logging
 import pymysql
 from flask import jsonify
-from database import get_db_connection
+from python_server.database import get_db_connection
 
 def get_count_from_table(table_name, db_config, condition=None, condition_values=None):
     """

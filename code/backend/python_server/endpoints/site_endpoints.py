@@ -1,8 +1,8 @@
 """Site endpoint handlers"""
 import logging
 from flask import jsonify, request
-from database import get_db_connection
-from endpoints.endpoint_utils import get_count_from_table
+from python_server.database import get_db_connection
+from python_server.endpoints.endpoint_utils import get_count_from_table
 
 def register_site_endpoints(app, db_config, fire_detection_processes):
     """
