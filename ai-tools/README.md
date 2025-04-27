@@ -22,6 +22,28 @@ These are small scripts that are hard to remember all of the details for. AI is 
 - When encountering error messages i would use chatGPT to quickly explain the solution in a more clear way and give possible solutions.
 -An example would be where I could not understand why my openCV was displaying a black screen when working on inferpi.py
 ChatGPT suggested that the current version of raspberry Pi was not compatible with openCV and that i had to downgrade.
+
+## Testing
+
+### TumCucTom Usage
+- Testing with unfamiliar frameworks.
+  - Completely new to frontend development:
+    - Only a couple months limited experience with quasar and vue
+    - Need to know how to test
+  - AI for two things:
+    - Knowledge
+      - What frameworks can I use for testing?
+        - (vitest)
+      - How do I test a frontend vue script:
+        - (test how it deals with api calls)
+        - (test that components render)
+    - Implementation
+      - How to setup vitest
+      - How to write the setup scripts
+      - How to debug the setup scripts
+      - How to debug actual scripts based on the errors
+
+
 ## Other AI uses
 
 ### Make suggestions for design / tech stack choices - TumCucTom
