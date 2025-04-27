@@ -9,7 +9,7 @@ on:
     branches: [ "dev", "main","cd/ci improve"]
   push:
     paths:
-     - '.github/workflows/pybuild.yml'
+     - '.github/workflows/test.yml'
 
 permissions:
   contents: read
