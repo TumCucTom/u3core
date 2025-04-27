@@ -20,25 +20,31 @@ const routeMock = {
 const factory = (options:MountingOptions<any> = {}) => {
   return mount(ErrorNotFound, {
     global: {
-      // PROVIDE what useQuasar() and useRouter() will inject:
       provide: {
-        // useQuasar() looks up `_q_`
         _q_: { notify: notifyMock },
-
-        // useRouter() looks up this Symbol key
         [routerKey]: { push: pushMock },
         [routeLocationKey]: routeMock,
       },
-      // stub out all <q-*> so Quasar never actually runs
-      stubs: [
-        'q-page','q-btn','q-input','q-avatar',
-        'q-img','q-rating','q-checkbox','q-form'
-      ],
+      stubs: {
+        'q-page': true,
+        'q-input': true,
+        'q-avatar': true,
+        'q-img': true,
+        'q-rating': true,
+        'q-checkbox': true,
+        'q-form': true,
+        'q-btn': {
+          template: '<button>{{ label }}</button>', 
+          props: ['label'],
+        },
+      },
       ...options.global,
     },
     ...options,
   })
 }
+
+
 
 describe('ErrorNotFound.vue', () => {
   it('renders 404 and a home button', () => {

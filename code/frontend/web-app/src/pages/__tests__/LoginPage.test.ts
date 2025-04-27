@@ -17,23 +17,22 @@ const axiosMock = axios as unknown as {
 const notifyMock = vi.fn()
 const pushMock   = vi.fn()
 
-// NEW factory
-const factory = (options:MountingOptions<any> = {}) => {
+const factory = (options: MountingOptions<any> = {}) => {
   return mount(LoginPage, {
+    shallow: true,
     global: {
-      // PROVIDE what useQuasar() and useRouter() will inject:
       provide: {
-        // useQuasar() looks up `_q_`
         _q_: { notify: notifyMock },
-
-        // useRouter() looks up this Symbol key
-        [routerKey]: { push: pushMock }
+        [routerKey]: { push: pushMock },
       },
-      // stub out all <q-*> so Quasar never actually runs
-      stubs: [
-        'q-page','q-btn','q-input','q-avatar',
-        'q-img','q-rating','q-checkbox','q-form'
-      ],
+      stubs: {
+        'q-img': true,
+        'q-rating': true,
+        'q-input': {
+          template: '<input :label="label" />',
+          props: ['label'],
+        },
+      },
       ...options.global,
     },
     ...options,
@@ -56,8 +55,13 @@ describe('LoginPage.vue', () => {
 
       expect(wrapper.vm.isLogin).toBe(false)
       expect(wrapper.text()).toContain('Sign up')
-      expect(wrapper.text()).toContain('First Name')
-      expect(wrapper.text()).toContain('Last Name')
+
+      const inputs = wrapper.findAll('input')
+      const firstNameInput = inputs.find(input => input.attributes('label') === 'First Name *')
+      const lastNameInput = inputs.find(input => input.attributes('label') === 'Last Name *')
+
+      expect(firstNameInput).toBeTruthy()
+      expect(lastNameInput).toBeTruthy()
     })
 
     it('toggles to login mode', async () => {

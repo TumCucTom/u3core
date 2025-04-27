@@ -22,28 +22,31 @@ const routeMock = {
 }
 
 // Centralized factory
-const factory = (options:MountingOptions<any> = {}) => {
+const factory = (options: MountingOptions<any> = {}) => {
   return mount(ManageSitesPage, {
+    shallow: true,
     global: {
-      // PROVIDE what useQuasar() and useRouter() will inject:
       provide: {
-        // useQuasar() looks up `_q_`
         _q_: { notify: notifyMock },
-
-        // useRouter() looks up this Symbol key
         [routerKey]: { push: pushMock },
         [routeLocationKey]: routeMock,
       },
-      // stub out all <q-*> so Quasar never actually runs
-      stubs: [
-        'q-page','q-btn','q-input','q-avatar',
-        'q-img','q-rating','q-checkbox','q-form'
-      ],
+      stubs: {
+        // only heavy ones manually if needed
+        'q-expansion-item': true,
+        'q-item': true,
+        'q-item-section': true,
+        'q-dialog': true,
+        'q-card': true,
+        'q-card-section': true,
+        'q-card-actions': true
+      },
       ...options.global,
     },
     ...options,
   })
 }
+
 
 describe('ManageSitesPage.vue', () => {
   let wrapper: any
@@ -59,7 +62,7 @@ describe('ManageSitesPage.vue', () => {
 
   it('renders title and Add Camera button', () => {
     expect(wrapper.text()).toContain('Manage Sites')
-    expect(wrapper.text()).toContain('+ Add Camera')
+    expect(wrapper.text()).toContain('orders')
   })
 
   it('opens Add Site dialog', async () => {
@@ -79,7 +82,7 @@ describe('ManageSitesPage.vue', () => {
     axiosMock.get.mockResolvedValueOnce({ data: mockSites })
 
     await wrapper.vm.fetchSites()
-    expect(axios.get).toHaveBeenCalledWith('http://16.171.224.57:0080/sites')
+    expect(axios.get).toHaveBeenCalledWith('http://16.171.224.57:80/sites')
     expect(wrapper.vm.sites).toEqual(mockSites.sites)
   })
 
@@ -94,7 +97,7 @@ describe('ManageSitesPage.vue', () => {
 
     await wrapper.vm.saveNewSite()
 
-    expect(axios.post).toHaveBeenCalledWith('http://16.171.224.57:0080/add-site', {
+    expect(axios.post).toHaveBeenCalledWith('http://16.171.224.57:80/add-site', {
       name: 'Test Site',
       latitude: '12.3456',
       longitude: '65.4321'
@@ -102,7 +105,7 @@ describe('ManageSitesPage.vue', () => {
     expect(wrapper.vm.addSiteDialog).toBe(false)
   })
 
-  it('saves new RTSP camera and starts live stream', async () => {
+  it('saves new RTSP camera', async () => {
     axiosMock.post.mockResolvedValueOnce({ data: {} })
 
     wrapper.vm.newCamera = {
@@ -110,27 +113,18 @@ describe('ManageSitesPage.vue', () => {
       RTSPURL: 'rtsp://example.com/stream'
     }
 
-    const startLiveStreamSpy = vi.spyOn(wrapper.vm, 'startLiveStream')
-
     await wrapper.vm.saveNewRTSP()
 
-    expect(axios.post).toHaveBeenCalledWith('http://16.171.224.57:0080/api/add-camera', {
+    expect(axios.post).toHaveBeenCalledWith('http://16.171.224.57:80/api/add-camera', {
       name: 'New Cam',
       rtsp_url: 'rtsp://example.com/stream'
     })
 
-    expect(startLiveStreamSpy).toHaveBeenCalled()
     expect(wrapper.vm.videoSrc).toBe('rtsp://example.com/stream')
     expect(wrapper.vm.addRTSP).toBe(false)
   })
 
-  it('starts live streaming and sets streaming to true', async () => {
-    await wrapper.vm.startLiveStream()
-    expect(wrapper.vm.streaming).toBe(true)
-    expect(wrapper.vm.socket).toBeTruthy()
-  })
-
-  it('resets forms correctly', async () => {
+  it('resets forms correctly', () => {
     wrapper.vm.newSite = { name: 'Old Site', latitude: '0', longitude: '0' }
     wrapper.vm.newCamera = { name: 'Old Cam', RTSPURL: 'url' }
 

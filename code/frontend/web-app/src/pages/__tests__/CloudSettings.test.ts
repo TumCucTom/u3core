@@ -19,28 +19,32 @@ const routeMock = {
 }
 
 // Centralized factory
-const factory = (options:MountingOptions<any> = {}) => {
+const factory = (options: MountingOptions<any> = {}) => {
   return mount(CloudSettings, {
     global: {
-      // PROVIDE what useQuasar() and useRouter() will inject:
       provide: {
-        // useQuasar() looks up `_q_`
         _q_: { notify: notifyMock },
-
-        // useRouter() looks up this Symbol key
         [routerKey]: { push: pushMock },
         [routeLocationKey]: routeMock,
       },
-      // stub out all <q-*> so Quasar never actually runs
-      stubs: [
-        'q-page','q-btn','q-input','q-avatar',
-        'q-img','q-rating','q-checkbox','q-form'
-      ],
+      stubs: {
+        'q-page': { template: '<div><slot /></div>' },
+        'q-card': { template: '<div><slot /></div>' },
+        'q-form': { template: '<form @submit="$emit(\'submit\', $event)"><slot /></form>' },
+        'q-btn': { props: ['label'], template: '<button @click="$emit(\'click\')">{{ label }}</button>' },
+        'q-btn-group': { template: '<div><slot /></div>' },
+        'q-input': { props: ['label'], template: '<div><label>{{ label }}</label><input /></div>' },
+        'q-select': { props: ['label'], template: '<div><label>{{ label }}</label><select><slot /></select></div>' },
+        'q-option-group': { template: '<div><slot /></div>' },
+        'q-card-section': { template: '<div><slot /></div>' },
+        'q-separator': true,
+      },
       ...options.global,
     },
     ...options,
   })
 }
+
 
 describe('CloudSettings.vue', () => {
   let wrapper: ReturnType<typeof mount>
