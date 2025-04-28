@@ -21,7 +21,7 @@ COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the Python backend code
-COPY python-server .
+COPY python_server .
 
 # Expose the backend port
 EXPOSE 3000
