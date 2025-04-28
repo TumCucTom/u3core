@@ -38,3 +38,4 @@ def start_fire_detection_for_all_cameras(connection, processes, detection_func):
         logging.info("Started fire detection for all cameras")
     except (pymysql.Error, RuntimeError, ValueError) as error:
         logging.error("Error starting fire detection processes: %(error)s", {"error": error})
+        

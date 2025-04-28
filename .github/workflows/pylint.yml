@@ -6,7 +6,6 @@ on:
       - 'code/backend/python-features/**'
       - 'code/backend/python_server/**'
       - '.github/workflows/pylint.yml'
-      - 'code/backend/python-server/**'
 
 jobs:
   build:
