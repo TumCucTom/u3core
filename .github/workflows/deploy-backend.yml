@@ -48,7 +48,7 @@ jobs:
       - name: Health Check
         run: |
           sleep 30
-          RESPONSE=$(curl -s -X GET http://16.171.224.57:80/health || echo "error")
+          RESPONSE=$(curl -s -X GET http://16.171.224.57:80/api/health/db || echo "error")
           echo "Response: $RESPONSE"
           
           if echo "$RESPONSE" | jq -e '.status == "healthy"' > /dev/null; then
