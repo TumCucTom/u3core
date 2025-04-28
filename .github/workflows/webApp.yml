@@ -15,7 +15,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install modules
-        run: npm --prefix code/frontend/web-app install
+        run: |
+          npm install vite@2.9.18 --save-dev
+          npm --prefix code/frontend/web-app install
       - name: Run web app tests
         run: |
           npm --prefix code/frontend/web-app ci
