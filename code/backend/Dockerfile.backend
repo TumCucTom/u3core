@@ -26,6 +26,8 @@ COPY python_server .
 # Expose the backend port
 EXPOSE 3000
 
+ENV PYTHONPATH="${PYTHONPATH}:/home/ec2-user/2024-MLAIPredictionMicroservices/code/backend/python_server"
+
 # Run the Python backend server
 CMD ["python", "app.py"]
 
