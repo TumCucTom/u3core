@@ -30,7 +30,7 @@ def start_fire_detection_for_all_cameras(connection, processes, detection_func):
             cameras = cursor.fetchall()
         for (rtsp_url,number,model) in cameras:
             if rtsp_url not in processes:  # Avoid duplicate processes
-                process = multiprocessing.Process(target=run_fire_detection,
+                process = multiprocessing.Process(target=detection_func,
                                                   args=(rtsp_url,number,0.6,0.5,"fire",10,f'models/{model}/best.pt',))
                 process.start()
                 processes[rtsp_url] = process
