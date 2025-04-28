@@ -48,7 +48,7 @@ def send_hazard_log(rtsp_url, hazard):
     """
     Sends a POST request to the /api/add-hazard endpoint
     """
-    url = "http://16.171.224.57:0080/api/add-hazard"
+    url = "http://16.171.224.57:80/api/add-hazard"
 
     # Generate current timestamp in "YYYY-MM-DD HH:MM:SS" format
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")

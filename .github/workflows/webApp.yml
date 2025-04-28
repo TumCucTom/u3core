@@ -15,7 +15,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install modules
-        run: npm --prefix code/frontend/web-app install
+        run: |
+          cd code/frontend/web-app
+          rm -rf node_modules package-lock.json yarn.lock
+          npm install vite@2.9.18 --save-dev
+          npm install
       - name: Run web app tests
         run: |
           npm --prefix code/frontend/web-app ci

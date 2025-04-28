@@ -129,157 +129,146 @@
 
 
 <script>
-  import { ref } from 'vue';
-  import { useQuasar } from 'quasar';
-  import axios from 'axios';
-  import { useRouter } from 'vue-router';
-  import bcrypt from 'bcryptjs';
-  import {colors} from 'quasar';
-  import obamaImage from '@/assets/obama.jpg';
-  import anotherUserImage from '@/assets/Lori.png';
+import { ref } from 'vue'
+import { useQuasar } from 'quasar'
+import axios from 'axios'
+import { useRouter } from 'vue-router'
+import bcrypt from 'bcryptjs'
+import { colors } from 'quasar'
+import obamaImage from '@/assets/obama.jpg'
+import anotherUserImage from '@/assets/Lori.png'
 
-
-  export default {
-    data() {
-      return {
-        isLogin: false, // sees if page is in login or register mode
-        obamaImage,
-        anotherUserImage,
-      };
-    },
-    methods: {
-      toggleMode() {
-        this.isLogin = !this.isLogin; // switches between login and register
-      },
-      proceedToOtp() {
-        sessionStorage.setItem("emailTransfer", this.email)
-      this.$router.push("/otp");
+export default {
+  data() {
+    return {
+      isLogin: false,
+      obamaImage,
+      anotherUserImage,
     }
+  },
+  methods: {
+    toggleMode() {
+      this.isLogin = !this.isLogin
     },
-    name: 'RegisterPage',
-    setup() {
-    const firstName = ref('');
-    const lastName = ref('');
-    const email = ref('');
-    const password = ref('');
-    const confirmPassword = ref('');
-    const emailLogin = ref('');
-    const passwordLogin = ref('');
-    const allEmails = ref([]);
-    const $q = useQuasar();
-    const router = useRouter(); // Get the router instance
-    const {getPaletteColor} = colors
-    console.log(getPaletteColor('text-brand'))
+    proceedToOtp() {
+      sessionStorage.setItem('emailTransfer', this.email)
+      this.$router.push('/otp')
+    }
+  },
+  name: 'RegisterPage',
+  setup() {
+    const firstName = ref('')
+    const lastName = ref('')
+    const email = ref('')
+    const password = ref('')
+    const confirmPassword = ref('')
+    const ratingModel = ref(5)
+    const allEmails = ref([])
 
-    /*
-    const passwordsMatch = () => {
-      return password.value === confirmPassword.value;
-    };
-  */
+    const $q = useQuasar()
+    const router = useRouter()
 
+    const onSubmit = async () => {
+      try {
+        const response = await axios.get('http://16.171.224.57:80/api/emails')
+        allEmails.value = response.data
 
-  const onSubmit = () => {
+        if (allEmails.value.includes(email.value)) {
+          $q.notify({
+            color: 'red-5',
+            textColor: 'white',
+            icon: 'warning',
+            message: 'Email is already registered',
+          })
+        } else {
+          await addToCustomer()
+          $q.notify({
+            color: 'green-4',
+            textColor: 'white',
+            icon: 'cloud_done',
+            message: 'Email registered',
+          })
+        }
+      } catch (error) {
+        console.error('Error fetching or adding emails:', error)
+        $q.notify({
+          color: 'red-5',
+          textColor: 'white',
+          icon: 'warning',
+          message: 'Failed to register',
+        })
+      }
+    }
 
-  axios.get('http://16.171.224.57:0080/api/emails')
-  .then(response => {
-  allEmails.value = response.data;
-  if (allEmails.value.includes(email.value)) {
-  console.error('Email is already registered');
-  $q.notify({
-  color: 'red-5',
-  textColor: 'white',
-  icon: 'warning',
-  message: 'Email is already registered',
-});
-} else {
-  addToCustomer();
-  $q.notify({
-  color: 'green-4',
-  textColor: 'white',
-  icon: 'cloud_done',
-  message: 'Email registered',
-});
+    const addToCustomer = async () => {
+      const requestData = {
+        items: [firstName.value, lastName.value, email.value, password.value],
+      }
+      await axios.post('http://16.171.224.57:80/api/addToCustomer', requestData)
+    }
+
+    const onLogin = async () => {
+      const emailSend = String(email.value)
+      sessionStorage.setItem('emailTransfer', emailSend)
+
+      try {
+        const response = await axios.get('http://16.171.224.57:80/api/login', { params: { emailVar: emailSend } })
+        const fetchedHashedPassword = response.data
+
+        try {
+          const result = await bcrypt.compare(password.value, fetchedHashedPassword)
+
+          if (result) {
+            $q.notify({
+              color: 'green-4',
+              textColor: 'white',
+              icon: 'cloud_done',
+              message: 'Successfully logged in',
+            })
+            router.push('/otp')
+          } else {
+            $q.notify({
+              color: 'red-5',
+              textColor: 'white',
+              icon: 'warning',
+              message: 'Invalid username/password',
+            })
+          }
+        } catch (bcryptError) {
+          console.error('Bcrypt error:', bcryptError)
+          $q.notify({
+            color: 'red-5',
+            textColor: 'white',
+            icon: 'warning',
+            message: 'Login failed. Please try again.',
+          })
+        }
+      } catch (axiosError) {
+        console.error('Axios error:', axiosError)
+        $q.notify({
+          color: 'red-5',
+          textColor: 'white',
+          icon: 'warning',
+          message: 'Email does not exist. Please register an account.',
+        })
+      }
+    }
+
+    return {
+      firstName,
+      lastName,
+      email,
+      password,
+      confirmPassword,
+      ratingModel,
+      allEmails,
+      onSubmit,
+      onLogin,
+    }
+  }
 }
-})
-  .catch(error => {
-  console.error('Error fetching emails:', error);
-});
-};
-
-  const addToCustomer = () => {
-  const requestData = {
-  items: [firstName.value, lastName.value, email.value, password.value],
-};
-
-
-  axios.post('http://16.171.224.57:0080/api/addToCustomer', requestData)
-  .then(response => {
-  console.log(response.data);
-})
-  .catch(error => {
-  console.error('Error adding item:', error);
-});
-};
-
-  const onLogin = async () => {
-  const emailSend = String(email.value);
-  sessionStorage.setItem("emailTransfer", emailSend)
-  try {
-  const response = await axios.get('http://16.171.224.57:0080/api/login', { params: { emailVar: emailSend } });
-  const fetchedHashedPassword = response.data;
-
-  const result = await bcrypt.compare(password.value, fetchedHashedPassword);
-  if (result) {
-  // Passwords match, allow the user to log in
-  $q.notify({
-  color: 'green-4',
-  textColor: 'white',
-  icon: 'cloud_done',
-  message: 'Successfully logged in',
-});
-
-  // Redirect user
-  router.push('/otp');
-} else {
-  // Passwords don't match, notify the user
-  $q.notify({
-  color: 'red-5',
-  textColor: 'white',
-  icon: 'warning',
-  message: 'Invalid username/password',
-});
-}
-} catch (error) {
-  console.error('Error during login:', error);
-  // Handle any other errors here
-  $q.notify({
-  color: 'red-5',
-  textColor: 'white',
-  icon: 'warning',
-  message: 'Email does not exist. Please register an account.',
-});
-}
-};
-
-  return {
-  ratingModel:ref(5),
-  firstName,
-  lastName,
-  email,
-  password,
-  confirmPassword,
-  emailLogin,
-  passwordLogin,
-  //passwordsMatch,
-  onSubmit,
-  onLogin,
-};
-},
-
-};
-
-
 </script>
+
 
 <style scoped>
 

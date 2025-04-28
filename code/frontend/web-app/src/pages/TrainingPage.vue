@@ -466,7 +466,7 @@ const getStatusColor = (status) => {
 }
 
 // formatting file size
-const formatFileSize = (bytes) => {
+const formatFileSize = (bytes = 0) => {
   const units = ['B', 'KB', 'MB', 'GB']
   let size = bytes
   let unitIndex = 0

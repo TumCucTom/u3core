@@ -344,7 +344,6 @@ export default {
         console.error("Error fetching anomalies by month:", error);
         monthlyAnomaliesData.value = [];
       } finally {
-        updateAnomaliesChart();
         isLoadingAnomaliesData.value = false;
       }
     };
@@ -360,32 +359,24 @@ export default {
         anomalyTypes.value = [];
         anomalyCounts.value = [];
       } finally {
-        updateTypesChart();
         isLoadingTypesData.value = false;
       }
     };
 
     const updateAnomaliesChart = () => {
+      if (!anomaliesChart.value) return; // ADDED GUARD
       if (anomaliesChartInstance) anomaliesChartInstance.destroy();
+
       const data = monthlyAnomaliesData.value.length
         ? monthlyAnomaliesData.value
         : fallbackMonths;
+
       anomaliesChartInstance = new Chart(anomaliesChart.value, {
         type: "bar",
         data: {
           labels: [
-            "Jan",
-            "Feb",
-            "Mar",
-            "Apr",
-            "May",
-            "Jun",
-            "Jul",
-            "Aug",
-            "Sep",
-            "Oct",
-            "Nov",
-            "Dec"
+            "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+            "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
           ],
           datasets: [{ data, backgroundColor: "#f6a525" }]
         },
@@ -405,13 +396,16 @@ export default {
     };
 
     const updateTypesChart = () => {
+      if (!typesChart.value) return; // ADDED GUARD
       if (typesChartInstance) typesChartInstance.destroy();
+
       const labels = anomalyTypes.value.length
         ? anomalyTypes.value
         : fallbackTypes;
       const data = anomalyCounts.value.length
         ? anomalyCounts.value
         : fallbackCounts;
+
       typesChartInstance = new Chart(typesChart.value, {
         type: "bar",
         data: {
@@ -435,21 +429,22 @@ export default {
 
     // severity donut chart
     const updateSeverityChart = () => {
+      if (!severityChart.value) return; // ADDED GUARD
       if (severityChartInstance) severityChartInstance.destroy();
+
       const labels = severityData.value.map((d) => d.label);
       const data = severityData.value.map((d) => d.value);
       const colors = severityData.value.map((d) => d.color);
+
       severityChartInstance = new Chart(severityChart.value, {
         type: "doughnut",
         data: {
           labels,
-          datasets: [
-            {
-              data,
-              backgroundColor: colors,
-              borderWidth: 0
-            }
-          ]
+          datasets: [{
+            data,
+            backgroundColor: colors,
+            borderWidth: 0
+          }]
         },
         options: {
           responsive: true,
@@ -477,14 +472,21 @@ export default {
       return "#d32f2f";
     };
 
-    onMounted(() => {
+    onMounted(async () => {
       email.value = decodeURIComponent(route.query.email || "");
-      fetchUserName();
-      fetchCounts();
-      fetchAnomalyData();
-      fetchAnomalyTypes();
+
+      await fetchUserName();
+      await fetchCounts();
+
+      await fetchAnomalyData();  // fetch anomalies monthly data
+      await fetchAnomalyTypes(); // fetch anomaly types data
+
+      // Now that data is ready AND canvases are mounted:
+      updateAnomaliesChart();
+      updateTypesChart();
       updateSeverityChart();
     });
+
 
     return {
       name,
