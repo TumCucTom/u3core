@@ -1,5 +1,5 @@
 import Home from "src/pages/LoginPage.vue";
-import otp from "src/pages/otPage.vue";
+import otp from "src/pages/OtPage.vue";
 import DashboardPage from "src/pages/DashboardPage.vue";
 import ManageCamerasPage from "src/pages/ManageCamerasPage.vue";
 import ManageModelsPage from "src/pages/ManageModelsPage.vue";
@@ -19,7 +19,7 @@ const routes = [
   //start off at the login page as the default route
   {
     path: "/",
-    component: () => import("layouts/MinimalLayout.vue"),
+    component: () => import("src/layouts/MinimalLayout.vue"),
     children: [
       {
         path: "",
@@ -40,7 +40,7 @@ const routes = [
   // sidebar layout for all the other pages
   {
     path: "/app",
-    component: () => import("layouts/SidebarLayout.vue"),
+    component: () => import("src/layouts/SidebarLayout.vue"),
     children: [
       { path: "dashboard",
         component: DashboardPage,
@@ -55,8 +55,6 @@ const routes = [
         component: ManageSitesPage,
         meta: {title:"ManageSites"}
       }, // Manage Sites page
-
-
       { path: "manage-models",
         component: ManageModelsPage,
         meta: {title:"ManageModels"}
@@ -102,7 +100,7 @@ const routes = [
   // Catch-all for 404 errors
   {
     path: "/:catchAll(.*)*",
-    component: () => import("pages/ErrorNotFound.vue"),
+    component: () => import("src/pages/ErrorNotFound.vue"),
     meta: { title:"ErrorNotFound"}
   },
 ];

@@ -55,7 +55,7 @@ export default {
 
     const sendVerificationEmail = async () => {
       try {
-        const response = await axios.post('http://16.171.224.57:0080/api/sendEmail', { email: email.value });
+        const response = await axios.post('http://16.171.224.57:80/api/sendEmail', { email: email.value });
         console.log('Verification email sent successfully:', response);
         $q.notify({
           color: 'green-4',

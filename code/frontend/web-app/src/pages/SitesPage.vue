@@ -1,7 +1,7 @@
 <template>
   <q-page class="q-px-lg q-py-md">
     <div>
-      
+
       <div class="row justify-between items-center q-mb-lg">
         <div>
           <h1 class="text-h4 text-bold">Manage Sites</h1>
@@ -12,7 +12,7 @@
         <q-btn label="+ Add Site" color="primary" text-color="white" />
       </div>
 
-      
+
       <div class="row q-mb-lg">
         <q-card flat bordered class="col-12 col-md-4 q-pa-md">
           <div class="text-caption text-grey-7">Total Sites</div>
@@ -28,7 +28,7 @@
         </q-card>
       </div>
 
-      
+
       <div class="row q-mb-md justify-between items-center">
         <h2 class="text-h6">Recent alerts</h2>
         <div class="row">
@@ -37,7 +37,7 @@
         </div>
       </div>
 
-      
+
       <q-table
         flat
         rows-per-page-options="[5, 10, 15]"
@@ -45,20 +45,20 @@
         :columns="columns"
         row-key="id"
       >
-        
+
         <template v-slot:body-cell-site="props">
           <q-checkbox />
           <span>{{ props.row.site }}</span>
         </template>
 
-        
+
         <template v-slot:body-cell-resource-link>
           <q-btn flat label="Video" color="primary" />
           <q-btn flat label="Image" color="primary" />
         </template>
       </q-table>
 
-      
+
       <div class="row justify-between items-center q-mt-md">
         <q-btn flat label="Previous" />
         <q-btn flat label="Next" />
@@ -94,6 +94,6 @@ export default {
 
 <style>
 .q-page {
-  background: #f9f9f9; 
+  background: #f9f9f9;
 }
 </style>

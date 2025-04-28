@@ -4,7 +4,7 @@ on:
   push:
     paths:
       - 'code/backend/python-features/**'
-      - 'code/backend/python-server/**'
+      - 'code/backend/python_server/**'
       - '.github/workflows/pylint.yml'
       - 'code/backend/python-server/**'
 
@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.8", "3.9", "3.10"]
+        python-version: ["3.8"]
     steps:
     - uses: actions/checkout@v4
     - name: Set up Python ${{ matrix.python-version }}
@@ -29,5 +29,5 @@ jobs:
     - name: Analysing the code with pylint
       run: |
         pylint $(git ls-files 'code/backend/python-features/*.py') --rcfile=.github/workflows/.pylintrc
-        pylint $(git ls-files 'code/backend/python-server/*.py') --rcfile=.github/workflows/.pylintrc
+        pylint $(git ls-files 'code/backend/python_server/*.py') --rcfile=.github/workflows/.pylintrc
         

@@ -129,7 +129,7 @@ export default {
   methods: {
     async fetchAlerts() {
       try {
-        const response = await fetch("http://127.0.0.1:3002/api/get-logs");
+        const response = await fetch("http://16.171.224.57:80/api/get-logs");
         const data = await response.json();
         this.alertsData = data;
       } catch (error) {
