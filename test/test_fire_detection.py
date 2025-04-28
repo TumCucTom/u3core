@@ -36,13 +36,14 @@ def test_start_fire_detection_for_all_cameras_starts_processes(mock_connection):
         assert "rtsp://camera2" in processes
         assert mock_process_instance.start.call_count == 2
 
-        # Check that each process was started with correct arguments
-        expected_calls = [
-            (("rtsp://camera1", "+1234567890", 0.6, 0.5, "fire", 10, "models/default/best.pt"),),
-            (("rtsp://camera2", "+1234567891", 0.6, 0.5, "fire", 10, "models/special/best.pt"),)
+        # Correctly check that each process was started with correct arguments
+        expected_args = [
+            ("rtsp://camera1", "+1234567890", 0.6, 0.5, "fire", 10, "models/default/best.pt"),
+            ("rtsp://camera2", "+1234567891", 0.6, 0.5, "fire", 10, "models/special/best.pt")
         ]
-        actual_args = [call_args.args for call_args in mock_process_class.call_args_list]
-        assert actual_args == expected_calls
+        actual_args = [call.kwargs["args"] for call in mock_process_class.call_args_list]
+        assert actual_args == expected_args
+
 
 def test_run_fire_detection_logs_rtsp_url(caplog):
     with patch('python_server.fire_detection.run_yolov8_inference') as mock_inference:

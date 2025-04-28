@@ -45,8 +45,8 @@ def test_run_yolov8_inference_quick_exit(dummy_frame):
         mock_yolo.return_value = mock_model_instance
 
         mock_cap = MagicMock()
-        mock_cap.isOpened.side_effect = [True, False]  # Opened once, then stop
-        mock_cap.read.return_value = (True, dummy_frame)
+        mock_cap.isOpened.return_value = True  # <<< Always True for test
+        mock_cap.read.side_effect = [(True, dummy_frame), (False, dummy_frame)]  # <<< Read success then stop
         mock_video.return_value = mock_cap
 
         fire_script.run_yolov8_inference(
@@ -59,8 +59,8 @@ def test_run_yolov8_inference_quick_exit(dummy_frame):
             model_path="dummy_model_path.pt"
         )
 
-        # Ensure frame was read
+        # Now this will pass
         assert mock_cap.read.call_count >= 1
-        # No WhatsApp should be sent because no fire
         mock_whatsapp.assert_not_called()
         mock_hazard_log.assert_not_called()
+
