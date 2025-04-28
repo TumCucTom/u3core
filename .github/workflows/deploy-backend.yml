@@ -34,7 +34,7 @@ jobs:
           
             # Navigate to home directory and remove any existing repo
             cd ~
-            rm -rf 2024-MLAIPredictionMicroservices
+            sudo rm -rf 2024-MLAIPredictionMicroservices
           
             # Clone the latest version
             git clone --single-branch --branch "${{ github.ref_name }}" git@github.com:spe-uob/2024-MLAIPredictionMicroservices.git
