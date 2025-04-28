@@ -38,6 +38,7 @@
     "ws": "^8.18.0"
   },
   "devDependencies": {
+    "vite": "2.9.18",
     "@quasar/app-vite": "^1.9.0",
     "@quasar/quasar-app-extension-testing-unit-vitest": "^1.1.0",
     "@vue/test-utils": "^2.4.6",
