@@ -1,144 +1,66 @@
-"""
-Fire Detection and Alert System (YOLOv8)
+import pytest
+from unittest.mock import patch, MagicMock
 
-This script captures video from an RTSP stream, detects fire using a trained YOLOv8 model,
-and sends alerts via AWS SNS (SMS) and Twilio (WhatsApp) when fire is detected.
+import python_server.fire_detection_script as fire_script
 
-Configuration values are loaded from environment variables.
-"""
-# pylint: disable=too-many-locals
-# pylint: disable=too-many-arguments
-# pylint: disable=redefined-outer-name
-# pylint: disable=no-member
-import os
-import datetime
-import time
-import requests
-from dotenv import load_dotenv
-import cv2
-from ultralytics import YOLO
-from twilio.rest import Client
+@pytest.fixture
+def dummy_frame():
+    # Create a dummy image frame (black frame)
+    import numpy as np
+    return np.zeros((480, 640, 3), dtype=np.uint8)
 
-# Load environment variables
-dotenv_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../.env"))
-load_dotenv(dotenv_path)
+def test_detect_fire_with_yolo_fire_detected(dummy_frame):
+    mock_model = MagicMock()
+    mock_box = MagicMock()
+    mock_box.cls = [MagicMock(item=lambda: 0)]  # class 0
+    mock_box.conf = [MagicMock(item=lambda: 0.95)]  # high confidence
+    mock_model.return_value = [MagicMock(boxes=[mock_box])]
 
-# Twilio setup
-T_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
-T_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
+    fire_detected, alert_type = fire_script.detect_fire_with_yolo(dummy_frame, mock_model)
 
-# Alert message
-ALERT_MESSAGE = "Fire detected! Immediate action required!"
+    assert fire_detected is True
+    assert alert_type == "fire"
 
-def send_whatsapp_via_twilio(number, stream_address, datetime):
-    """Send WhatsApp message via Twilio."""
-    account_sid = T_ACCOUNT_SID
-    auth_token = T_AUTH_TOKEN
-    client = Client(account_sid, auth_token)
+def test_detect_fire_with_yolo_no_fire(dummy_frame):
+    mock_model = MagicMock()
+    mock_model.return_value = [MagicMock(boxes=[])]  # No boxes detected
 
-    message = client.messages.create(
-        from_ ='whatsapp:+14155238886',
-        body =f'Fire Detected -  site: test123, rtsp: {stream_address}, time: {datetime}',
-        to=f'whatsapp:{number}'
-    )
+    fire_detected, alert_type = fire_script.detect_fire_with_yolo(dummy_frame, mock_model)
 
-    print(message.sid)
+    assert fire_detected is False
+    assert alert_type == "none"
 
-def send_hazard_log(rtsp_url, hazard):
-    """
-    Sends a POST request to the /api/add-hazard endpoint
-    """
-    url = "http://16.171.224.57:80/api/add-hazard"
+def test_run_yolov8_inference_quick_exit(dummy_frame):
+    with patch('python_server.fire_detection_script.YOLO') as mock_yolo, \
+            patch('python_server.fire_detection_script.cv2.VideoCapture') as mock_video, \
+            patch('python_server.fire_detection_script.send_whatsapp_via_twilio') as mock_whatsapp, \
+            patch('python_server.fire_detection_script.send_hazard_log') as mock_hazard_log, \
+            patch('python_server.fire_detection_script.cv2.destroyAllWindows'):
 
-    # Generate current timestamp in "YYYY-MM-DD HH:MM:SS" format
-    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        mock_model_instance = MagicMock()
+        mock_result = MagicMock()
+        mock_result.boxes.data = []  # No fire boxes
+        mock_model_instance.return_value = [mock_result]
+        mock_model_instance.names = {0: "fire"}
+        mock_yolo.return_value = mock_model_instance
 
-    # Prepare the request payload
-    payload = {
-        "timestamp": timestamp,
-        "type": hazard,
-        "cameraAddress": rtsp_url
-    }
+        mock_cap = MagicMock()
+        mock_cap.isOpened.side_effect = [True, False]  # Opened once, then stop
+        mock_cap.read.return_value = (True, dummy_frame)
+        mock_video.return_value = mock_cap
 
-    try:
-        response = requests.post(url, json=payload, timeout=15)
-        return response.json()
-    except requests.exceptions.RequestException as e:
-        print(f"Error sending request: {e}")
-        return {"error": "Failed to send request"}
+        fire_script.run_yolov8_inference(
+            rtsp_url="dummy_rtsp_url",
+            number="+1234567890",
+            conf=0.6,
+            iou=0.5,
+            alert_class="fire",
+            alert_interval=10,
+            model_path="dummy_model_path.pt"
+        )
 
-
-# Detect fire using YOLOv8
-def detect_fire_with_yolo(frame, model):
-    """Detect fire using the trained YOLOv8 model."""
-    results = model(frame)  # Run inference on the frame
-    detections = results[0].boxes  # Get detected bounding boxes
-
-    for box in detections:
-        class_id = int(box.cls[0].item())  # Get class index
-        confidence = box.conf[0].item()  # Get confidence score
-
-        if class_id == 0 and confidence >= 0.6:  # Assuming 'fire' is class 0
-            return True, "fire"
-
-    return False, "none"
-
-
-def run_yolov8_inference(rtsp_url,
-                         number,
-                         conf=0.6,
-                         iou=0.5,
-                         alert_class="fire",
-                         alert_interval=10,
-                         model_path = "models/default/best.pt"
-                         ):
-    """
-    Run YOLOv8 inference on webcam or RTSP input, detect 'fire', and trigger alerts.
-
-    Args:
-        rtsp_url: the address of stream
-        number: phone number to whatsapp
-        conf: Confidence threshold.
-        iou: IOU threshold.
-        alert_class: Class name to trigger alert.
-        alert_interval: Seconds between repeated alerts.
-        model_path: path to the stored model
-    """
-    model = YOLO(model_path)
-
-    cap = cv2.VideoCapture(rtsp_url)
-
-    if not cap.isOpened():
-        print("Error: Unable to open RTSP stream.")
-        return
-
-    last_alert_time = 0
-
-    while cap.isOpened():
-        success, frame = cap.read()
-        if not success:
-            break
-
-        # Run inference
-        results = model(frame, conf=conf, iou=iou, verbose=False)
-
-        # Fire alert logic
-        fire_detected = False
-        for box in results[0].boxes.data:
-            class_id = int(box[5].item())
-            class_name = model.names[class_id]
-            if class_name.lower() == alert_class.lower():
-                fire_detected = True
-                break
-
-        if fire_detected:
-            current_time = time.time()
-            date_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            if current_time - last_alert_time > alert_interval:
-                print("Fire detected! Sending alerts...")
-                last_alert_time = current_time
-                send_whatsapp_via_twilio(number,rtsp_url,date_time)
-                send_hazard_log(rtsp_url, "fire")
-
-    cap.release()
-    cv2.destroyAllWindows()
+        # Ensure frame was read
+        assert mock_cap.read.call_count >= 1
+        # No WhatsApp should be sent because no fire
+        mock_whatsapp.assert_not_called()
+        mock_hazard_log.assert_not_called()
