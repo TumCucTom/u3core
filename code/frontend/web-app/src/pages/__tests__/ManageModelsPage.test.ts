@@ -52,7 +52,7 @@ describe('ManageModelsPage.vue', () => {
   it('renders page title and subtitle', () => {
     const wrapper = factory()
     expect(wrapper.text()).toContain('Manage Models')
-    expect(wrapper.text()).toContain('Track, manage and forecast your models and performance.')
+    expect(wrapper.text()).toContain('Manage Models Track, Manage and Configure models')
   })
 
   it('renders "+ Add Model" button', () => {

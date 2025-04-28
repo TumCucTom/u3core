@@ -1,17 +1,32 @@
 import { flushPromises, mount } from '@vue/test-utils'
-import { describe, it,beforeEach, expect, vi } from 'vitest'
+import { describe, it, beforeEach, expect, vi } from 'vitest'
 import DashboardPage from '../DashboardPage.vue'
 import axios from 'axios'
-import { routerKey, routeLocationKey }               from 'vue-router'
+import { routerKey, routeLocationKey } from 'vue-router'
 
+// Mock libraries
 vi.mock('axios')
 vi.mock('bcryptjs')
+vi.mock('chart.js', () => ({
+  Chart: vi.fn(() => ({
+    destroy: vi.fn(),
+    update: vi.fn(),
+  }))
+}))
+vi.stubGlobal('HTMLCanvasElement', class {
+  getContext() {
+    return {}; // return empty object so Chart.js won't crash
+  }
+});
 
+
+// Type axios mock
 const axiosMock = axios as unknown as {
-  get: ReturnType<typeof vi.fn>,
+  get: ReturnType<typeof vi.fn>
   post: ReturnType<typeof vi.fn>
 }
 
+// Factory to mount DashboardPage
 const factory = () => {
   return mount(DashboardPage, {
     global: {
@@ -37,14 +52,14 @@ describe('DashboardPage.vue', () => {
     vi.resetAllMocks()
   })
 
-  it('renders with welcome text and name placeholder', async () => {
-    axiosMock.get.mockResolvedValueOnce({ data: 'Alice' }) // Mock getName
+  it('renders welcome text, subtitle, and user name', async () => {
+    axiosMock.get.mockResolvedValueOnce({ data: 'Alice' }) // Mock API call for name
     const wrapper = factory()
 
     await flushPromises()
 
     expect(wrapper.text()).toContain('Welcome back')
-    expect(wrapper.text()).toContain('Track, manage and forecast your customers and orders.')
+    expect(wrapper.text()).toContain('Track, manage and forecast your asset performance')
     expect(wrapper.text()).toContain('Alice')
   })
 })

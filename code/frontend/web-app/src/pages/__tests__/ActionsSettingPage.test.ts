@@ -90,10 +90,10 @@ describe('ActionsSettingPage', () => {
 
   it('renders filter buttons (SMS, Email, Whatsapp, Twitter)', () => {
     const wrapper = factory()
-    expect(wrapper.text()).toContain('SMS')
+    expect(wrapper.text()).toContain('Sms')
     expect(wrapper.text()).toContain('Email')
-    expect(wrapper.text()).toContain('Whatsapp')
-    expect(wrapper.text()).toContain('Twitter')
+    expect(wrapper.text()).toContain('WhatsApp')
+    expect(wrapper.text()).toContain('Tweets')
   })
 
   it('renders search input and filter buttons', () => {

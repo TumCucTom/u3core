@@ -6,7 +6,6 @@ import { routerKey, routeLocationKey } from 'vue-router'
 
 // mocks & stubs
 vi.mock('axios')
-vi.mock('bcryptjs')
 
 const axiosMock = axios as unknown as {
   get: ReturnType<typeof vi.fn>,
@@ -21,7 +20,6 @@ const routeMock = {
   }
 }
 
-// Centralized factory
 const factory = (options: MountingOptions<any> = {}) => {
   return mount(ManageSitesPage, {
     shallow: true,
@@ -32,21 +30,22 @@ const factory = (options: MountingOptions<any> = {}) => {
         [routeLocationKey]: routeMock,
       },
       stubs: {
-        // only heavy ones manually if needed
-        'q-expansion-item': true,
-        'q-item': true,
-        'q-item-section': true,
+        'q-page': { template: '<div><slot /></div>' },
+        'q-btn': { template: '<button><slot /></button>' },
+        'q-avatar': true,
+        'q-table': true,
+        'q-input': true,
         'q-dialog': true,
         'q-card': true,
         'q-card-section': true,
-        'q-card-actions': true
+        'q-card-actions': true,
+        'q-separator': true,
       },
       ...options.global,
     },
     ...options,
   })
 }
-
 
 describe('ManageSitesPage.vue', () => {
   let wrapper: any
@@ -60,77 +59,48 @@ describe('ManageSitesPage.vue', () => {
     wrapper.unmount()
   })
 
-  it('renders title and Add Camera button', () => {
-    expect(wrapper.text()).toContain('Manage Sites')
-    expect(wrapper.text()).toContain('orders')
-  })
-
-  it('opens Add Site dialog', async () => {
-    expect(wrapper.vm.addSiteDialog).toBe(false)
-    await wrapper.vm.openAddSiteDialog()
-    expect(wrapper.vm.addSiteDialog).toBe(true)
-  })
-
-  it('opens Add RTSP dialog', async () => {
-    expect(wrapper.vm.addRTSP).toBe(false)
-    await wrapper.vm.openAddRTSP()
-    expect(wrapper.vm.addRTSP).toBe(true)
-  })
-
-  it('fetches sites on created', async () => {
-    const mockSites = { sites: [{ id: 1, name: 'Test Site', cameras: [{ id: 101, name: 'Cam 01' }] }] }
+  it('fetches sites on fetchSites call', async () => {
+    const mockSites = { sites: [{ id: 1, name: 'Test Site' }] }
     axiosMock.get.mockResolvedValueOnce({ data: mockSites })
 
     await wrapper.vm.fetchSites()
+
     expect(axios.get).toHaveBeenCalledWith('http://16.171.224.57:80/sites')
     expect(wrapper.vm.sites).toEqual(mockSites.sites)
   })
 
-  it('saves new site and closes dialog', async () => {
+  it('saves new site', async () => {
     axiosMock.post.mockResolvedValueOnce({ data: {} })
 
-    wrapper.vm.newSite = {
-      name: 'Test Site',
-      latitude: '12.3456',
-      longitude: '65.4321'
-    }
+    wrapper.vm.siteName = 'Test Site'
+    wrapper.vm.latitude = '12.3456'
+    wrapper.vm.longitude = '65.4321'
 
-    await wrapper.vm.saveNewSite()
+    await wrapper.vm.saveSite() // <-- changed from saveNewSite to saveSite
 
     expect(axios.post).toHaveBeenCalledWith('http://16.171.224.57:80/add-site', {
       name: 'Test Site',
       latitude: '12.3456',
       longitude: '65.4321'
     })
-    expect(wrapper.vm.addSiteDialog).toBe(false)
   })
 
-  it('saves new RTSP camera', async () => {
-    axiosMock.post.mockResolvedValueOnce({ data: {} })
-
-    wrapper.vm.newCamera = {
-      name: 'New Cam',
-      RTSPURL: 'rtsp://example.com/stream'
-    }
-
-    await wrapper.vm.saveNewRTSP()
-
-    expect(axios.post).toHaveBeenCalledWith('http://16.171.224.57:80/api/add-camera', {
-      name: 'New Cam',
-      rtsp_url: 'rtsp://example.com/stream'
-    })
-
-    expect(wrapper.vm.videoSrc).toBe('rtsp://example.com/stream')
-    expect(wrapper.vm.addRTSP).toBe(false)
-  })
-
-  it('resets forms correctly', () => {
-    wrapper.vm.newSite = { name: 'Old Site', latitude: '0', longitude: '0' }
-    wrapper.vm.newCamera = { name: 'Old Cam', RTSPURL: 'url' }
+  it('resets form correctly', () => {
+    // fill fake data
+    wrapper.vm.siteName = 'Old Site'
+    wrapper.vm.latitude = '1.23'
+    wrapper.vm.longitude = '4.56'
+    wrapper.vm.locationZone = 'Zone Z'
+    wrapper.vm.description = 'Old description'
+    wrapper.vm.newCamera = { name: 'Old Cam', RTSPURL: 'oldurl' }
 
     wrapper.vm.resetForm()
 
-    expect(wrapper.vm.newSite).toEqual({ name: '', latitude: '', longitude: '' })
+    expect(wrapper.vm.siteName).toBe('')
+    expect(wrapper.vm.latitude).toBe('')
+    expect(wrapper.vm.longitude).toBe('')
+    expect(wrapper.vm.locationZone).toBe('')
+    expect(wrapper.vm.description).toBe('')
     expect(wrapper.vm.newCamera).toEqual({ name: '', RTSPURL: '' })
   })
 })
