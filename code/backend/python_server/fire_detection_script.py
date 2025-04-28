@@ -7,13 +7,13 @@ and sends alerts via AWS SNS (SMS) and Twilio (WhatsApp) when fire is detected.
 Configuration values are loaded from environment variables.
 """
 import os
+import datetime
+import time
 import requests
 from dotenv import load_dotenv
 import cv2
-import datetime
 from ultralytics import YOLO
 from twilio.rest import Client
-import time
 
 # Load environment variables
 dotenv_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../.env"))
