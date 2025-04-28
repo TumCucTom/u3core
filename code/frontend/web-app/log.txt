@@ -1,0 +1,226 @@
+
+> quasar-project@0.0.1 test:unit
+> vitest run
+
+
+ RUN  v2.1.9 /Users/Tom/2024-MLAIPredictionMicroservices/code/frontend/web-app
+
+ ❯ src/pages/__tests__/DashboardPage.test.ts (4 tests | 4 failed) 7ms
+   × DashboardPage.vue > renders with welcome text and name placeholder 4ms
+     → default.get.mockResolvedValue is not a function
+   × DashboardPage.vue > fetches user name from email in query 1ms
+     → default.get.mockResolvedValue is not a function
+   × DashboardPage.vue > fetches site, camera, and alert counts 0ms
+     → default.get.mockResolvedValue is not a function
+   × DashboardPage.vue > logs on settings button click 0ms
+     → default.get.mockResolvedValue is not a function
+ ❯ src/pages/__tests__/TrainingPage.test.ts (9 tests | 2 failed) 50ms
+   × TrainingPage.vue > renders main title and upload button 19ms
+     → expected '' to contain 'Upload Training Data'
+   × TrainingPage.vue > shows "No training records yet" when no logs 2ms
+     → expected '' to contain 'No training records yet'
+ ❯ src/pages/__tests__/ManageSitesPage.test.ts (8 tests | 5 failed) 51ms
+   × ManageSitesPage.vue > renders title and Add Camera button 35ms
+     → expected '' to contain 'Manage Sites'
+   × ManageSitesPage.vue > fetches sites on created 2ms
+     → default.get.mockResolvedValueOnce is not a function
+   × ManageSitesPage.vue > saves new site and closes dialog 2ms
+     → default.post.mockResolvedValueOnce is not a function
+   × ManageSitesPage.vue > saves new RTSP camera and starts live stream 1ms
+     → default.post.mockResolvedValueOnce is not a function
+   × ManageSitesPage.vue > starts live streaming and sets streaming to true 2ms
+     → expected false to be true // Object.is equality
+ ❯ src/pages/__tests__/CloudSettings.test.ts (9 tests | 5 failed) 50ms
+   × CloudSettings > renders the title and subtitle 17ms
+     → expected '' to contain 'Cloud Settings'
+   × CloudSettings > shows start and end time inputs when "shift-based" is selected 5ms
+     → expected '' to contain 'Start time'
+   × CloudSettings > renders data usage value 5ms
+     → expected '' to contain '0 GB'
+   × CloudSettings > renders the retention policy buttons 4ms
+     → expected '' to contain '7 days'
+   × CloudSettings > handles form submission and logs correct values 7ms
+     → Cannot call trigger on an empty VueWrapper.
+stdout | src/pages/__tests__/LoginPage.test.ts > LoginPage.vue > renders correctly in signup mode by default
+#000000
+
+stdout | src/pages/__tests__/LoginPage.test.ts > LoginPage.vue > toggles to login mode
+#000000
+
+ ❯ src/pages/__tests__/LoginPage.test.ts (7 tests | 7 failed) 37ms
+   × LoginPage.vue > renders correctly in signup mode by default 32ms
+     → expected '' to contain 'Sign up'
+   × LoginPage.vue > toggles to login mode 3ms
+     → expected '' to contain 'Welcome back'
+   × LoginPage.vue > handles successful signup flow 0ms
+     → default.get.mockResolvedValue is not a function
+   × LoginPage.vue > handles duplicate email on signup 0ms
+     → default.get.mockResolvedValue is not a function
+   × LoginPage.vue > handles successful login flow 0ms
+     → default.get.mockResolvedValue is not a function
+   × LoginPage.vue > handles invalid password login flow 0ms
+     → default.get.mockResolvedValue is not a function
+   × LoginPage.vue > handles login error (email not found) 0ms
+     → default.get.mockRejectedValue is not a function
+stdout | src/pages/__tests__/ResetPassword.test.ts > ResetPassword.vue > renders main headings and password inputs
+Token from URL: 12345 Email from URL: test@example.com
+
+stdout | src/pages/__tests__/ResetPassword.test.ts > ResetPassword.vue > toggles password visibility
+Token from URL: 12345 Email from URL: test@example.com
+
+stdout | src/pages/__tests__/ResetPassword.test.ts > ResetPassword.vue > handles successful password reset flow
+Token from URL: 12345 Email from URL: test@example.com
+
+stdout | src/pages/__tests__/ResetPassword.test.ts > ResetPassword.vue > shows error if email is not registered
+Token from URL: 12345 Email from URL: test@example.com
+
+stdout | src/pages/__tests__/ResetPassword.test.ts > ResetPassword.vue > shows error if passwords do not match
+Token from URL: 12345 Email from URL: test@example.com
+
+stdout | src/pages/__tests__/ResetPassword.test.ts > ResetPassword.vue > shows error if server fails during password reset
+Token from URL: 12345 Email from URL: test@example.com
+
+ ❯ src/pages/__tests__/OtPage.test.ts (5 tests | 4 failed) 36ms
+   × OtPage.vue > renders main text and email placeholder 28ms
+     → expected '' to contain 'Check your email'
+   × OtPage.vue > calls sendEmail on mount and updates email text 2ms
+     → default.post.mockResolvedValueOnce is not a function
+   × OtPage.vue > resends email and shows success notification 2ms
+     → default.post.mockResolvedValueOnce is not a function
+   × OtPage.vue > shows error notification on resend failure 1ms
+     → default.post.mockRejectedValueOnce is not a function
+ ❯ src/pages/__tests__/ResetPassword.test.ts (6 tests | 5 failed) 29ms
+   × ResetPassword.vue > renders main headings and password inputs 19ms
+     → expected '' to contain 'RESET PASSWORD'
+   × ResetPassword.vue > handles successful password reset flow 2ms
+     → default.get.mockResolvedValueOnce is not a function
+   × ResetPassword.vue > shows error if email is not registered 1ms
+     → default.get.mockResolvedValueOnce is not a function
+   × ResetPassword.vue > shows error if passwords do not match 1ms
+     → default.get.mockResolvedValueOnce is not a function
+   × ResetPassword.vue > shows error if server fails during password reset 1ms
+     → default.get.mockResolvedValueOnce is not a function
+ ❯ src/pages/__tests__/SettingsPage.test.ts (6 tests | 2 failed) 87ms
+   × SettingsPage.vue > renders main Settings title 63ms
+     → expected '' to contain 'Settings'
+   × SettingsPage.vue > renders all tabs 8ms
+     → expected '' to contain 'Application Settings'
+ ❯ src/layouts/__tests__/SidebarLayout.test.ts (4 tests | 4 failed) 58ms
+   × SidebarLayout.vue > renders the sidebar and router-view 46ms
+     → Cannot convert undefined or null to object
+   × SidebarLayout.vue > shows filtered menu items based on search 2ms
+     → Cannot convert undefined or null to object
+   × SidebarLayout.vue > opens and closes logout dialog 4ms
+     → Cannot convert undefined or null to object
+   × SidebarLayout.vue > confirms logout and redirects to login 2ms
+     → Cannot convert undefined or null to object
+ ❯ src/pages/__tests__/AlertsPage.test.ts (5 tests | 3 failed) 36ms
+   × AlertsPage > renders the page title and subtitle 12ms
+     → expected '' to contain 'Alerts'
+   × AlertsPage > renders the table component 17ms
+     → expected false to be true // Object.is equality
+   × AlertsPage > calls fetchAlerts on mount 3ms
+     → expected "spy" to be called 1 times, but got 2 times
+ ❯ src/pages/__tests__/ForgotPassword.test.ts (4 tests | 3 failed) 38ms
+   × ForgotPassword.vue > renders headings and instructions 24ms
+     → expected '' to contain 'EMAIL VERIFICATION'
+   × ForgotPassword.vue > calls API and shows success notification on button click 1ms
+     → default.post.mockResolvedValue is not a function
+   × ForgotPassword.vue > handles API error and shows error notification 0ms
+     → default.post.mockRejectedValue is not a function
+ ❯ src/layouts/__tests__/MainLayout.test.ts (3 tests | 3 failed) 13ms
+   × MainLayout.vue > renders layout with toolbar and drawer closed initially 9ms
+     → Cannot convert undefined or null to object
+   × MainLayout.vue > toggles drawer when menu button clicked 2ms
+     → Cannot convert undefined or null to object
+   × MainLayout.vue > renders all EssentialLink components 0ms
+     → Cannot convert undefined or null to object
+ ❯ src/pages/__tests__/SitesPage.test.ts (8 tests | 8 failed) 39ms
+   × SitesPage.vue > renders page title and subtitle 12ms
+     → expected '' to contain 'Manage Sites'
+   × SitesPage.vue > renders "+ Add Site" button 1ms
+     → expected '' to contain '+ Add Site'
+   × SitesPage.vue > renders dashboard cards 2ms
+     → expected '' to contain 'Total Sites'
+   × SitesPage.vue > renders recent alerts section with buttons 1ms
+     → expected '' to contain 'Recent alerts'
+   × SitesPage.vue > renders the table with correct columns 1ms
+     → expected '' to contain 'Site name'
+   × SitesPage.vue > renders all mock table rows 1ms
+     → expected '' to contain 'Site 01'
+   × SitesPage.vue > renders Video and Image buttons in the resource link column 1ms
+     → expected '' to contain 'Video'
+   × SitesPage.vue > renders pagination controls 18ms
+     → expected '' to contain 'Previous'
+ ❯ src/pages/__tests__/ActionsSettingPage.test.ts (6 tests | 6 failed) 27ms
+   × ActionsSettingPage > renders the page and title section correctly 16ms
+     → expected '' to contain 'Actions Setting'
+   × ActionsSettingPage > renders the + Add Recipient button 6ms
+     → expected false to be true // Object.is equality
+   × ActionsSettingPage > renders filter buttons (SMS, Email, Whatsapp, Twitter) 2ms
+     → expected '' to contain 'SMS'
+   × ActionsSettingPage > renders search input and filter buttons 1ms
+     → expected '' to contain 'Search'
+   × ActionsSettingPage > renders the table with no data 1ms
+     → expected '' to contain 'No data available'
+   × ActionsSettingPage > renders pagination controls 1ms
+     → expected '' to contain 'Previous'
+ ❯ src/pages/__tests__/ManageModelsPage.test.ts (6 tests | 6 failed) 18ms
+   × ManageModelsPage.vue > renders page title and subtitle 10ms
+     → expected '' to contain 'Manage Models'
+   × ManageModelsPage.vue > renders "+ Add Model" button 1ms
+     → expected '' to contain '+ Add Model'
+   × ManageModelsPage.vue > renders filter buttons 2ms
+     → expected '' to contain 'All'
+   × ManageModelsPage.vue > renders search input 1ms
+     → expected '' to contain 'Search'
+   × ManageModelsPage.vue > renders the table with no data message 2ms
+     → expected false to be true // Object.is equality
+   × ManageModelsPage.vue > renders pagination controls 1ms
+     → expected '' to contain 'Previous'
+ ❯ src/pages/__tests__/ErrorNotFound.test.ts (1 test | 1 failed) 15ms
+   × ErrorNotFound.vue > renders 404 and a home button 13ms
+     → expected '404  Oops. Nothing here...' to contain 'Go Home'
+ ❯ src/layouts/__tests__/HomeLayout.test.ts (3 tests | 3 failed) 9ms
+   × HomeLayout.vue > renders layout and router-view 7ms
+     → Cannot convert undefined or null to object
+   × HomeLayout.vue > toggles dark mode on button click 1ms
+     → Cannot convert undefined or null to object
+   × HomeLayout.vue > opens the hyperlink when logo clicked 1ms
+     → Cannot convert undefined or null to object
+stdout | src/pages/__tests__/VerifiedPassword.test.ts > VerifiedPassword.vue > redirects to dashboard if token and email are present
+Token from URL: 12345 Email from URL: test@example.com
+Successful verification
+
+stdout | src/pages/__tests__/VerifiedPassword.test.ts > VerifiedPassword.vue > redirects to home if token or email are missing
+Token from URL: 12345 Email from URL: test@example.com
+Successful verification
+
+ ❯ src/pages/__tests__/VerifiedPassword.test.ts (2 tests | 2 failed) 21ms
+   × VerifiedPassword.vue > redirects to dashboard if token and email are present 18ms
+     → expected "spy" to be called with arguments: [ Array(1) ]
+
+Received: 
+
+
+
+Number of calls: 0
+
+   × VerifiedPassword.vue > redirects to home if token or email are missing 2ms
+     → expected "spy" to be called with arguments: [ '/' ]
+
+Received: 
+
+
+
+Number of calls: 0
+
+ ❯ src/pages/__tests__/IndexPage.test.ts (1 test | 1 failed) 45ms
+   × IndexPage.vue > renders the logo image 12ms
+     → expected false to be true // Object.is equality
+
+ Test Files  19 failed (19)
+      Tests  74 failed | 23 passed (97)
+   Start at  13:31:48
+   Duration  5.63s (transform 1.51s, setup 12.67s, collect 3.51s, tests 667ms, environment 6.97s, prepare 2.88s)
+
