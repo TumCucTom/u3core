@@ -29,5 +29,5 @@ jobs:
     - name: Analysing the code with pylint
       run: |
         pylint $(git ls-files 'code/backend/python-features/*.py') --rcfile=.github/workflows/.pylintrc
-        pylint $(git ls-files 'code/backend/python-server/*.py') --rcfile=.github/workflows/.pylintrc
+        pylint $(git ls-files 'code/backend/python_server/*.py') --rcfile=.github/workflows/.pylintrc
         
