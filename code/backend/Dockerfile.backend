@@ -21,13 +21,13 @@ COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the Python backend code
-COPY python_server .
+COPY . .
 
 # Expose the backend port
 EXPOSE 3000
 
-ENV PYTHONPATH="${PYTHONPATH}:/home/ec2-user/2024-MLAIPredictionMicroservices/code/backend/python_server"
+ENV PYTHONPATH="${PYTHONPATH}:/usr/src/app/python_server"
 
 # Run the Python backend server
-CMD ["python", "app.py"]
+CMD ["python", "python_server/app.py"]
 
