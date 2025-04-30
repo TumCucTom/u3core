@@ -9,7 +9,7 @@
 
 # u3Core
 ## Table of Contents
-- [2024-ML/AI Prediction Microservices](#2024-mlai-prediction-microservices)
+- [u3Core](#u3Core)
   - [Project Overview & structure](#project-overview)
   - [User/ Developer Instructions](#user-instructions)
   - [Stakeholders and User stories](#stakeholders)
