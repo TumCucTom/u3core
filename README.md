@@ -7,7 +7,7 @@
 ![Node.js](https://img.shields.io/badge/Node.js-5FA04E.svg?style=for-the-badge&logo=nodedotjs&logoColor=white)
 
 
-# 2024-ML/AI Prediction Microservices
+# u3Core
 ## Table of Contents
 - [2024-ML/AI Prediction Microservices](#2024-mlai-prediction-microservices)
   - [Project Overview & structure](#project-overview)
